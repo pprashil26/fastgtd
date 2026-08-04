@@ -8,6 +8,7 @@
     :root {
       --bg: #f6f3ee;
       --page: #fffdf8;
+      --panel: #fbf7f0;
       --ink: #3d3a34;
       --muted: #8a8378;
       --line: #e7dfd4;
@@ -19,6 +20,8 @@
       --current: #fff3c7;
       --current-soft: #fff8df;
       --current-ink: #6f5b22;
+      --selected: #dce8e1;
+      --today: #f7e7bd;
       --danger: #a56a62;
       --shadow: 0 10px 28px rgba(70, 55, 35, 0.08);
     }
@@ -40,9 +43,149 @@
       padding: 10px 8px;
     }
 
+    .shell {
+      width: 100%;
+      max-width: 1040px;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 800px);
+      gap: 10px;
+      align-items: start;
+    }
+
+    .sidebar {
+      background: var(--page);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: width 0.2s ease;
+    }
+
+    .sidebar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px 7px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
+    }
+
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .plain-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      padding: 1px 0;
+      cursor: pointer;
+    }
+
+    .plain-btn:hover {
+      text-decoration: underline;
+    }
+
+    .calendar-wrap {
+      max-height: calc(100vh - 80px);
+      overflow: auto;
+      padding: 8px 8px 10px;
+    }
+
+    .month {
+      margin-bottom: 10px;
+    }
+
+    .month-name {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      margin: 0 0 4px 2px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .day-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      min-height: 23px;
+      border-radius: 7px;
+      font: inherit;
+      font-size: 11px;
+      line-height: 1;
+      padding: 2px 0;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .day-btn:hover {
+      background: var(--soft);
+      text-decoration: none;
+    }
+
+    .day-btn.weekend {
+      color: var(--muted);
+      background: rgba(231, 223, 212, 0.28);
+    }
+
+    .day-btn.today {
+      border-color: rgba(150, 120, 45, 0.38);
+      background: var(--today);
+      font-weight: 700;
+    }
+
+    .day-btn.selected {
+      background: var(--selected);
+      border-color: var(--entry-border);
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .day-btn.has-data::after {
+      content: "";
+      display: block;
+      width: 3px;
+      height: 3px;
+      margin: 1px auto 0;
+      border-radius: 50%;
+      background: var(--accent, #7b9285);
+    }
+
+    .sidebar.collapsed {
+      width: 42px;
+    }
+
+    .sidebar.collapsed .sidebar-head {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .sidebar.collapsed .sidebar-title,
+    .sidebar.collapsed .calendar-wrap {
+      display: none;
+    }
+
+    .shell.sidebar-collapsed {
+      grid-template-columns: 42px minmax(0, 800px);
+    }
+
     .app {
       width: 100%;
-      max-width: 430px;
+      max-width: 800px;
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -51,7 +194,7 @@
     }
 
     header {
-      padding: 10px 12px 8px;
+      padding: 9px 12px 7px;
       border-bottom: 1px solid var(--line);
       background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
@@ -71,7 +214,7 @@
       letter-spacing: -0.02em;
     }
 
-    .today {
+    .selected-date {
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
@@ -92,29 +235,26 @@
       white-space: nowrap;
     }
 
-    button {
-      border: 0;
-      background: transparent;
-      color: var(--danger);
-      font: inherit;
-      font-size: 11.5px;
-      padding: 1px 0;
-      cursor: pointer;
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      white-space: nowrap;
     }
 
-    button:hover {
-      text-decoration: underline;
+    .clear-btn {
+      color: var(--danger);
     }
 
     .note-block {
-      padding: 7px 10px;
+      padding: 6px 11px;
       border-bottom: 1px solid var(--line);
     }
 
     .note-block.bottom {
       border-top: 1px solid var(--line);
       border-bottom: 0;
-      background: #fbf7f0;
+      background: var(--panel);
     }
 
     .note-line {
@@ -133,7 +273,7 @@
 
     input[type="text"] {
       width: 100%;
-      height: 28px;
+      height: 27px;
       border: 1px solid var(--line);
       border-radius: 10px;
       outline: none;
@@ -158,17 +298,25 @@
     }
 
     .timeline {
-      padding: 7px 10px 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 12px;
+      padding: 6px 11px 7px;
     }
 
     .column {
       min-width: 0;
     }
 
+    .column:first-child {
+      border-right: 1px solid var(--line);
+      padding-right: 12px;
+    }
+
     .slot {
       display: grid;
       grid-template-columns: 58px 1fr;
-      min-height: 29px;
+      min-height: 27px;
       border-bottom: 1px solid var(--line);
       border-radius: 8px;
       transition: background 0.2s ease;
@@ -193,7 +341,7 @@
     }
 
     .time {
-      padding: 7px 8px 4px 2px;
+      padding: 6px 8px 3px 2px;
       color: var(--ink);
       font-size: 11px;
       font-weight: 600;
@@ -203,16 +351,16 @@
 
     textarea {
       width: 100%;
-      min-height: 28px;
-      height: 28px;
+      min-height: 26px;
+      height: 26px;
       resize: none;
       border: 0;
       outline: none;
       background: transparent;
       color: var(--ink);
       font: inherit;
-      font-size: 12.5px;
-      padding: 6px 8px 5px;
+      font-size: 12px;
+      padding: 5px 8px 4px;
       border-left: 1px solid var(--line);
       overflow: hidden;
     }
@@ -232,83 +380,96 @@
     }
 
     footer {
-      padding: 6px 12px 9px;
+      padding: 5px 12px 7px;
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 10.5px;
       text-align: center;
-      background: #fbf7f0;
+      background: var(--panel);
     }
 
-    /* Desktop/tablet landscape: two columns to fit the full day on small laptop screens */
-    @media (min-width: 760px) {
-      body {
-        align-items: flex-start;
-        padding: 10px 8px;
+    /* Narrow desktop/tablet: keep layout usable and compact */
+    @media (max-width: 900px) and (min-width: 760px) {
+      .shell {
+        grid-template-columns: 190px minmax(0, 1fr);
       }
 
-      .app {
-        max-width: 800px;
-      }
-
-      header {
-        padding-top: 9px;
-        padding-bottom: 7px;
-      }
-
-      .timeline {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 12px;
-        padding: 6px 11px 7px;
-      }
-
-      .column:first-child {
-        border-right: 1px solid var(--line);
-        padding-right: 12px;
-      }
-
-      .slot {
-        min-height: 27px;
-      }
-
-      textarea {
-        min-height: 26px;
-        height: 26px;
-        font-size: 12px;
-        padding-top: 5px;
-        padding-bottom: 4px;
-      }
-
-      .time {
-        padding-top: 6px;
-        padding-bottom: 3px;
-      }
-
-      .note-block {
-        padding: 6px 11px;
-      }
-
-      input[type="text"] {
-        height: 27px;
-        font-size: 12.5px;
-      }
-
-      footer {
-        padding-top: 5px;
-        padding-bottom: 7px;
+      .shell.sidebar-collapsed {
+        grid-template-columns: 42px minmax(0, 1fr);
       }
     }
 
-    /* Mobile: one simple vertical column. Inputs use 16px font to prevent iOS/Safari auto zoom. */
+    /* Mobile: calendar collapses above the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. */
     @media (max-width: 759px) {
       body {
         padding: 8px 6px;
       }
 
+      .shell,
+      .shell.sidebar-collapsed {
+        display: block;
+        max-width: 100%;
+      }
+
+      .sidebar {
+        width: 100%;
+        margin-bottom: 8px;
+        border-radius: 14px;
+      }
+
+      .sidebar.collapsed {
+        width: 100%;
+      }
+
+      .sidebar.collapsed .sidebar-title {
+        display: block;
+      }
+
+      .sidebar.collapsed .calendar-wrap {
+        display: none;
+      }
+
+      .sidebar-head {
+        padding: 8px 10px;
+      }
+
+      .calendar-wrap {
+        max-height: 45vh;
+      }
+
       .app {
         max-width: 100%;
         border-radius: 14px;
+      }
+
+      .title-row {
+        gap: 8px;
+      }
+
+      h1 {
+        font-size: 17px;
+      }
+
+      .selected-date {
+        font-size: 11.5px;
+      }
+
+      .toolbar {
+        font-size: 11px;
+      }
+
+      .note-line {
+        grid-template-columns: 56px 1fr;
+      }
+
+      .timeline {
+        display: block;
+        padding: 7px 10px 8px;
+      }
+
+      .column:first-child {
+        border-right: 0;
+        padding-right: 0;
       }
 
       .slot {
@@ -319,10 +480,6 @@
       .time {
         font-size: 10.5px;
         padding-top: 9px;
-      }
-
-      .note-line {
-        grid-template-columns: 56px 1fr;
       }
 
       input[type="text"],
@@ -344,70 +501,127 @@
   </style>
 </head>
 <body>
-  <main class="app" aria-label="Timeblocks daily planner">
-    <header>
-      <div class="title-row">
-        <h1>Timeblocks</h1>
-        <div class="today" id="todayText">Today</div>
+  <div class="shell" id="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Compact calendar sidebar">
+      <div class="sidebar-head">
+        <div class="sidebar-title">Calendar</div>
+        <button class="plain-btn" id="sidebarToggle" type="button" aria-expanded="true" title="Show or hide calendar">Hide</button>
       </div>
-      <div class="toolbar">
-        <div class="hint">8:00 AM to 8:00 PM · 30 min blocks</div>
-        <button id="clearBtn" type="button" title="Clear today's entries">Clear</button>
-      </div>
-    </header>
+      <div class="calendar-wrap" id="calendarWrap"></div>
+    </aside>
 
-    <section class="note-block" aria-label="Focus for the day">
-      <div class="note-line">
-        <label class="note-label" for="focusInput">Focus</label>
-        <input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" />
-      </div>
-    </section>
+    <main class="app" aria-label="Timeblocks daily planner">
+      <header>
+        <div class="title-row">
+          <h1>Timeblocks</h1>
+          <div class="selected-date" id="selectedDateText">Selected date</div>
+        </div>
+        <div class="toolbar">
+          <div class="hint">8:00 AM to 8:00 PM · 30 min blocks</div>
+          <div class="actions">
+            <button class="plain-btn" id="todayBtn" type="button" title="Open today">Today</button>
+            <button class="plain-btn clear-btn" id="clearBtn" type="button" title="Clear selected day's entries">Clear</button>
+          </div>
+        </div>
+      </header>
 
-    <section class="timeline" id="timeline"></section>
+      <section class="note-block" aria-label="Focus for the day">
+        <div class="note-line">
+          <label class="note-label" for="focusInput">Focus</label>
+          <input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" />
+        </div>
+      </section>
 
-    <section class="note-block bottom" aria-label="Evening reminder">
-      <div class="note-line">
-        <label class="note-label" for="eveningInput">Evening</label>
-        <input id="eveningInput" type="text" placeholder="Evening commitment, reminder..." autocomplete="off" />
-      </div>
-    </section>
+      <section class="timeline" id="timeline"></section>
 
-    <footer>
-      Current block is highlighted. Saved automatically on this device.
-    </footer>
-  </main>
+      <section class="note-block bottom" aria-label="Evening reminder">
+        <div class="note-line">
+          <label class="note-label" for="eveningInput">Evening</label>
+          <input id="eveningInput" type="text" placeholder="Evening commitment, reminder..." autocomplete="off" />
+        </div>
+      </section>
+
+      <footer>
+        Select a date from the calendar. Current block highlights only for today. Saved automatically on this device.
+      </footer>
+    </main>
+  </div>
 
   <script>
     (function () {
+      const START_DATE = new Date(2026, 6, 1);  // 1 July 2026
+      const END_DATE = new Date(2027, 11, 31);  // 31 December 2027
+
+      const shell = document.getElementById("shell");
+      const sidebar = document.getElementById("sidebar");
+      const sidebarToggle = document.getElementById("sidebarToggle");
+      const calendarWrap = document.getElementById("calendarWrap");
       const timeline = document.getElementById("timeline");
-      const todayText = document.getElementById("todayText");
+      const selectedDateText = document.getElementById("selectedDateText");
       const clearBtn = document.getElementById("clearBtn");
+      const todayBtn = document.getElementById("todayBtn");
       const focusInput = document.getElementById("focusInput");
       const eveningInput = document.getElementById("eveningInput");
 
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const dateKey = `${yyyy}-${mm}-${dd}`;
-      const storageKey = `timeblocks:${dateKey}`;
-
-      todayText.textContent = now.toLocaleDateString(undefined, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-      });
-
-      let saved = {};
-      try {
-        saved = JSON.parse(localStorage.getItem(storageKey)) || {};
-      } catch (e) {
-        saved = {};
+      function pad(value) {
+        return String(value).padStart(2, "0");
       }
 
-      focusInput.value = saved.focus || "";
-      eveningInput.value = saved.evening || "";
+      function toKey(date) {
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      }
+
+      function fromKey(key) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key || "");
+        if (!match) return null;
+        const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        if (toKey(date) !== key) return null;
+        return date;
+      }
+
+      function isSameDay(a, b) {
+        return a && b && toKey(a) === toKey(b);
+      }
+
+      function isWithinRange(date) {
+        return date >= START_DATE && date <= END_DATE;
+      }
+
+      function getToday() {
+        const current = new Date();
+        return new Date(current.getFullYear(), current.getMonth(), current.getDate());
+      }
+
+      function getInitialDate() {
+        const hashDate = fromKey(location.hash.replace("#", ""));
+        if (hashDate && isWithinRange(hashDate)) return hashDate;
+
+        const today = getToday();
+        if (isWithinRange(today)) return today;
+
+        return new Date(START_DATE);
+      }
+
+      let selectedDate = getInitialDate();
+      let storageKey = "";
+      let saved = {};
+
+      function selectedStorageKey() {
+        return `timeblocks:${toKey(selectedDate)}`;
+      }
+
+      function monthName(date) {
+        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+      }
+
+      function displayDate(date) {
+        return date.toLocaleDateString(undefined, {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        });
+      }
 
       function formatTime(hour, minute) {
         const d = new Date();
@@ -418,19 +632,46 @@
         });
       }
 
+      function readSavedData() {
+        storageKey = selectedStorageKey();
+        try {
+          saved = JSON.parse(localStorage.getItem(storageKey)) || {};
+        } catch (e) {
+          saved = {};
+        }
+      }
+
+      function hasSavedDataForDate(key) {
+        try {
+          const data = JSON.parse(localStorage.getItem(`timeblocks:${key}`)) || {};
+          const hasFocus = Boolean((data.focus || "").trim());
+          const hasEvening = Boolean((data.evening || "").trim());
+          const hasEntries = data.entries && Object.keys(data.entries).length > 0;
+          return hasFocus || hasEvening || hasEntries;
+        } catch (e) {
+          return false;
+        }
+      }
+
       function save() {
         const data = {
-          focus: focusInput.value.trim(),
-          evening: eveningInput.value.trim(),
+          focus: focusInput.value,
+          evening: eveningInput.value,
           entries: {}
         };
 
         document.querySelectorAll("textarea[data-time]").forEach(box => {
-          const value = box.value.trim();
-          if (value) data.entries[box.dataset.time] = value;
+          if (box.value.trim()) data.entries[box.dataset.time] = box.value;
         });
 
         localStorage.setItem(storageKey, JSON.stringify(data));
+        markDateHasData(toKey(selectedDate));
+      }
+
+      function markDateHasData(key) {
+        const btn = document.querySelector(`.day-btn[data-date="${key}"]`);
+        if (!btn) return;
+        btn.classList.toggle("has-data", hasSavedDataForDate(key));
       }
 
       function autoGrow(box) {
@@ -443,7 +684,7 @@
       function createSlot(total) {
         const hour = Math.floor(total / 60);
         const minute = total % 60;
-        const timeId = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+        const timeId = `${pad(hour)}:${pad(minute)}`;
 
         const slot = document.createElement("div");
         slot.className = "slot";
@@ -478,32 +719,8 @@
         return slot;
       }
 
-      function highlightCurrentTimeBlock() {
-        document.querySelectorAll(".slot.current-slot").forEach(slot => {
-          slot.classList.remove("current-slot");
-        });
-
-        const current = new Date();
-        const currentMinutes = current.getHours() * 60 + current.getMinutes();
-        const startMinutes = 8 * 60;
-        const endMinutes = 20 * 60;
-
-        if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
-          return;
-        }
-
-        const roundedMinutes = Math.floor(currentMinutes / 30) * 30;
-        const hour = Math.floor(roundedMinutes / 60);
-        const minute = roundedMinutes % 60;
-        const timeId = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-        const currentSlot = document.querySelector(`.slot[data-time="${timeId}"]`);
-
-        if (currentSlot) {
-          currentSlot.classList.add("current-slot");
-        }
-      }
-
       function buildTimeline() {
+        timeline.innerHTML = "";
         const firstColumn = document.createElement("div");
         const secondColumn = document.createElement("div");
         firstColumn.className = "column";
@@ -522,14 +739,121 @@
         timeline.appendChild(firstColumn);
         timeline.appendChild(secondColumn);
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
+      }
+
+      function highlightCurrentTimeBlock() {
+        document.querySelectorAll(".slot.current-slot").forEach(slot => {
+          slot.classList.remove("current-slot");
+        });
+
+        const today = getToday();
+        if (!isSameDay(selectedDate, today)) return;
+
+        const current = new Date();
+        const currentMinutes = current.getHours() * 60 + current.getMinutes();
+        const startMinutes = 8 * 60;
+        const endMinutes = 20 * 60;
+
+        if (currentMinutes < startMinutes || currentMinutes > endMinutes) return;
+
+        const roundedMinutes = Math.floor(currentMinutes / 30) * 30;
+        const hour = Math.floor(roundedMinutes / 60);
+        const minute = roundedMinutes % 60;
+        const timeId = `${pad(hour)}:${pad(minute)}`;
+        const currentSlot = document.querySelector(`.slot[data-time="${timeId}"]`);
+
+        if (currentSlot) currentSlot.classList.add("current-slot");
+      }
+
+      function loadSelectedDate() {
+        readSavedData();
+        selectedDateText.textContent = displayDate(selectedDate);
+        focusInput.value = saved.focus || "";
+        eveningInput.value = saved.evening || "";
+        buildTimeline();
+        updateSelectedCalendarDay();
         highlightCurrentTimeBlock();
+      }
+
+      function selectDate(date, updateHash) {
+        if (!isWithinRange(date)) return;
+        selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        if (updateHash) {
+          history.replaceState(null, "", `#${toKey(selectedDate)}`);
+        }
+        loadSelectedDate();
+      }
+
+      function updateSelectedCalendarDay() {
+        const selectedKey = toKey(selectedDate);
+        document.querySelectorAll(".day-btn.selected").forEach(btn => {
+          btn.classList.remove("selected");
+        });
+        const btn = document.querySelector(`.day-btn[data-date="${selectedKey}"]`);
+        if (btn) {
+          btn.classList.add("selected");
+          btn.scrollIntoView({ block: "nearest" });
+        }
+      }
+
+      function buildCalendar() {
+        calendarWrap.innerHTML = "";
+        const todayKey = toKey(getToday());
+        let cursor = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), 1);
+
+        while (cursor <= END_DATE) {
+          const month = document.createElement("section");
+          month.className = "month";
+
+          const heading = document.createElement("div");
+          heading.className = "month-name";
+          heading.textContent = monthName(cursor);
+
+          const days = document.createElement("div");
+          days.className = "days";
+
+          const monthIndex = cursor.getMonth();
+          const year = cursor.getFullYear();
+          const day = new Date(year, monthIndex, 1);
+
+          while (day.getMonth() === monthIndex) {
+            if (day >= START_DATE && day <= END_DATE) {
+              const key = toKey(day);
+              const btn = document.createElement("button");
+              btn.className = "day-btn";
+              btn.type = "button";
+              btn.textContent = day.getDate();
+              btn.dataset.date = key;
+              btn.title = displayDate(day);
+              btn.setAttribute("aria-label", displayDate(day));
+
+              if (day.getDay() === 0 || day.getDay() === 6) btn.classList.add("weekend");
+              if (key === todayKey) btn.classList.add("today");
+              if (key === toKey(selectedDate)) btn.classList.add("selected");
+              if (hasSavedDataForDate(key)) btn.classList.add("has-data");
+
+              btn.addEventListener("click", function () {
+                const clickedDate = fromKey(this.dataset.date);
+                if (clickedDate) selectDate(clickedDate, true);
+              });
+
+              days.appendChild(btn);
+            }
+            day.setDate(day.getDate() + 1);
+          }
+
+          month.appendChild(heading);
+          month.appendChild(days);
+          calendarWrap.appendChild(month);
+          cursor.setMonth(cursor.getMonth() + 1);
+        }
       }
 
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", save);
 
       clearBtn.addEventListener("click", function () {
-        const ok = confirm("Clear all entries for today?");
+        const ok = confirm(`Clear all entries for ${displayDate(selectedDate)}?`);
         if (!ok) return;
         localStorage.removeItem(storageKey);
         focusInput.value = "";
@@ -538,14 +862,34 @@
           box.value = "";
           autoGrow(box);
         });
+        markDateHasData(toKey(selectedDate));
         highlightCurrentTimeBlock();
+      });
+
+      todayBtn.addEventListener("click", function () {
+        const today = getToday();
+        if (isWithinRange(today)) selectDate(today, true);
+      });
+
+      sidebarToggle.addEventListener("click", function () {
+        const collapsed = sidebar.classList.toggle("collapsed");
+        shell.classList.toggle("sidebar-collapsed", collapsed);
+        sidebarToggle.textContent = collapsed ? "Show" : "Hide";
+        sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
       });
 
       window.addEventListener("resize", function () {
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
       });
 
-      buildTimeline();
+      window.addEventListener("hashchange", function () {
+        const hashDate = fromKey(location.hash.replace("#", ""));
+        if (hashDate && isWithinRange(hashDate)) selectDate(hashDate, false);
+      });
+
+      buildCalendar();
+      loadSelectedDate();
+      history.replaceState(null, "", `#${toKey(selectedDate)}`);
       setInterval(highlightCurrentTimeBlock, 60000);
     })();
   </script>
