@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timeblocks</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --page: #fffdf8;
+      --ink: #3d3a34;
+      --muted: #8a8378;
+      --line: #e7dfd4;
+      --soft: #f1ebe2;
+      --entry: #e8f0ec;
+      --entry-border: #c8d8d0;
+      --accent: #7b9285;
+      --danger: #a56a62;
+      --shadow: 0 10px 30px rgba(70, 55, 35, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 1.3;
+      display: flex;
+      justify-content: center;
+      padding: 14px 8px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      background: var(--page);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 13px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .today {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hint {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      color: var(--danger);
+      font: inherit;
+      font-size: 12px;
+      padding: 2px 0;
+      cursor: pointer;
+    }
+
+    button:hover {
+      text-decoration: underline;
+    }
+
+    .timeline {
+      padding: 8px 10px 12px;
+    }
+
+    .slot {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      min-height: 30px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .slot:last-child {
+      border-bottom: 0;
+    }
+
+    .time {
+      padding: 7px 8px 5px 2px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      user-select: none;
+    }
+
+    .time.hour {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 29px;
+      height: 29px;
+      resize: none;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 12.5px;
+      padding: 6px 8px;
+      border-left: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    textarea:focus {
+      background: var(--soft);
+    }
+
+    textarea.has-text {
+      background: var(--entry);
+      border-left: 3px solid var(--entry-border);
+      padding-left: 6px;
+    }
+
+    footer {
+      padding: 8px 14px 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      background: #fbf7f0;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 8px 6px;
+      }
+
+      .app {
+        max-width: 100%;
+        border-radius: 14px;
+      }
+
+      .slot {
+        grid-template-columns: 52px 1fr;
+      }
+
+      .time {
+        font-size: 10.5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Timeblocks daily planner">
+    <header>
+      <div class="title-row">
+        <h1>Timeblocks</h1>
+        <div class="today" id="todayText">Today</div>
+      </div>
+      <div class="toolbar">
+        <div class="hint">8:00 AM to 8:00 PM · 15 min blocks</div>
+        <button id="clearBtn" type="button" title="Clear today's entries">Clear</button>
+      </div>
+    </header>
+
+    <section class="timeline" id="timeline"></section>
+
+    <footer>
+      Click any block and type. Saved automatically on this device.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      const timeline = document.getElementById("timeline");
+      const todayText = document.getElementById("todayText");
+      const clearBtn = document.getElementById("clearBtn");
+
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      const dateKey = `${yyyy}-${mm}-${dd}`;
+      const storageKey = `timeblocks:${dateKey}`;
+
+      todayText.textContent = now.toLocaleDateString(undefined, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      });
+
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(storageKey)) || {};
+      } catch (e) {
+        saved = {};
+      }
+
+      function formatTime(hour, minute) {
+        const d = new Date();
+        d.setHours(hour, minute, 0, 0);
+        return d.toLocaleTimeString(undefined, {
+          hour: "numeric",
+          minute: "2-digit"
+        });
+      }
+
+      function save() {
+        const data = {};
+        document.querySelectorAll("textarea[data-time]").forEach(box => {
+          const value = box.value.trim();
+          if (value) data[box.dataset.time] = value;
+        });
+        localStorage.setItem(storageKey, JSON.stringify(data));
+      }
+
+      function autoGrow(box) {
+        box.style.height = "29px";
+        box.style.height = Math.max(29, box.scrollHeight) + "px";
+        box.classList.toggle("has-text", box.value.trim().length > 0);
+      }
+
+      function buildTimeline() {
+        for (let total = 8 * 60; total <= 20 * 60; total += 15) {
+          const hour = Math.floor(total / 60);
+          const minute = total % 60;
+          const timeId = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
+          const slot = document.createElement("div");
+          slot.className = "slot";
+
+          const label = document.createElement("div");
+          label.className = minute === 0 ? "time hour" : "time";
+          label.textContent = formatTime(hour, minute);
+
+          const box = document.createElement("textarea");
+          box.dataset.time = timeId;
+          box.value = saved[timeId] || "";
+          box.placeholder = minute === 0 ? "Add..." : "";
+          box.setAttribute("aria-label", `Entry for ${label.textContent}`);
+
+          box.addEventListener("input", function () {
+            autoGrow(box);
+            save();
+          });
+
+          box.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
+              const index = boxes.indexOf(box);
+              if (boxes[index + 1]) boxes[index + 1].focus();
+            }
+          });
+
+          slot.appendChild(label);
+          slot.appendChild(box);
+          timeline.appendChild(slot);
+          autoGrow(box);
+        }
+      }
+
+      clearBtn.addEventListener("click", function () {
+        const ok = confirm("Clear all entries for today?");
+        if (!ok) return;
+        localStorage.removeItem(storageKey);
+        document.querySelectorAll("textarea[data-time]").forEach(box => {
+          box.value = "";
+          autoGrow(box);
+        });
+      });
+
+      buildTimeline();
+    })();
+  </script>
+</body>
+</html>
