@@ -468,7 +468,7 @@
 
     .note-title-row {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       gap: 8px;
       align-items: center;
       padding: 7px 8px 6px;
@@ -508,6 +508,84 @@
     }
 
     .note-body:focus {
+      background-color: #fffaf0;
+    }
+
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(61, 58, 52, 0.28);
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .expanded-note {
+      width: min(420px, 92vw);
+      min-height: min(600px, 82vh);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--page);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(50, 40, 28, 0.22);
+      overflow: hidden;
+    }
+
+    .expanded-note-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
+    }
+
+    .expanded-title {
+      height: 30px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 3px 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .expanded-title:focus {
+      background: transparent;
+    }
+
+    .expanded-body {
+      flex: 1;
+      min-height: 460px;
+      height: auto;
+      resize: none;
+      border: 0;
+      border-left: 0;
+      border-radius: 0;
+      line-height: 26px;
+      font-size: 14px;
+      padding: 10px 14px;
+      background-color: #fffdf8;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 25px,
+        rgba(160, 145, 120, 0.24) 26px
+      );
+      overflow: auto;
+    }
+
+    .expanded-body:focus {
       background-color: #fffaf0;
     }
 
@@ -665,6 +743,34 @@
           rgba(160, 145, 120, 0.24) 26px
         );
       }
+
+      .modal-backdrop {
+        padding: 10px;
+      }
+
+      .expanded-note {
+        width: 100%;
+        min-height: 78vh;
+        max-height: 90vh;
+        border-radius: 16px;
+      }
+
+      .expanded-title {
+        height: 34px;
+        font-size: 16px;
+      }
+
+      .expanded-body {
+        min-height: 58vh;
+        font-size: 16px;
+        line-height: 28px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 27px,
+          rgba(160, 145, 120, 0.24) 28px
+        );
+      }
     }
   </style>
 </head>
@@ -729,6 +835,16 @@
     </aside>
   </div>
 
+  <div class="modal-backdrop" id="noteModal" aria-hidden="true">
+    <section class="expanded-note" role="dialog" aria-modal="true" aria-label="Expanded note editor">
+      <div class="expanded-note-head">
+        <input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" />
+        <button class="plain-btn" id="closeExpandedNote" type="button" title="Close expanded note">Close</button>
+      </div>
+      <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
+    </section>
+  </div>
+
   <script>
     (function () {
       const START_DATE = new Date(2026, 6, 1);  // 1 July 2026
@@ -749,12 +865,17 @@
       const eveningInput = document.getElementById("eveningInput");
       const addNoteBtn = document.getElementById("addNoteBtn");
       const notesList = document.getElementById("notesList");
+      const noteModal = document.getElementById("noteModal");
+      const expandedTitle = document.getElementById("expandedTitle");
+      const expandedBody = document.getElementById("expandedBody");
+      const closeExpandedNote = document.getElementById("closeExpandedNote");
 
       let selectedDate = getInitialDate();
       let storageKey = "";
       let saved = {};
       let notes = [];
       let draggedBox = null;
+      let expandedNoteId = null;
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -1065,6 +1186,12 @@
         title.placeholder = "Note title";
         title.setAttribute("aria-label", "Note title");
 
+        const expandBtn = document.createElement("button");
+        expandBtn.className = "plain-btn";
+        expandBtn.type = "button";
+        expandBtn.textContent = "Expand";
+        expandBtn.title = "Open larger note editor";
+
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "plain-btn delete-note-btn";
         deleteBtn.type = "button";
@@ -1077,24 +1204,72 @@
         body.placeholder = "Write note...";
         body.setAttribute("aria-label", "Note body");
 
-        title.addEventListener("input", save);
+        title.addEventListener("input", function () {
+          if (expandedNoteId === card.dataset.id) expandedTitle.value = title.value;
+          save();
+        });
+
         body.addEventListener("input", function () {
           autoGrowNoteBody(body);
+          if (expandedNoteId === card.dataset.id) expandedBody.value = body.value;
           save();
+        });
+
+        expandBtn.addEventListener("click", function () {
+          openExpandedNote(card.dataset.id);
         });
 
         deleteBtn.addEventListener("click", function () {
           const ok = confirm("Delete this note?");
           if (!ok) return;
+          if (expandedNoteId === card.dataset.id) closeExpandedEditor();
           card.remove();
           save();
         });
 
         titleRow.appendChild(title);
+        titleRow.appendChild(expandBtn);
         titleRow.appendChild(deleteBtn);
         card.appendChild(titleRow);
         card.appendChild(body);
         return card;
+      }
+
+      function getNoteCardById(id) {
+        return document.querySelector(`.note-card[data-id="${id}"]`);
+      }
+
+      function openExpandedNote(id) {
+        const card = getNoteCardById(id);
+        if (!card) return;
+
+        expandedNoteId = id;
+        expandedTitle.value = card.querySelector(".note-title-input").value;
+        expandedBody.value = card.querySelector(".note-body").value;
+        noteModal.classList.add("open");
+        noteModal.setAttribute("aria-hidden", "false");
+        setTimeout(function () {
+          expandedBody.focus();
+        }, 0);
+      }
+
+      function syncExpandedToCard() {
+        if (!expandedNoteId) return;
+        const card = getNoteCardById(expandedNoteId);
+        if (!card) return;
+
+        const title = card.querySelector(".note-title-input");
+        const body = card.querySelector(".note-body");
+        title.value = expandedTitle.value;
+        body.value = expandedBody.value;
+        autoGrowNoteBody(body);
+        save();
+      }
+
+      function closeExpandedEditor() {
+        noteModal.classList.remove("open");
+        noteModal.setAttribute("aria-hidden", "true");
+        expandedNoteId = null;
       }
 
       function renderNotes() {
@@ -1142,6 +1317,7 @@
 
       function selectDate(date, updateHash) {
         if (!isWithinRange(date)) return;
+        if (noteModal.classList.contains("open")) closeExpandedEditor();
         selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         if (updateHash) {
           history.replaceState(null, "", `#${toKey(selectedDate)}`);
@@ -1256,9 +1432,25 @@
         if (titles.length) titles[titles.length - 1].focus();
       });
 
+      expandedTitle.addEventListener("input", syncExpandedToCard);
+      expandedBody.addEventListener("input", syncExpandedToCard);
+
+      closeExpandedNote.addEventListener("click", closeExpandedEditor);
+
+      noteModal.addEventListener("click", function (event) {
+        if (event.target === noteModal) closeExpandedEditor();
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && noteModal.classList.contains("open")) {
+          closeExpandedEditor();
+        }
+      });
+
       clearBtn.addEventListener("click", function () {
         const ok = confirm(`Clear all entries for ${displayDate(selectedDate)}?`);
         if (!ok) return;
+        if (noteModal.classList.contains("open")) closeExpandedEditor();
         localStorage.removeItem(storageKey);
         focusInput.value = "";
         eveningInput.value = "";
