@@ -51,10 +51,12 @@
       grid-template-columns: 230px minmax(0, 780px) 230px;
       gap: 10px;
       align-items: start;
+      justify-content: center;
     }
 
     .sidebar,
     .notes-sidebar {
+      width: 100%;
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -201,16 +203,11 @@
       display: none;
     }
 
-    .shell.left-collapsed {
-      grid-template-columns: 42px minmax(0, 780px) 230px;
-    }
-
-    .shell.right-collapsed {
-      grid-template-columns: 230px minmax(0, 780px) 42px;
-    }
-
+    /* Main page remains centred: collapsing sidebars does not change grid column widths. */
+    .shell.left-collapsed,
+    .shell.right-collapsed,
     .shell.left-collapsed.right-collapsed {
-      grid-template-columns: 42px minmax(0, 820px) 42px;
+      grid-template-columns: 230px minmax(0, 780px) 230px;
     }
 
     .app {
@@ -457,20 +454,11 @@
 
     /* Narrow desktop/tablet: keep layout usable and compact */
     @media (max-width: 1080px) and (min-width: 760px) {
-      .shell {
-        grid-template-columns: 210px minmax(0, 1fr) 210px;
-      }
-
-      .shell.left-collapsed {
-        grid-template-columns: 42px minmax(0, 1fr) 210px;
-      }
-
-      .shell.right-collapsed {
-        grid-template-columns: 210px minmax(0, 1fr) 42px;
-      }
-
+      .shell,
+      .shell.left-collapsed,
+      .shell.right-collapsed,
       .shell.left-collapsed.right-collapsed {
-        grid-template-columns: 42px minmax(0, 1fr) 42px;
+        grid-template-columns: 210px minmax(0, 1fr) 210px;
       }
 
       .weekday {
