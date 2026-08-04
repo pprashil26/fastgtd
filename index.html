@@ -22,7 +22,6 @@
       --current-ink: #6f5b22;
       --selected: #dce8e1;
       --today: #f7e7bd;
-      --accent: #7b9285;
       --saved-day: #eef5ee;
       --saved-day-border: #d4e3d8;
       --danger: #a56a62;
@@ -56,15 +55,38 @@
       justify-content: center;
     }
 
+    .shell.left-collapsed,
+    .shell.right-collapsed,
+    .shell.left-collapsed.right-collapsed {
+      grid-template-columns: 230px minmax(0, 780px) 230px;
+    }
+
     .sidebar,
-    .notes-sidebar {
-      width: 100%;
+    .notes-sidebar,
+    .app {
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 16px;
       box-shadow: var(--shadow);
       overflow: hidden;
+    }
+
+    .sidebar,
+    .notes-sidebar {
+      width: 100%;
       transition: width 0.2s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 780px;
+    }
+
+    .sidebar-head,
+    .notes-head,
+    header {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
 
     .sidebar-head,
@@ -74,8 +96,6 @@
       justify-content: space-between;
       gap: 8px;
       padding: 9px 10px 7px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
 
     .sidebar-title,
@@ -202,27 +222,8 @@
       display: none;
     }
 
-    /* Main page remains centred: collapsing sidebars does not change grid column widths. */
-    .shell.left-collapsed,
-    .shell.right-collapsed,
-    .shell.left-collapsed.right-collapsed {
-      grid-template-columns: 230px minmax(0, 780px) 230px;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 780px;
-      background: var(--page);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
     header {
       padding: 9px 12px 7px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
 
     .title-row {
@@ -491,10 +492,11 @@
     }
 
     .note-body {
-      min-height: 92px;
-      height: 92px;
+      min-height: 96px;
+      height: 96px;
+      max-height: 96px;
       border-left: 0;
-      resize: vertical;
+      resize: none;
       line-height: 24px;
       padding: 6px 9px;
       background-color: #fffdf8;
@@ -504,13 +506,12 @@
         transparent 23px,
         rgba(160, 145, 120, 0.24) 24px
       );
-      overflow: auto;
+      overflow: hidden;
     }
 
     .note-body:focus {
       background-color: #fffaf0;
     }
-
 
     .modal-backdrop {
       position: fixed;
@@ -589,7 +590,6 @@
       background-color: #fffaf0;
     }
 
-    /* Narrow desktop/tablet: keep layout usable and compact */
     @media (max-width: 1080px) and (min-width: 760px) {
       .shell,
       .shell.left-collapsed,
@@ -603,7 +603,6 @@
       }
     }
 
-    /* Mobile: sidebars stack above and below the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. Drag/drop is disabled. */
     @media (max-width: 759px) {
       body {
         padding: 8px 6px;
@@ -662,10 +661,6 @@
 
       .calendar-wrap {
         max-height: 45vh;
-      }
-
-      .notes-wrap {
-        padding: 8px;
       }
 
       .title-row {
@@ -734,8 +729,12 @@
       }
 
       .note-body {
-        min-height: 120px;
+        min-height: 104px;
+        height: 104px;
+        max-height: 104px;
         line-height: 26px;
+        resize: none;
+        overflow: hidden;
         background-image: repeating-linear-gradient(
           to bottom,
           transparent 0,
@@ -847,8 +846,8 @@
 
   <script>
     (function () {
-      const START_DATE = new Date(2026, 6, 1);  // 1 July 2026
-      const END_DATE = new Date(2027, 11, 31);  // 31 December 2027
+      const START_DATE = new Date(2026, 6, 1);
+      const END_DATE = new Date(2027, 11, 31);
       const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
       const shell = document.getElementById("shell");
@@ -928,10 +927,6 @@
         return `timeblocks:${toKey(selectedDate)}`;
       }
 
-      function monthName(date) {
-        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
-      }
-
       function displayDate(date) {
         return date.toLocaleDateString(undefined, {
           weekday: "short",
@@ -941,10 +936,14 @@
         });
       }
 
+      function monthName(date) {
+        return date.toLocaleDateString(undefined, { month: "short", year: "numeric" });
+      }
+
       function formatTime(hour, minute) {
-        const d = new Date();
-        d.setHours(hour, minute, 0, 0);
-        return d.toLocaleTimeString(undefined, {
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+        return date.toLocaleTimeString(undefined, {
           hour: "numeric",
           minute: "2-digit"
         });
@@ -1030,22 +1029,21 @@
       }
 
       function markDateHasData(key) {
-        const btn = document.querySelector(`.day-btn[data-date="${key}"]`);
-        if (!btn) return;
-        btn.classList.toggle("has-data", hasSavedDataForDate(key));
+        const button = document.querySelector(`.day-btn[data-date="${key}"]`);
+        if (!button) return;
+        button.classList.toggle("has-data", hasSavedDataForDate(key));
       }
 
       function autoGrow(box) {
-        const minHeight = window.matchMedia("(max-width: 759px)").matches ? 34 : 26;
-        box.style.height = minHeight + "px";
-        box.style.height = Math.max(minHeight, box.scrollHeight) + "px";
+        const minimumHeight = window.matchMedia("(max-width: 759px)").matches ? 34 : 26;
+        box.style.height = minimumHeight + "px";
+        box.style.height = Math.max(minimumHeight, box.scrollHeight) + "px";
         box.classList.toggle("has-text", box.value.trim().length > 0);
       }
 
       function autoGrowNoteBody(box) {
-        const minHeight = window.matchMedia("(max-width: 759px)").matches ? 120 : 92;
-        box.style.height = minHeight + "px";
-        box.style.height = Math.max(minHeight, box.scrollHeight) + "px";
+        const fixedHeight = window.matchMedia("(max-width: 759px)").matches ? 104 : 96;
+        box.style.height = fixedHeight + "px";
       }
 
       function clearDropClasses() {
@@ -1071,7 +1069,6 @@
         handle.className = "drag-handle";
         handle.textContent = "⋮⋮";
         handle.title = "Drag entry";
-        handle.setAttribute("aria-hidden", "true");
         handle.draggable = true;
 
         const box = document.createElement("textarea");
@@ -1080,7 +1077,7 @@
         box.placeholder = "Add...";
         box.setAttribute("aria-label", `Entry for ${label.textContent}`);
 
-        handle.addEventListener("dragstart", function (event) {
+        handle.addEventListener("dragstart", event => {
           if (!isDesktopDragEnabled() || !box.value.trim()) {
             event.preventDefault();
             return;
@@ -1090,14 +1087,13 @@
           event.dataTransfer.setData("text/plain", box.dataset.time);
         });
 
-        handle.addEventListener("dragend", function () {
+        handle.addEventListener("dragend", () => {
           draggedBox = null;
           clearDropClasses();
         });
 
-        slot.addEventListener("dragover", function (event) {
-          if (!isDesktopDragEnabled() || !draggedBox) return;
-          if (draggedBox === box) return;
+        slot.addEventListener("dragover", event => {
+          if (!isDesktopDragEnabled() || !draggedBox || draggedBox === box) return;
 
           clearDropClasses();
           if (box.value.trim()) {
@@ -1110,11 +1106,11 @@
           slot.classList.add("drop-ok");
         });
 
-        slot.addEventListener("dragleave", function () {
+        slot.addEventListener("dragleave", () => {
           slot.classList.remove("drop-ok", "drop-block");
         });
 
-        slot.addEventListener("drop", function (event) {
+        slot.addEventListener("drop", event => {
           if (!isDesktopDragEnabled() || !draggedBox || draggedBox === box || box.value.trim()) {
             clearDropClasses();
             return;
@@ -1129,12 +1125,12 @@
           clearDropClasses();
         });
 
-        box.addEventListener("input", function () {
+        box.addEventListener("input", () => {
           autoGrow(box);
           save();
         });
 
-        box.addEventListener("keydown", function (event) {
+        box.addEventListener("keydown", event => {
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
@@ -1156,7 +1152,6 @@
         firstColumn.className = "column";
         secondColumn.className = "column";
 
-        // 30-minute blocks. Left: 8:00 AM to 1:30 PM. Right: 2:00 PM to 8:00 PM.
         for (let total = 8 * 60; total <= 20 * 60; total += 30) {
           const slot = createSlot(total);
           if (total < 14 * 60) {
@@ -1184,52 +1179,46 @@
         title.type = "text";
         title.value = note.title || "Untitled";
         title.placeholder = "Note title";
-        title.setAttribute("aria-label", "Note title");
 
-        const expandBtn = document.createElement("button");
-        expandBtn.className = "plain-btn";
-        expandBtn.type = "button";
-        expandBtn.textContent = "Expand";
-        expandBtn.title = "Open larger note editor";
+        const expandButton = document.createElement("button");
+        expandButton.className = "plain-btn";
+        expandButton.type = "button";
+        expandButton.textContent = "Expand";
+        expandButton.title = "Open larger note editor";
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "plain-btn delete-note-btn";
-        deleteBtn.type = "button";
-        deleteBtn.textContent = "Delete";
-        deleteBtn.title = "Delete note";
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "plain-btn delete-note-btn";
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
 
         const body = document.createElement("textarea");
         body.className = "note-body";
         body.value = note.body || "";
         body.placeholder = "Write note...";
-        body.setAttribute("aria-label", "Note body");
 
-        title.addEventListener("input", function () {
+        title.addEventListener("input", () => {
           if (expandedNoteId === card.dataset.id) expandedTitle.value = title.value;
           save();
         });
 
-        body.addEventListener("input", function () {
+        body.addEventListener("input", () => {
           autoGrowNoteBody(body);
           if (expandedNoteId === card.dataset.id) expandedBody.value = body.value;
           save();
         });
 
-        expandBtn.addEventListener("click", function () {
-          openExpandedNote(card.dataset.id);
-        });
+        expandButton.addEventListener("click", () => openExpandedNote(card.dataset.id));
 
-        deleteBtn.addEventListener("click", function () {
-          const ok = confirm("Delete this note?");
-          if (!ok) return;
+        deleteButton.addEventListener("click", () => {
+          if (!confirm("Delete this note?")) return;
           if (expandedNoteId === card.dataset.id) closeExpandedEditor();
           card.remove();
           save();
         });
 
         titleRow.appendChild(title);
-        titleRow.appendChild(expandBtn);
-        titleRow.appendChild(deleteBtn);
+        titleRow.appendChild(expandButton);
+        titleRow.appendChild(deleteButton);
         card.appendChild(titleRow);
         card.appendChild(body);
         return card;
@@ -1248,9 +1237,7 @@
         expandedBody.value = card.querySelector(".note-body").value;
         noteModal.classList.add("open");
         noteModal.setAttribute("aria-hidden", "false");
-        setTimeout(function () {
-          expandedBody.focus();
-        }, 0);
+        setTimeout(() => expandedBody.focus(), 0);
       }
 
       function syncExpandedToCard() {
@@ -1274,9 +1261,7 @@
 
       function renderNotes() {
         notesList.innerHTML = "";
-        notes.forEach(note => {
-          notesList.appendChild(createNoteCard(note));
-        });
+        notes.forEach(note => notesList.appendChild(createNoteCard(note)));
         document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
       }
 
@@ -1296,11 +1281,8 @@
         if (currentMinutes < startMinutes || currentMinutes > endMinutes) return;
 
         const roundedMinutes = Math.floor(currentMinutes / 30) * 30;
-        const hour = Math.floor(roundedMinutes / 60);
-        const minute = roundedMinutes % 60;
-        const timeId = `${pad(hour)}:${pad(minute)}`;
+        const timeId = `${pad(Math.floor(roundedMinutes / 60))}:${pad(roundedMinutes % 60)}`;
         const currentSlot = document.querySelector(`.slot[data-time="${timeId}"]`);
-
         if (currentSlot) currentSlot.classList.add("current-slot");
       }
 
@@ -1318,22 +1300,22 @@
       function selectDate(date, updateHash) {
         if (!isWithinRange(date)) return;
         if (noteModal.classList.contains("open")) closeExpandedEditor();
+
         selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        if (updateHash) {
-          history.replaceState(null, "", `#${toKey(selectedDate)}`);
-        }
+        if (updateHash) history.replaceState(null, "", `#${toKey(selectedDate)}`);
         loadSelectedDate();
       }
 
       function updateSelectedCalendarDay() {
         const selectedKey = toKey(selectedDate);
-        document.querySelectorAll(".day-btn.selected").forEach(btn => {
-          btn.classList.remove("selected");
+        document.querySelectorAll(".day-btn.selected").forEach(button => {
+          button.classList.remove("selected");
         });
-        const btn = document.querySelector(`.day-btn[data-date="${selectedKey}"]`);
-        if (btn) {
-          btn.classList.add("selected");
-          btn.scrollIntoView({ block: "nearest" });
+
+        const button = document.querySelector(`.day-btn[data-date="${selectedKey}"]`);
+        if (button) {
+          button.classList.add("selected");
+          button.scrollIntoView({ block: "nearest" });
         }
       }
 
@@ -1377,32 +1359,31 @@
           const firstDayOfMonth = new Date(year, monthIndex, 1);
           const day = new Date(year, monthIndex, 1);
 
-          for (let i = 0; i < mondayFirstIndex(firstDayOfMonth); i += 1) {
+          for (let index = 0; index < mondayFirstIndex(firstDayOfMonth); index += 1) {
             addBlankDay(days);
           }
 
           while (day.getMonth() === monthIndex) {
             if (day >= START_DATE && day <= END_DATE) {
               const key = toKey(day);
-              const btn = document.createElement("button");
-              btn.className = "day-btn";
-              btn.type = "button";
-              btn.textContent = day.getDate();
-              btn.dataset.date = key;
-              btn.title = displayDate(day);
-              btn.setAttribute("aria-label", displayDate(day));
+              const button = document.createElement("button");
+              button.className = "day-btn";
+              button.type = "button";
+              button.textContent = day.getDate();
+              button.dataset.date = key;
+              button.title = displayDate(day);
 
-              if (day.getDay() === 0 || day.getDay() === 6) btn.classList.add("weekend");
-              if (hasSavedDataForDate(key)) btn.classList.add("has-data");
-              if (key === todayKey) btn.classList.add("today");
-              if (key === toKey(selectedDate)) btn.classList.add("selected");
+              if (day.getDay() === 0 || day.getDay() === 6) button.classList.add("weekend");
+              if (hasSavedDataForDate(key)) button.classList.add("has-data");
+              if (key === todayKey) button.classList.add("today");
+              if (key === toKey(selectedDate)) button.classList.add("selected");
 
-              btn.addEventListener("click", function () {
+              button.addEventListener("click", function () {
                 const clickedDate = fromKey(this.dataset.date);
                 if (clickedDate) selectDate(clickedDate, true);
               });
 
-              days.appendChild(btn);
+              days.appendChild(button);
             } else {
               addBlankDay(days);
             }
@@ -1420,37 +1401,37 @@
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", save);
 
-      addNoteBtn.addEventListener("click", function () {
-        notes.push({
+      addNoteBtn.addEventListener("click", () => {
+        const newNote = {
           id: createId(),
           title: "New Note",
           body: ""
-        });
+        };
+
+        notes.unshift(newNote);
         renderNotes();
         save();
-        const titles = notesList.querySelectorAll(".note-title-input");
-        if (titles.length) titles[titles.length - 1].focus();
+        openExpandedNote(newNote.id);
+        expandedTitle.focus();
+        expandedTitle.select();
       });
 
       expandedTitle.addEventListener("input", syncExpandedToCard);
       expandedBody.addEventListener("input", syncExpandedToCard);
-
       closeExpandedNote.addEventListener("click", closeExpandedEditor);
 
-      noteModal.addEventListener("click", function (event) {
+      noteModal.addEventListener("click", event => {
         if (event.target === noteModal) closeExpandedEditor();
       });
 
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape" && noteModal.classList.contains("open")) {
-          closeExpandedEditor();
-        }
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && noteModal.classList.contains("open")) closeExpandedEditor();
       });
 
-      clearBtn.addEventListener("click", function () {
-        const ok = confirm(`Clear all entries for ${displayDate(selectedDate)}?`);
-        if (!ok) return;
+      clearBtn.addEventListener("click", () => {
+        if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`)) return;
         if (noteModal.classList.contains("open")) closeExpandedEditor();
+
         localStorage.removeItem(storageKey);
         focusInput.value = "";
         eveningInput.value = "";
@@ -1464,31 +1445,31 @@
         highlightCurrentTimeBlock();
       });
 
-      todayBtn.addEventListener("click", function () {
+      todayBtn.addEventListener("click", () => {
         const today = getToday();
         if (isWithinRange(today)) selectDate(today, true);
       });
 
-      sidebarToggle.addEventListener("click", function () {
+      sidebarToggle.addEventListener("click", () => {
         const collapsed = sidebar.classList.toggle("collapsed");
         shell.classList.toggle("left-collapsed", collapsed);
         sidebarToggle.textContent = collapsed ? "Show" : "Hide";
         sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
       });
 
-      notesToggle.addEventListener("click", function () {
+      notesToggle.addEventListener("click", () => {
         const collapsed = notesSidebar.classList.toggle("collapsed");
         shell.classList.toggle("right-collapsed", collapsed);
         notesToggle.textContent = collapsed ? "Show" : "Hide";
         notesToggle.setAttribute("aria-expanded", String(!collapsed));
       });
 
-      window.addEventListener("resize", function () {
+      window.addEventListener("resize", () => {
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
         document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
       });
 
-      window.addEventListener("hashchange", function () {
+      window.addEventListener("hashchange", () => {
         const hashDate = fromKey(location.hash.replace("#", ""));
         if (hashDate && isWithinRange(hashDate)) selectDate(hashDate, false);
       });
