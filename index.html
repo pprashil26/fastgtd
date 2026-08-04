@@ -22,6 +22,7 @@
       --current-ink: #6f5b22;
       --selected: #dce8e1;
       --today: #f7e7bd;
+      --accent: #7b9285;
       --danger: #a56a62;
       --shadow: 0 10px 28px rgba(70, 55, 35, 0.08);
     }
@@ -47,7 +48,7 @@
       width: 100%;
       max-width: 1040px;
       display: grid;
-      grid-template-columns: 220px minmax(0, 800px);
+      grid-template-columns: 240px minmax(0, 800px);
       gap: 10px;
       align-items: start;
     }
@@ -99,22 +100,36 @@
     }
 
     .month {
-      margin-bottom: 10px;
+      margin-bottom: 11px;
     }
 
     .month-name {
       font-size: 11px;
       color: var(--muted);
       font-weight: 700;
-      margin: 0 0 4px 2px;
+      margin: 0 0 5px 2px;
       letter-spacing: 0.02em;
       text-transform: uppercase;
     }
 
+    .weekday-row,
     .days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 2px;
+    }
+
+    .weekday {
+      color: var(--muted);
+      font-size: 9.5px;
+      font-weight: 700;
+      text-align: center;
+      padding-bottom: 2px;
+      user-select: none;
+    }
+
+    .day-spacer {
+      min-height: 23px;
     }
 
     .day-btn {
@@ -161,7 +176,7 @@
       height: 3px;
       margin: 1px auto 0;
       border-radius: 50%;
-      background: var(--accent, #7b9285);
+      background: var(--accent);
     }
 
     .sidebar.collapsed {
@@ -391,11 +406,15 @@
     /* Narrow desktop/tablet: keep layout usable and compact */
     @media (max-width: 900px) and (min-width: 760px) {
       .shell {
-        grid-template-columns: 190px minmax(0, 1fr);
+        grid-template-columns: 210px minmax(0, 1fr);
       }
 
       .shell.sidebar-collapsed {
         grid-template-columns: 42px minmax(0, 1fr);
+      }
+
+      .weekday {
+        font-size: 9px;
       }
     }
 
@@ -551,6 +570,7 @@
     (function () {
       const START_DATE = new Date(2026, 6, 1);  // 1 July 2026
       const END_DATE = new Date(2027, 11, 31);  // 31 December 2027
+      const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
       const shell = document.getElementById("shell");
       const sidebar = document.getElementById("sidebar");
@@ -577,6 +597,10 @@
         const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
         if (toKey(date) !== key) return null;
         return date;
+      }
+
+      function mondayFirstIndex(date) {
+        return (date.getDay() + 6) % 7;
       }
 
       function isSameDay(a, b) {
@@ -796,6 +820,25 @@
         }
       }
 
+      function addWeekdayHeader(month) {
+        const weekdayRow = document.createElement("div");
+        weekdayRow.className = "weekday-row";
+        WEEKDAYS.forEach(dayName => {
+          const dayHeader = document.createElement("div");
+          dayHeader.className = "weekday";
+          dayHeader.textContent = dayName;
+          weekdayRow.appendChild(dayHeader);
+        });
+        month.appendChild(weekdayRow);
+      }
+
+      function addBlankDay(days) {
+        const spacer = document.createElement("div");
+        spacer.className = "day-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        days.appendChild(spacer);
+      }
+
       function buildCalendar() {
         calendarWrap.innerHTML = "";
         const todayKey = toKey(getToday());
@@ -814,7 +857,12 @@
 
           const monthIndex = cursor.getMonth();
           const year = cursor.getFullYear();
+          const firstDayOfMonth = new Date(year, monthIndex, 1);
           const day = new Date(year, monthIndex, 1);
+
+          for (let i = 0; i < mondayFirstIndex(firstDayOfMonth); i += 1) {
+            addBlankDay(days);
+          }
 
           while (day.getMonth() === monthIndex) {
             if (day >= START_DATE && day <= END_DATE) {
@@ -838,11 +886,14 @@
               });
 
               days.appendChild(btn);
+            } else {
+              addBlankDay(days);
             }
             day.setDate(day.getDate() + 1);
           }
 
           month.appendChild(heading);
+          addWeekdayHeader(month);
           month.appendChild(days);
           calendarWrap.appendChild(month);
           cursor.setMonth(cursor.getMonth() + 1);
