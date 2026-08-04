@@ -14,9 +14,10 @@
       --soft: #f1ebe2;
       --entry: #e8f0ec;
       --entry-border: #c8d8d0;
-      --accent: #7b9285;
+      --focus: #eef1e7;
+      --evening: #f3ece7;
       --danger: #a56a62;
-      --shadow: 0 10px 30px rgba(70, 55, 35, 0.08);
+      --shadow: 0 10px 28px rgba(70, 55, 35, 0.08);
     }
 
     * {
@@ -30,10 +31,10 @@
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       font-size: 13px;
-      line-height: 1.3;
+      line-height: 1.25;
       display: flex;
       justify-content: center;
-      padding: 14px 8px;
+      padding: 10px 8px;
     }
 
     .app {
@@ -41,13 +42,13 @@
       max-width: 430px;
       background: var(--page);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 16px;
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
     header {
-      padding: 13px 14px 10px;
+      padding: 10px 12px 8px;
       border-bottom: 1px solid var(--line);
       background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
@@ -57,12 +58,12 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     h1 {
       margin: 0;
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 650;
       letter-spacing: -0.02em;
     }
@@ -79,7 +80,7 @@
       align-items: center;
       gap: 10px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11.5px;
     }
 
     .hint {
@@ -93,8 +94,8 @@
       background: transparent;
       color: var(--danger);
       font: inherit;
-      font-size: 12px;
-      padding: 2px 0;
+      font-size: 11.5px;
+      padding: 1px 0;
       cursor: pointer;
     }
 
@@ -102,14 +103,69 @@
       text-decoration: underline;
     }
 
+    .note-block {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .note-block.bottom {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      background: #fbf7f0;
+    }
+
+    .note-line {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .note-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      user-select: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      padding: 5px 9px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 12.5px;
+      background: #fffdf8;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--entry-border);
+      background: var(--soft);
+    }
+
+    #focusInput {
+      background: var(--focus);
+    }
+
+    #eveningInput {
+      background: var(--evening);
+    }
+
     .timeline {
-      padding: 8px 10px 12px;
+      padding: 7px 10px 8px;
+    }
+
+    .column {
+      min-width: 0;
     }
 
     .slot {
       display: grid;
       grid-template-columns: 58px 1fr;
-      min-height: 30px;
+      min-height: 29px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -118,22 +174,18 @@
     }
 
     .time {
-      padding: 7px 8px 5px 2px;
-      color: var(--muted);
+      padding: 7px 8px 4px 2px;
+      color: var(--ink);
       font-size: 11px;
+      font-weight: 600;
       text-align: right;
       user-select: none;
     }
 
-    .time.hour {
-      color: var(--ink);
-      font-weight: 650;
-    }
-
     textarea {
       width: 100%;
-      min-height: 29px;
-      height: 29px;
+      min-height: 28px;
+      height: 28px;
       resize: none;
       border: 0;
       outline: none;
@@ -141,7 +193,7 @@
       color: var(--ink);
       font: inherit;
       font-size: 12.5px;
-      padding: 6px 8px;
+      padding: 6px 8px 5px;
       border-left: 1px solid var(--line);
       overflow: hidden;
     }
@@ -157,15 +209,75 @@
     }
 
     footer {
-      padding: 8px 14px 12px;
+      padding: 6px 12px 9px;
       border-top: 1px solid var(--line);
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10.5px;
       text-align: center;
       background: #fbf7f0;
     }
 
-    @media (max-width: 480px) {
+    /* Desktop/tablet landscape: two columns to fit the full day on small laptop screens */
+    @media (min-width: 760px) {
+      body {
+        align-items: flex-start;
+        padding: 10px 8px;
+      }
+
+      .app {
+        max-width: 800px;
+      }
+
+      header {
+        padding-top: 9px;
+        padding-bottom: 7px;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 12px;
+        padding: 6px 11px 7px;
+      }
+
+      .column:first-child {
+        border-right: 1px solid var(--line);
+        padding-right: 12px;
+      }
+
+      .slot {
+        min-height: 27px;
+      }
+
+      textarea {
+        min-height: 26px;
+        height: 26px;
+        font-size: 12px;
+        padding-top: 5px;
+        padding-bottom: 4px;
+      }
+
+      .time {
+        padding-top: 6px;
+        padding-bottom: 3px;
+      }
+
+      .note-block {
+        padding: 6px 11px;
+      }
+
+      input[type="text"] {
+        height: 27px;
+      }
+
+      footer {
+        padding-top: 5px;
+        padding-bottom: 7px;
+      }
+    }
+
+    /* Mobile: keep one simple vertical column */
+    @media (max-width: 759px) {
       body {
         padding: 8px 6px;
       }
@@ -182,6 +294,10 @@
       .time {
         font-size: 10.5px;
       }
+
+      .note-line {
+        grid-template-columns: 56px 1fr;
+      }
     }
   </style>
 </head>
@@ -193,12 +309,26 @@
         <div class="today" id="todayText">Today</div>
       </div>
       <div class="toolbar">
-        <div class="hint">8:00 AM to 8:00 PM · 15 min blocks</div>
+        <div class="hint">8:00 AM to 8:00 PM · 30 min blocks</div>
         <button id="clearBtn" type="button" title="Clear today's entries">Clear</button>
       </div>
     </header>
 
+    <section class="note-block" aria-label="Focus for the day">
+      <div class="note-line">
+        <label class="note-label" for="focusInput">Focus</label>
+        <input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" />
+      </div>
+    </section>
+
     <section class="timeline" id="timeline"></section>
+
+    <section class="note-block bottom" aria-label="Evening reminder">
+      <div class="note-line">
+        <label class="note-label" for="eveningInput">Evening</label>
+        <input id="eveningInput" type="text" placeholder="Evening commitment, reminder..." autocomplete="off" />
+      </div>
+    </section>
 
     <footer>
       Click any block and type. Saved automatically on this device.
@@ -210,6 +340,8 @@
       const timeline = document.getElementById("timeline");
       const todayText = document.getElementById("todayText");
       const clearBtn = document.getElementById("clearBtn");
+      const focusInput = document.getElementById("focusInput");
+      const eveningInput = document.getElementById("eveningInput");
 
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -232,6 +364,9 @@
         saved = {};
       }
 
+      focusInput.value = saved.focus || "";
+      eveningInput.value = saved.evening || "";
+
       function formatTime(hour, minute) {
         const d = new Date();
         d.setHours(hour, minute, 0, 0);
@@ -242,64 +377,93 @@
       }
 
       function save() {
-        const data = {};
+        const data = {
+          focus: focusInput.value.trim(),
+          evening: eveningInput.value.trim(),
+          entries: {}
+        };
+
         document.querySelectorAll("textarea[data-time]").forEach(box => {
           const value = box.value.trim();
-          if (value) data[box.dataset.time] = value;
+          if (value) data.entries[box.dataset.time] = value;
         });
+
         localStorage.setItem(storageKey, JSON.stringify(data));
       }
 
       function autoGrow(box) {
-        box.style.height = "29px";
-        box.style.height = Math.max(29, box.scrollHeight) + "px";
+        box.style.height = "26px";
+        box.style.height = Math.max(26, box.scrollHeight) + "px";
         box.classList.toggle("has-text", box.value.trim().length > 0);
       }
 
-      function buildTimeline() {
-        for (let total = 8 * 60; total <= 20 * 60; total += 15) {
-          const hour = Math.floor(total / 60);
-          const minute = total % 60;
-          const timeId = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+      function createSlot(total) {
+        const hour = Math.floor(total / 60);
+        const minute = total % 60;
+        const timeId = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
-          const slot = document.createElement("div");
-          slot.className = "slot";
+        const slot = document.createElement("div");
+        slot.className = "slot";
 
-          const label = document.createElement("div");
-          label.className = minute === 0 ? "time hour" : "time";
-          label.textContent = formatTime(hour, minute);
+        const label = document.createElement("div");
+        label.className = "time";
+        label.textContent = formatTime(hour, minute);
 
-          const box = document.createElement("textarea");
-          box.dataset.time = timeId;
-          box.value = saved[timeId] || "";
-          box.placeholder = minute === 0 ? "Add..." : "";
-          box.setAttribute("aria-label", `Entry for ${label.textContent}`);
+        const box = document.createElement("textarea");
+        box.dataset.time = timeId;
+        box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
+        box.placeholder = "Add...";
+        box.setAttribute("aria-label", `Entry for ${label.textContent}`);
 
-          box.addEventListener("input", function () {
-            autoGrow(box);
-            save();
-          });
-
-          box.addEventListener("keydown", function (event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
-              const index = boxes.indexOf(box);
-              if (boxes[index + 1]) boxes[index + 1].focus();
-            }
-          });
-
-          slot.appendChild(label);
-          slot.appendChild(box);
-          timeline.appendChild(slot);
+        box.addEventListener("input", function () {
           autoGrow(box);
-        }
+          save();
+        });
+
+        box.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
+            const index = boxes.indexOf(box);
+            if (boxes[index + 1]) boxes[index + 1].focus();
+          }
+        });
+
+        slot.appendChild(label);
+        slot.appendChild(box);
+        return slot;
       }
+
+      function buildTimeline() {
+        const firstColumn = document.createElement("div");
+        const secondColumn = document.createElement("div");
+        firstColumn.className = "column";
+        secondColumn.className = "column";
+
+        // 30-minute blocks. Left: 8:00 AM to 1:30 PM. Right: 2:00 PM to 8:00 PM.
+        for (let total = 8 * 60; total <= 20 * 60; total += 30) {
+          const slot = createSlot(total);
+          if (total < 14 * 60) {
+            firstColumn.appendChild(slot);
+          } else {
+            secondColumn.appendChild(slot);
+          }
+        }
+
+        timeline.appendChild(firstColumn);
+        timeline.appendChild(secondColumn);
+        document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
+      }
+
+      focusInput.addEventListener("input", save);
+      eveningInput.addEventListener("input", save);
 
       clearBtn.addEventListener("click", function () {
         const ok = confirm("Clear all entries for today?");
         if (!ok) return;
         localStorage.removeItem(storageKey);
+        focusInput.value = "";
+        eveningInput.value = "";
         document.querySelectorAll("textarea[data-time]").forEach(box => {
           box.value = "";
           autoGrow(box);
