@@ -46,14 +46,15 @@
 
     .shell {
       width: 100%;
-      max-width: 1040px;
+      max-width: 1280px;
       display: grid;
-      grid-template-columns: 240px minmax(0, 800px);
+      grid-template-columns: 230px minmax(0, 780px) 230px;
       gap: 10px;
       align-items: start;
     }
 
-    .sidebar {
+    .sidebar,
+    .notes-sidebar {
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -62,7 +63,8 @@
       transition: width 0.2s ease;
     }
 
-    .sidebar-head {
+    .sidebar-head,
+    .notes-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -72,7 +74,8 @@
       background: linear-gradient(180deg, #fffdf8 0%, #f8f3eb 100%);
     }
 
-    .sidebar-title {
+    .sidebar-title,
+    .notes-title {
       font-size: 13px;
       font-weight: 650;
       color: var(--ink);
@@ -179,28 +182,40 @@
       background: var(--accent);
     }
 
-    .sidebar.collapsed {
+    .sidebar.collapsed,
+    .notes-sidebar.collapsed {
       width: 42px;
     }
 
-    .sidebar.collapsed .sidebar-head {
+    .sidebar.collapsed .sidebar-head,
+    .notes-sidebar.collapsed .notes-head {
       justify-content: center;
       padding-left: 0;
       padding-right: 0;
     }
 
     .sidebar.collapsed .sidebar-title,
-    .sidebar.collapsed .calendar-wrap {
+    .sidebar.collapsed .calendar-wrap,
+    .notes-sidebar.collapsed .notes-title,
+    .notes-sidebar.collapsed .notes-wrap {
       display: none;
     }
 
-    .shell.sidebar-collapsed {
-      grid-template-columns: 42px minmax(0, 800px);
+    .shell.left-collapsed {
+      grid-template-columns: 42px minmax(0, 780px) 230px;
+    }
+
+    .shell.right-collapsed {
+      grid-template-columns: 230px minmax(0, 780px) 42px;
+    }
+
+    .shell.left-collapsed.right-collapsed {
+      grid-template-columns: 42px minmax(0, 820px) 42px;
     }
 
     .app {
       width: 100%;
-      max-width: 800px;
+      max-width: 780px;
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -403,14 +418,59 @@
       background: var(--panel);
     }
 
+    .notes-wrap {
+      padding: 8px;
+    }
+
+    .notes-hint {
+      color: var(--muted);
+      font-size: 10.5px;
+      margin: 0 0 6px 2px;
+    }
+
+    .lined-note {
+      width: 100%;
+      min-height: calc(100vh - 124px);
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      outline: none;
+      color: var(--ink);
+      font: inherit;
+      font-size: 12.5px;
+      line-height: 24px;
+      padding: 6px 9px;
+      background-color: #fffdf8;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 23px,
+        rgba(160, 145, 120, 0.24) 24px
+      );
+      overflow: auto;
+    }
+
+    .lined-note:focus {
+      border-color: var(--entry-border);
+      background-color: #fffaf0;
+    }
+
     /* Narrow desktop/tablet: keep layout usable and compact */
-    @media (max-width: 900px) and (min-width: 760px) {
+    @media (max-width: 1080px) and (min-width: 760px) {
       .shell {
-        grid-template-columns: 210px minmax(0, 1fr);
+        grid-template-columns: 210px minmax(0, 1fr) 210px;
       }
 
-      .shell.sidebar-collapsed {
-        grid-template-columns: 42px minmax(0, 1fr);
+      .shell.left-collapsed {
+        grid-template-columns: 42px minmax(0, 1fr) 210px;
+      }
+
+      .shell.right-collapsed {
+        grid-template-columns: 210px minmax(0, 1fr) 42px;
+      }
+
+      .shell.left-collapsed.right-collapsed {
+        grid-template-columns: 42px minmax(0, 1fr) 42px;
       }
 
       .weekday {
@@ -418,37 +478,60 @@
       }
     }
 
-    /* Mobile: calendar collapses above the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. */
+    /* Mobile: sidebars stack above and below the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. */
     @media (max-width: 759px) {
       body {
         padding: 8px 6px;
       }
 
       .shell,
-      .shell.sidebar-collapsed {
-        display: block;
+      .shell.left-collapsed,
+      .shell.right-collapsed,
+      .shell.left-collapsed.right-collapsed {
+        display: flex;
+        flex-direction: column;
         max-width: 100%;
       }
 
-      .sidebar {
+      .sidebar,
+      .notes-sidebar {
         width: 100%;
-        margin-bottom: 8px;
         border-radius: 14px;
       }
 
-      .sidebar.collapsed {
+      .sidebar {
+        order: 1;
+        margin-bottom: 8px;
+      }
+
+      .app {
+        order: 2;
+        max-width: 100%;
+        border-radius: 14px;
+      }
+
+      .notes-sidebar {
+        order: 3;
+        margin-top: 8px;
+      }
+
+      .sidebar.collapsed,
+      .notes-sidebar.collapsed {
         width: 100%;
       }
 
-      .sidebar.collapsed .sidebar-title {
+      .sidebar.collapsed .sidebar-title,
+      .notes-sidebar.collapsed .notes-title {
         display: block;
       }
 
-      .sidebar.collapsed .calendar-wrap {
+      .sidebar.collapsed .calendar-wrap,
+      .notes-sidebar.collapsed .notes-wrap {
         display: none;
       }
 
-      .sidebar-head {
+      .sidebar-head,
+      .notes-head {
         padding: 8px 10px;
       }
 
@@ -456,9 +539,20 @@
         max-height: 45vh;
       }
 
-      .app {
-        max-width: 100%;
-        border-radius: 14px;
+      .notes-wrap {
+        padding: 8px;
+      }
+
+      .lined-note {
+        min-height: 180px;
+        font-size: 16px;
+        line-height: 26px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 25px,
+          rgba(160, 145, 120, 0.24) 26px
+        );
       }
 
       .title-row {
@@ -564,6 +658,17 @@
         Select a date from the calendar. Current block highlights only for today. Saved automatically on this device.
       </footer>
     </main>
+
+    <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
+      <div class="notes-head">
+        <div class="notes-title">Notepad</div>
+        <button class="plain-btn" id="notesToggle" type="button" aria-expanded="true" title="Show or hide notepad">Hide</button>
+      </div>
+      <div class="notes-wrap">
+        <p class="notes-hint">Daily scratchpad. Saved with selected date.</p>
+        <textarea id="dailyNotes" class="lined-note" placeholder="Write quick notes, reminders, thoughts..."></textarea>
+      </div>
+    </aside>
   </div>
 
   <script>
@@ -575,6 +680,8 @@
       const shell = document.getElementById("shell");
       const sidebar = document.getElementById("sidebar");
       const sidebarToggle = document.getElementById("sidebarToggle");
+      const notesSidebar = document.getElementById("notesSidebar");
+      const notesToggle = document.getElementById("notesToggle");
       const calendarWrap = document.getElementById("calendarWrap");
       const timeline = document.getElementById("timeline");
       const selectedDateText = document.getElementById("selectedDateText");
@@ -582,6 +689,7 @@
       const todayBtn = document.getElementById("todayBtn");
       const focusInput = document.getElementById("focusInput");
       const eveningInput = document.getElementById("eveningInput");
+      const dailyNotes = document.getElementById("dailyNotes");
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -671,7 +779,8 @@
           const hasFocus = Boolean((data.focus || "").trim());
           const hasEvening = Boolean((data.evening || "").trim());
           const hasEntries = data.entries && Object.keys(data.entries).length > 0;
-          return hasFocus || hasEvening || hasEntries;
+          const hasNotes = Boolean((data.notes || "").trim());
+          return hasFocus || hasEvening || hasEntries || hasNotes;
         } catch (e) {
           return false;
         }
@@ -681,6 +790,7 @@
         const data = {
           focus: focusInput.value,
           evening: eveningInput.value,
+          notes: dailyNotes.value,
           entries: {}
         };
 
@@ -794,6 +904,7 @@
         selectedDateText.textContent = displayDate(selectedDate);
         focusInput.value = saved.focus || "";
         eveningInput.value = saved.evening || "";
+        dailyNotes.value = saved.notes || "";
         buildTimeline();
         updateSelectedCalendarDay();
         highlightCurrentTimeBlock();
@@ -902,6 +1013,7 @@
 
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", save);
+      dailyNotes.addEventListener("input", save);
 
       clearBtn.addEventListener("click", function () {
         const ok = confirm(`Clear all entries for ${displayDate(selectedDate)}?`);
@@ -909,6 +1021,7 @@
         localStorage.removeItem(storageKey);
         focusInput.value = "";
         eveningInput.value = "";
+        dailyNotes.value = "";
         document.querySelectorAll("textarea[data-time]").forEach(box => {
           box.value = "";
           autoGrow(box);
@@ -924,9 +1037,16 @@
 
       sidebarToggle.addEventListener("click", function () {
         const collapsed = sidebar.classList.toggle("collapsed");
-        shell.classList.toggle("sidebar-collapsed", collapsed);
+        shell.classList.toggle("left-collapsed", collapsed);
         sidebarToggle.textContent = collapsed ? "Show" : "Hide";
         sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+      });
+
+      notesToggle.addEventListener("click", function () {
+        const collapsed = notesSidebar.classList.toggle("collapsed");
+        shell.classList.toggle("right-collapsed", collapsed);
+        notesToggle.textContent = collapsed ? "Show" : "Hide";
+        notesToggle.setAttribute("aria-expanded", String(!collapsed));
       });
 
       window.addEventListener("resize", function () {
