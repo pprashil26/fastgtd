@@ -23,6 +23,8 @@
       --selected: #dce8e1;
       --today: #f7e7bd;
       --accent: #7b9285;
+      --saved-day: #eef5ee;
+      --saved-day-border: #d4e3d8;
       --danger: #a56a62;
       --shadow: 0 10px 28px rgba(70, 55, 35, 0.08);
     }
@@ -142,7 +144,7 @@
       background: transparent;
       color: var(--ink);
       min-height: 23px;
-      border-radius: 7px;
+      border-radius: 999px;
       font: inherit;
       font-size: 11px;
       line-height: 1;
@@ -161,6 +163,13 @@
       background: rgba(231, 223, 212, 0.28);
     }
 
+    .day-btn.has-data {
+      background: var(--saved-day);
+      border-color: var(--saved-day-border);
+      color: var(--ink);
+      font-weight: 650;
+    }
+
     .day-btn.today {
       border-color: rgba(150, 120, 45, 0.38);
       background: var(--today);
@@ -172,16 +181,6 @@
       border-color: var(--entry-border);
       color: var(--ink);
       font-weight: 800;
-    }
-
-    .day-btn.has-data::after {
-      content: "";
-      display: block;
-      width: 3px;
-      height: 3px;
-      margin: 1px auto 0;
-      border-radius: 50%;
-      background: var(--accent);
     }
 
     .sidebar.collapsed,
@@ -269,7 +268,8 @@
       white-space: nowrap;
     }
 
-    .clear-btn {
+    .clear-btn,
+    .delete-note-btn {
       color: var(--danger);
     }
 
@@ -342,7 +342,7 @@
 
     .slot {
       display: grid;
-      grid-template-columns: 58px 1fr;
+      grid-template-columns: 58px 18px 1fr;
       min-height: 27px;
       border-bottom: 1px solid var(--line);
       border-radius: 8px;
@@ -367,6 +367,16 @@
       background: var(--current-soft);
     }
 
+    .slot.drop-ok {
+      background: #e9f4ea;
+      box-shadow: inset 0 0 0 1px #bdd5c2;
+    }
+
+    .slot.drop-block {
+      background: #f7ebe8;
+      box-shadow: inset 0 0 0 1px #e2beb7;
+    }
+
     .time {
       padding: 6px 8px 3px 2px;
       color: var(--ink);
@@ -374,6 +384,21 @@
       font-weight: 600;
       text-align: right;
       user-select: none;
+    }
+
+    .drag-handle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: grab;
+      user-select: none;
+      opacity: 0.72;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
     }
 
     textarea {
@@ -419,22 +444,57 @@
       padding: 8px;
     }
 
+    .notes-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
     .notes-hint {
       color: var(--muted);
       font-size: 10.5px;
-      margin: 0 0 6px 2px;
+      margin: 0;
     }
 
-    .lined-note {
-      width: 100%;
-      min-height: calc(100vh - 124px);
-      resize: vertical;
+    .note-card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      outline: none;
-      color: var(--ink);
-      font: inherit;
+      background: #fffdf8;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .note-title-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 8px 6px;
+      border-bottom: 1px solid var(--line);
+      background: #fbf7f0;
+    }
+
+    .note-title-input {
+      height: 25px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 2px 0;
       font-size: 12.5px;
+      font-weight: 650;
+    }
+
+    .note-title-input:focus {
+      background: transparent;
+    }
+
+    .note-body {
+      min-height: 92px;
+      height: 92px;
+      border-left: 0;
+      resize: vertical;
       line-height: 24px;
       padding: 6px 9px;
       background-color: #fffdf8;
@@ -447,8 +507,7 @@
       overflow: auto;
     }
 
-    .lined-note:focus {
-      border-color: var(--entry-border);
+    .note-body:focus {
       background-color: #fffaf0;
     }
 
@@ -466,7 +525,7 @@
       }
     }
 
-    /* Mobile: sidebars stack above and below the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. */
+    /* Mobile: sidebars stack above and below the planner. Inputs use 16px font to prevent iOS/Safari auto zoom. Drag/drop is disabled. */
     @media (max-width: 759px) {
       body {
         padding: 8px 6px;
@@ -531,18 +590,6 @@
         padding: 8px;
       }
 
-      .lined-note {
-        min-height: 180px;
-        font-size: 16px;
-        line-height: 26px;
-        background-image: repeating-linear-gradient(
-          to bottom,
-          transparent 0,
-          transparent 25px,
-          rgba(160, 145, 120, 0.24) 26px
-        );
-      }
-
       .title-row {
         gap: 8px;
       }
@@ -578,6 +625,10 @@
         min-height: 34px;
       }
 
+      .drag-handle {
+        display: none;
+      }
+
       .time {
         font-size: 10.5px;
         padding-top: 9px;
@@ -597,6 +648,22 @@
         min-height: 34px;
         height: 34px;
         padding: 7px 8px 5px;
+      }
+
+      .note-title-input {
+        height: 32px;
+        font-size: 16px;
+      }
+
+      .note-body {
+        min-height: 120px;
+        line-height: 26px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 25px,
+          rgba(160, 145, 120, 0.24) 26px
+        );
       }
     }
   </style>
@@ -653,8 +720,11 @@
         <button class="plain-btn" id="notesToggle" type="button" aria-expanded="true" title="Show or hide notepad">Hide</button>
       </div>
       <div class="notes-wrap">
-        <p class="notes-hint">Daily scratchpad. Saved with selected date.</p>
-        <textarea id="dailyNotes" class="lined-note" placeholder="Write quick notes, reminders, thoughts..."></textarea>
+        <div class="notes-top">
+          <p class="notes-hint">Multiple notes. Saved with selected date.</p>
+          <button class="plain-btn" id="addNoteBtn" type="button" title="Add note">+ Note</button>
+        </div>
+        <div id="notesList"></div>
       </div>
     </aside>
   </div>
@@ -677,7 +747,14 @@
       const todayBtn = document.getElementById("todayBtn");
       const focusInput = document.getElementById("focusInput");
       const eveningInput = document.getElementById("eveningInput");
-      const dailyNotes = document.getElementById("dailyNotes");
+      const addNoteBtn = document.getElementById("addNoteBtn");
+      const notesList = document.getElementById("notesList");
+
+      let selectedDate = getInitialDate();
+      let storageKey = "";
+      let saved = {};
+      let notes = [];
+      let draggedBox = null;
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -722,9 +799,9 @@
         return new Date(START_DATE);
       }
 
-      let selectedDate = getInitialDate();
-      let storageKey = "";
-      let saved = {};
+      function isDesktopDragEnabled() {
+        return window.matchMedia("(min-width: 760px)").matches;
+      }
 
       function selectedStorageKey() {
         return `timeblocks:${toKey(selectedDate)}`;
@@ -752,6 +829,30 @@
         });
       }
 
+      function createId() {
+        return `note-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function normalizeNotes(rawNotes) {
+        if (Array.isArray(rawNotes)) {
+          return rawNotes.map(note => ({
+            id: note.id || createId(),
+            title: note.title || "Untitled",
+            body: note.body || ""
+          }));
+        }
+
+        if (typeof rawNotes === "string" && rawNotes.trim()) {
+          return [{
+            id: createId(),
+            title: "Note",
+            body: rawNotes
+          }];
+        }
+
+        return [];
+      }
+
       function readSavedData() {
         storageKey = selectedStorageKey();
         try {
@@ -759,6 +860,14 @@
         } catch (e) {
           saved = {};
         }
+        notes = normalizeNotes(saved.notes);
+      }
+
+      function hasNotesData(data) {
+        if (Array.isArray(data.notes)) {
+          return data.notes.some(note => (note.title || "").trim() || (note.body || "").trim());
+        }
+        return Boolean((data.notes || "").trim());
       }
 
       function hasSavedDataForDate(key) {
@@ -767,18 +876,26 @@
           const hasFocus = Boolean((data.focus || "").trim());
           const hasEvening = Boolean((data.evening || "").trim());
           const hasEntries = data.entries && Object.keys(data.entries).length > 0;
-          const hasNotes = Boolean((data.notes || "").trim());
+          const hasNotes = hasNotesData(data);
           return hasFocus || hasEvening || hasEntries || hasNotes;
         } catch (e) {
           return false;
         }
       }
 
+      function collectNotes() {
+        return Array.from(document.querySelectorAll(".note-card")).map(card => ({
+          id: card.dataset.id,
+          title: card.querySelector(".note-title-input").value,
+          body: card.querySelector(".note-body").value
+        }));
+      }
+
       function save() {
         const data = {
           focus: focusInput.value,
           evening: eveningInput.value,
-          notes: dailyNotes.value,
+          notes: collectNotes(),
           entries: {}
         };
 
@@ -786,6 +903,7 @@
           if (box.value.trim()) data.entries[box.dataset.time] = box.value;
         });
 
+        notes = data.notes;
         localStorage.setItem(storageKey, JSON.stringify(data));
         markDateHasData(toKey(selectedDate));
       }
@@ -803,6 +921,18 @@
         box.classList.toggle("has-text", box.value.trim().length > 0);
       }
 
+      function autoGrowNoteBody(box) {
+        const minHeight = window.matchMedia("(max-width: 759px)").matches ? 120 : 92;
+        box.style.height = minHeight + "px";
+        box.style.height = Math.max(minHeight, box.scrollHeight) + "px";
+      }
+
+      function clearDropClasses() {
+        document.querySelectorAll(".slot.drop-ok, .slot.drop-block").forEach(slot => {
+          slot.classList.remove("drop-ok", "drop-block");
+        });
+      }
+
       function createSlot(total) {
         const hour = Math.floor(total / 60);
         const minute = total % 60;
@@ -816,11 +946,67 @@
         label.className = "time";
         label.textContent = formatTime(hour, minute);
 
+        const handle = document.createElement("div");
+        handle.className = "drag-handle";
+        handle.textContent = "⋮⋮";
+        handle.title = "Drag entry";
+        handle.setAttribute("aria-hidden", "true");
+        handle.draggable = true;
+
         const box = document.createElement("textarea");
         box.dataset.time = timeId;
         box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
         box.placeholder = "Add...";
         box.setAttribute("aria-label", `Entry for ${label.textContent}`);
+
+        handle.addEventListener("dragstart", function (event) {
+          if (!isDesktopDragEnabled() || !box.value.trim()) {
+            event.preventDefault();
+            return;
+          }
+          draggedBox = box;
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", box.dataset.time);
+        });
+
+        handle.addEventListener("dragend", function () {
+          draggedBox = null;
+          clearDropClasses();
+        });
+
+        slot.addEventListener("dragover", function (event) {
+          if (!isDesktopDragEnabled() || !draggedBox) return;
+          if (draggedBox === box) return;
+
+          clearDropClasses();
+          if (box.value.trim()) {
+            slot.classList.add("drop-block");
+            return;
+          }
+
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+          slot.classList.add("drop-ok");
+        });
+
+        slot.addEventListener("dragleave", function () {
+          slot.classList.remove("drop-ok", "drop-block");
+        });
+
+        slot.addEventListener("drop", function (event) {
+          if (!isDesktopDragEnabled() || !draggedBox || draggedBox === box || box.value.trim()) {
+            clearDropClasses();
+            return;
+          }
+
+          event.preventDefault();
+          box.value = draggedBox.value;
+          draggedBox.value = "";
+          autoGrow(draggedBox);
+          autoGrow(box);
+          save();
+          clearDropClasses();
+        });
 
         box.addEventListener("input", function () {
           autoGrow(box);
@@ -837,6 +1023,7 @@
         });
 
         slot.appendChild(label);
+        slot.appendChild(handle);
         slot.appendChild(box);
         return slot;
       }
@@ -861,6 +1048,61 @@
         timeline.appendChild(firstColumn);
         timeline.appendChild(secondColumn);
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
+      }
+
+      function createNoteCard(note) {
+        const card = document.createElement("section");
+        card.className = "note-card";
+        card.dataset.id = note.id || createId();
+
+        const titleRow = document.createElement("div");
+        titleRow.className = "note-title-row";
+
+        const title = document.createElement("input");
+        title.className = "note-title-input";
+        title.type = "text";
+        title.value = note.title || "Untitled";
+        title.placeholder = "Note title";
+        title.setAttribute("aria-label", "Note title");
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "plain-btn delete-note-btn";
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.title = "Delete note";
+
+        const body = document.createElement("textarea");
+        body.className = "note-body";
+        body.value = note.body || "";
+        body.placeholder = "Write note...";
+        body.setAttribute("aria-label", "Note body");
+
+        title.addEventListener("input", save);
+        body.addEventListener("input", function () {
+          autoGrowNoteBody(body);
+          save();
+        });
+
+        deleteBtn.addEventListener("click", function () {
+          const ok = confirm("Delete this note?");
+          if (!ok) return;
+          card.remove();
+          save();
+        });
+
+        titleRow.appendChild(title);
+        titleRow.appendChild(deleteBtn);
+        card.appendChild(titleRow);
+        card.appendChild(body);
+        return card;
+      }
+
+      function renderNotes() {
+        notesList.innerHTML = "";
+        notes.forEach(note => {
+          notesList.appendChild(createNoteCard(note));
+        });
+        document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
       }
 
       function highlightCurrentTimeBlock() {
@@ -892,8 +1134,8 @@
         selectedDateText.textContent = displayDate(selectedDate);
         focusInput.value = saved.focus || "";
         eveningInput.value = saved.evening || "";
-        dailyNotes.value = saved.notes || "";
         buildTimeline();
+        renderNotes();
         updateSelectedCalendarDay();
         highlightCurrentTimeBlock();
       }
@@ -975,9 +1217,9 @@
               btn.setAttribute("aria-label", displayDate(day));
 
               if (day.getDay() === 0 || day.getDay() === 6) btn.classList.add("weekend");
+              if (hasSavedDataForDate(key)) btn.classList.add("has-data");
               if (key === todayKey) btn.classList.add("today");
               if (key === toKey(selectedDate)) btn.classList.add("selected");
-              if (hasSavedDataForDate(key)) btn.classList.add("has-data");
 
               btn.addEventListener("click", function () {
                 const clickedDate = fromKey(this.dataset.date);
@@ -1001,7 +1243,18 @@
 
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", save);
-      dailyNotes.addEventListener("input", save);
+
+      addNoteBtn.addEventListener("click", function () {
+        notes.push({
+          id: createId(),
+          title: "New Note",
+          body: ""
+        });
+        renderNotes();
+        save();
+        const titles = notesList.querySelectorAll(".note-title-input");
+        if (titles.length) titles[titles.length - 1].focus();
+      });
 
       clearBtn.addEventListener("click", function () {
         const ok = confirm(`Clear all entries for ${displayDate(selectedDate)}?`);
@@ -1009,7 +1262,8 @@
         localStorage.removeItem(storageKey);
         focusInput.value = "";
         eveningInput.value = "";
-        dailyNotes.value = "";
+        notes = [];
+        renderNotes();
         document.querySelectorAll("textarea[data-time]").forEach(box => {
           box.value = "";
           autoGrow(box);
@@ -1039,6 +1293,7 @@
 
       window.addEventListener("resize", function () {
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
+        document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
       });
 
       window.addEventListener("hashchange", function () {
