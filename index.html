@@ -31,9 +31,7 @@
       --radius-card: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -126,9 +124,7 @@
       padding: 1px 0;
     }
 
-    .plain-btn:hover {
-      text-decoration: underline;
-    }
+    .plain-btn:hover { text-decoration: underline; }
 
     .icon-btn {
       width: 24px;
@@ -148,9 +144,7 @@
       text-decoration: none;
     }
 
-    .icon-btn:active {
-      transform: translateY(1px);
-    }
+    .icon-btn:active { transform: translateY(1px); }
 
     .icon-btn.pinned {
       color: var(--pin);
@@ -158,9 +152,8 @@
       background: rgba(247, 231, 189, 0.42);
     }
 
-    .icon-btn.delete-note-btn {
-      color: var(--danger);
-    }
+    .icon-btn.delete-note-btn,
+    .clear-btn { color: var(--danger); }
 
     .calendar-wrap {
       max-height: calc(100vh - 80px);
@@ -168,9 +161,7 @@
       padding: 8px 8px 10px;
     }
 
-    .month {
-      margin-bottom: 11px;
-    }
+    .month { margin-bottom: 11px; }
 
     .month-name {
       font-size: 11px;
@@ -197,9 +188,7 @@
       user-select: none;
     }
 
-    .day-spacer {
-      min-height: 23px;
-    }
+    .day-spacer { min-height: 23px; }
 
     .day-btn {
       border: 1px solid transparent;
@@ -246,9 +235,7 @@
     }
 
     .sidebar.collapsed,
-    .notes-sidebar.collapsed {
-      width: 42px;
-    }
+    .notes-sidebar.collapsed { width: 42px; }
 
     .sidebar.collapsed .sidebar-head,
     .notes-sidebar.collapsed .notes-head {
@@ -260,13 +247,9 @@
     .sidebar.collapsed .sidebar-title,
     .sidebar.collapsed .calendar-wrap,
     .notes-sidebar.collapsed .notes-title,
-    .notes-sidebar.collapsed .notes-wrap {
-      display: none;
-    }
+    .notes-sidebar.collapsed .notes-wrap { display: none; }
 
-    header {
-      padding: 9px 12px 7px;
-    }
+    header { padding: 9px 12px 7px; }
 
     .title-row {
       display: flex;
@@ -309,10 +292,6 @@
       gap: 10px;
       align-items: center;
       white-space: nowrap;
-    }
-
-    .clear-btn {
-      color: var(--danger);
     }
 
     .note-block {
@@ -360,13 +339,8 @@
       background: var(--soft);
     }
 
-    #focusInput {
-      background: var(--focus);
-    }
-
-    #eveningInput {
-      background: var(--evening);
-    }
+    #focusInput { background: var(--focus); }
+    #eveningInput { background: var(--evening); }
 
     .timeline {
       display: grid;
@@ -375,9 +349,7 @@
       padding: 6px 11px 7px;
     }
 
-    .column {
-      min-width: 0;
-    }
+    .column { min-width: 0; }
 
     .column:first-child {
       border-right: 1px solid var(--line);
@@ -393,9 +365,7 @@
       transition: background 0.2s ease;
     }
 
-    .slot:last-child {
-      border-bottom: 0;
-    }
+    .slot:last-child { border-bottom: 0; }
 
     .slot.current-slot {
       background: var(--current);
@@ -407,9 +377,7 @@
       font-weight: 750;
     }
 
-    .slot.current-slot textarea {
-      background: var(--current-soft);
-    }
+    .slot.current-slot textarea { background: var(--current-soft); }
 
     .slot.drop-ok {
       background: #e9f4ea;
@@ -441,9 +409,7 @@
       opacity: 0.72;
     }
 
-    .drag-handle:active {
-      cursor: grabbing;
-    }
+    .drag-handle:active { cursor: grabbing; }
 
     textarea {
       width: 100%;
@@ -461,9 +427,7 @@
       overflow: hidden;
     }
 
-    textarea:focus {
-      background: var(--soft);
-    }
+    textarea:focus { background: var(--soft); }
 
     textarea.has-text {
       background: var(--entry);
@@ -492,22 +456,17 @@
       flex-wrap: wrap;
     }
 
-    .footer-separator {
-      color: var(--line);
-    }
+    .footer-separator { color: var(--line); }
 
     .backup-btn {
       font-size: 10.5px;
       color: var(--muted);
     }
 
-    .notes-wrap {
-      padding: 8px;
-    }
+    .notes-wrap { padding: 8px; }
 
     .notes-top {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
@@ -530,7 +489,8 @@
     }
 
     .compact-btn:hover,
-    .move-all-btn:hover {
+    .move-all-btn:hover,
+    .search-btn:hover {
       background: var(--soft);
       text-decoration: none;
     }
@@ -540,6 +500,56 @@
       font-weight: 650;
       background: var(--soft);
     }
+
+    .search-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      text-decoration: none;
+    }
+
+    .search-btn.active {
+      color: var(--ink);
+      font-weight: 650;
+      background: var(--soft);
+    }
+
+    .notes-search-row {
+      display: none;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .notes-search-row.open { display: grid; }
+
+    .notes-search-row input[type="text"] {
+      height: 30px;
+      font-size: 12.5px;
+    }
+
+    .search-clear-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--soft);
+      color: var(--muted);
+      padding: 0;
+    }
+
+    .no-results {
+      display: none;
+      color: var(--muted);
+      font-size: 11.5px;
+      text-align: center;
+      padding: 8px 4px;
+    }
+
+    .no-results.show { display: block; }
 
     .add-note-icon-btn {
       width: 30px;
@@ -593,9 +603,7 @@
     }
 
     .note-card.is-pinned .note-title-area,
-    .note-card.is-pinned .note-tools-row {
-      background: #fff8df;
-    }
+    .note-card.is-pinned .note-tools-row { background: #fff8df; }
 
     .note-title-input {
       height: 25px;
@@ -608,13 +616,9 @@
       min-width: 0;
     }
 
-    .note-title-input:focus {
-      background: transparent;
-    }
+    .note-title-input:focus { background: transparent; }
 
-    .compact-expand-btn {
-      display: none;
-    }
+    .compact-expand-btn { display: none; }
 
     .note-body {
       min-height: 96px;
@@ -634,9 +638,7 @@
       overflow: hidden;
     }
 
-    .note-body:focus {
-      background-color: #fffaf0;
-    }
+    .note-body:focus { background-color: #fffaf0; }
 
     .notes-sidebar.notes-compact .note-title-area {
       display: grid;
@@ -646,19 +648,13 @@
       padding: 6px 8px;
     }
 
-    .notes-sidebar.notes-compact .compact-expand-btn {
-      display: inline-flex;
-    }
+    .notes-sidebar.notes-compact .compact-expand-btn { display: inline-flex; }
 
     .notes-sidebar.notes-compact .note-tools-row,
     .notes-sidebar.notes-compact .note-body,
-    .notes-sidebar.notes-compact .link-preview {
-      display: none;
-    }
+    .notes-sidebar.notes-compact .link-preview { display: none; }
 
-    .notes-sidebar.notes-compact .note-card {
-      margin-bottom: 5px;
-    }
+    .notes-sidebar.notes-compact .note-card { margin-bottom: 5px; }
 
     .notes-sidebar.notes-compact .note-title-input {
       height: 24px;
@@ -692,9 +688,7 @@
       white-space: nowrap;
     }
 
-    .link-preview a:hover {
-      text-decoration: underline;
-    }
+    .link-preview a:hover { text-decoration: underline; }
 
     .expanded-links {
       border-top: 1px solid var(--line);
@@ -713,9 +707,7 @@
       z-index: 50;
     }
 
-    .modal-backdrop.open {
-      display: flex;
-    }
+    .modal-backdrop.open { display: flex; }
 
     .expanded-note,
     .move-note-panel {
@@ -753,9 +745,7 @@
       font-weight: 700;
     }
 
-    .expanded-title:focus {
-      background: transparent;
-    }
+    .expanded-title:focus { background: transparent; }
 
     .expanded-note-tools {
       display: flex;
@@ -771,10 +761,6 @@
     .expanded-note-tools .icon-btn {
       width: 26px;
       height: 26px;
-    }
-
-    .expanded-note-tools .delete-note-btn {
-      color: var(--danger);
     }
 
     .expanded-body {
@@ -798,13 +784,9 @@
       overflow: auto;
     }
 
-    .expanded-body:focus {
-      background-color: #fffaf0;
-    }
+    .expanded-body:focus { background-color: #fffaf0; }
 
-    .move-note-panel {
-      width: min(340px, 92vw);
-    }
+    .move-note-panel { width: min(340px, 92vw); }
 
     .move-note-title {
       margin: 0;
@@ -812,9 +794,7 @@
       font-weight: 700;
     }
 
-    .move-note-body {
-      padding: 12px;
-    }
+    .move-note-body { padding: 12px; }
 
     .move-note-body label {
       display: block;
@@ -838,15 +818,11 @@
         grid-template-columns: 210px minmax(0, 1fr) 210px;
       }
 
-      .weekday {
-        font-size: 9px;
-      }
+      .weekday { font-size: 9px; }
     }
 
     @media (max-width: 759px) {
-      body {
-        padding: 8px 6px;
-      }
+      body { padding: 8px 6px; }
 
       .shell,
       .shell.left-collapsed,
@@ -880,48 +856,23 @@
       }
 
       .sidebar.collapsed,
-      .notes-sidebar.collapsed {
-        width: 100%;
-      }
+      .notes-sidebar.collapsed { width: 100%; }
 
       .sidebar.collapsed .sidebar-title,
-      .notes-sidebar.collapsed .notes-title {
-        display: block;
-      }
+      .notes-sidebar.collapsed .notes-title { display: block; }
 
       .sidebar.collapsed .calendar-wrap,
-      .notes-sidebar.collapsed .notes-wrap {
-        display: none;
-      }
+      .notes-sidebar.collapsed .notes-wrap { display: none; }
 
       .sidebar-head,
-      .notes-head {
-        padding: 8px 10px;
-      }
+      .notes-head { padding: 8px 10px; }
 
-      .calendar-wrap {
-        max-height: 45vh;
-      }
-
-      .title-row {
-        gap: 8px;
-      }
-
-      h1 {
-        font-size: 17px;
-      }
-
-      .selected-date {
-        font-size: 11.5px;
-      }
-
-      .toolbar {
-        font-size: 11px;
-      }
-
-      .note-line {
-        grid-template-columns: 56px 1fr;
-      }
+      .calendar-wrap { max-height: 45vh; }
+      .title-row { gap: 8px; }
+      h1 { font-size: 17px; }
+      .selected-date { font-size: 11.5px; }
+      .toolbar { font-size: 11px; }
+      .note-line { grid-template-columns: 56px 1fr; }
 
       .timeline {
         display: block;
@@ -938,9 +889,7 @@
         min-height: 34px;
       }
 
-      .drag-handle {
-        display: none;
-      }
+      .drag-handle { display: none; }
 
       .time {
         font-size: 10.5px;
@@ -949,9 +898,7 @@
 
       input[type="text"],
       input[type="date"],
-      textarea {
-        font-size: 16px;
-      }
+      textarea { font-size: 16px; }
 
       input[type="text"],
       input[type="date"] {
@@ -990,9 +937,7 @@
         font-size: 16px;
       }
 
-      .modal-backdrop {
-        padding: 10px;
-      }
+      .modal-backdrop { padding: 10px; }
 
       .expanded-note {
         width: 100%;
@@ -1079,14 +1024,20 @@
         <button class="plain-btn" id="notesToggle" type="button" aria-expanded="true" title="Show or hide notepad">Hide</button>
       </div>
       <div class="notes-wrap">
+        <div class="notes-search-row" id="notesSearchRow">
+          <input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" />
+          <button class="plain-btn search-clear-btn" id="notesSearchClear" type="button" title="Clear search">×</button>
+        </div>
         <div class="notes-top">
           <div class="notes-actions">
+            <button class="plain-btn search-btn" id="notesSearchBtn" type="button" title="Search notes">⌕</button>
             <button class="plain-btn compact-btn" id="compactNotesBtn" type="button" title="Hide or show note previews">Compact</button>
             <button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes to another day">Move All</button>
             <button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button>
           </div>
         </div>
         <div id="notesList"></div>
+        <div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
   </div>
@@ -1146,6 +1097,11 @@
       const importBackupInput = document.getElementById("importBackupInput");
       const focusInput = document.getElementById("focusInput");
       const eveningInput = document.getElementById("eveningInput");
+      const notesSearchBtn = document.getElementById("notesSearchBtn");
+      const notesSearchRow = document.getElementById("notesSearchRow");
+      const notesSearchInput = document.getElementById("notesSearchInput");
+      const notesSearchClear = document.getElementById("notesSearchClear");
+      const notesNoResults = document.getElementById("notesNoResults");
       const addNoteBtn = document.getElementById("addNoteBtn");
       const compactNotesBtn = document.getElementById("compactNotesBtn");
       const moveAllNotesBtn = document.getElementById("moveAllNotesBtn");
@@ -1175,6 +1131,8 @@
       let movingNoteId = null;
       let movingAllNotes = false;
       let notesCompact = localStorage.getItem(COMPACT_KEY) === "true";
+      let notesSearchOpen = false;
+      let notesSearchQuery = "";
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -1310,6 +1268,12 @@
         return pinned.concat(normal);
       }
 
+      function noteMatchesSearch(note) {
+        const query = notesSearchQuery.trim().toLowerCase();
+        if (!query) return true;
+        return `${note.title || ""} ${note.body || ""}`.toLowerCase().includes(query);
+      }
+
       function readDateData(key) {
         try {
           return JSON.parse(localStorage.getItem(dateStorageKey(key))) || {};
@@ -1431,15 +1395,6 @@
         }
       }
 
-      function collectNotes() {
-        return Array.from(document.querySelectorAll(".note-card")).map(card => ({
-          id: card.dataset.id,
-          title: card.querySelector(".note-title-input").value,
-          body: card.querySelector(".note-body").value,
-          pinned: card.dataset.pinned === "true"
-        }));
-      }
-
       function collectEntries() {
         const entries = {};
         document.querySelectorAll("textarea[data-time]").forEach(box => {
@@ -1448,17 +1403,17 @@
         return entries;
       }
 
-      function currentDateDataFromDom() {
+      function currentDateDataFromState() {
         return {
           focus: focusInput.value,
           evening: eveningInput.value,
-          notes: collectNotes(),
+          notes: orderNotes(notes),
           entries: collectEntries()
         };
       }
 
       function save() {
-        const data = currentDateDataFromDom();
+        const data = currentDateDataFromState();
         notes = data.notes;
         writeDateData(toKey(selectedDate), data);
         markDateHasData(toKey(selectedDate));
@@ -1475,6 +1430,25 @@
         compactNotesBtn.classList.toggle("active", notesCompact);
         compactNotesBtn.textContent = notesCompact ? "Preview" : "Compact";
         compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
+      }
+
+      function updateSearchUi() {
+        notesSearchRow.classList.toggle("open", notesSearchOpen);
+        notesSearchBtn.classList.toggle("active", notesSearchOpen || Boolean(notesSearchQuery));
+      }
+
+      function openSearch() {
+        notesSearchOpen = true;
+        updateSearchUi();
+        setTimeout(() => notesSearchInput.focus(), 0);
+      }
+
+      function clearSearch() {
+        notesSearchOpen = false;
+        notesSearchQuery = "";
+        notesSearchInput.value = "";
+        updateSearchUi();
+        renderNotes();
       }
 
       function autoGrow(box) {
@@ -1603,10 +1577,14 @@
         document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
       }
 
+      function findNoteById(id) {
+        return notes.find(note => note.id === id);
+      }
+
       function createNoteCard(note) {
         const card = document.createElement("section");
         card.className = "note-card";
-        card.dataset.id = note.id || createId();
+        card.dataset.id = note.id;
         card.dataset.pinned = String(Boolean(note.pinned));
         card.classList.toggle("is-pinned", Boolean(note.pinned));
 
@@ -1664,25 +1642,31 @@
         renderLinks(linkPreview, body.value);
 
         title.addEventListener("input", () => {
-          if (expandedNoteId === card.dataset.id) expandedTitle.value = title.value;
+          const currentNote = findNoteById(note.id);
+          if (!currentNote) return;
+          currentNote.title = title.value;
+          if (expandedNoteId === note.id) expandedTitle.value = title.value;
           save();
         });
 
         body.addEventListener("input", () => {
+          const currentNote = findNoteById(note.id);
+          if (!currentNote) return;
+          currentNote.body = body.value;
           autoGrowNoteBody(body);
           renderLinks(linkPreview, body.value);
-          if (expandedNoteId === card.dataset.id) {
+          if (expandedNoteId === note.id) {
             expandedBody.value = body.value;
             renderLinks(expandedLinks, body.value);
           }
           save();
         });
 
-        pinButton.addEventListener("click", () => togglePin(card.dataset.id));
-        expandButton.addEventListener("click", () => openExpandedNote(card.dataset.id));
-        compactExpandButton.addEventListener("click", () => openExpandedNote(card.dataset.id));
-        moveButton.addEventListener("click", () => openMoveNote(card.dataset.id));
-        deleteButton.addEventListener("click", () => deleteNoteById(card.dataset.id));
+        pinButton.addEventListener("click", () => togglePin(note.id));
+        expandButton.addEventListener("click", () => openExpandedNote(note.id));
+        compactExpandButton.addEventListener("click", () => openExpandedNote(note.id));
+        moveButton.addEventListener("click", () => openMoveNote(note.id));
+        deleteButton.addEventListener("click", () => deleteNoteById(note.id));
 
         titleArea.append(title, compactExpandButton);
         toolsRow.append(pinButton, expandButton, moveButton, deleteButton);
@@ -1695,48 +1679,41 @@
       }
 
       function deleteNoteById(id) {
-        const card = getNoteCardById(id);
-        if (!card) return;
+        const note = findNoteById(id);
+        if (!note) return;
         if (!confirm("Delete this note?")) return;
         if (expandedNoteId === id) closeExpandedEditor();
         if (movingNoteId === id) closeMoveNote();
-        card.remove();
-        notes = orderNotes(collectNotes());
+        notes = notes.filter(item => item.id !== id);
         renderNotes();
         save();
       }
 
       function updateExpandedToolbar() {
         if (!expandedNoteId) return;
-        const card = getNoteCardById(expandedNoteId);
-        if (!card) return;
-        const pinned = card.dataset.pinned === "true";
-        expandedPinBtn.textContent = pinned ? "★" : "☆";
-        expandedPinBtn.title = pinned ? "Unpin note" : "Pin note";
-        expandedPinBtn.classList.toggle("pinned", pinned);
+        const note = findNoteById(expandedNoteId);
+        if (!note) return;
+        expandedPinBtn.textContent = note.pinned ? "★" : "☆";
+        expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
+        expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
       }
 
       function togglePin(id) {
-        const currentNotes = collectNotes();
-        const index = currentNotes.findIndex(note => note.id === id);
-        if (index === -1) return;
-        const [note] = currentNotes.splice(index, 1);
+        const note = findNoteById(id);
+        if (!note) return;
         note.pinned = !note.pinned;
-        const firstNormalIndex = currentNotes.findIndex(note => !note.pinned);
-        if (firstNormalIndex === -1) currentNotes.push(note);
-        else currentNotes.splice(firstNormalIndex, 0, note);
-        notes = orderNotes(currentNotes);
+        notes = orderNotes(notes);
         renderNotes();
         save();
         updateExpandedToolbar();
       }
 
       function openExpandedNote(id) {
-        const card = getNoteCardById(id);
-        if (!card) return;
+        const note = findNoteById(id);
+        if (!note) return;
         expandedNoteId = id;
-        expandedTitle.value = card.querySelector(".note-title-input").value;
-        expandedBody.value = card.querySelector(".note-body").value;
+        expandedTitle.value = note.title || "Untitled";
+        expandedBody.value = note.body || "";
         renderLinks(expandedLinks, expandedBody.value);
         updateExpandedToolbar();
         noteModal.classList.add("open");
@@ -1746,16 +1723,12 @@
 
       function syncExpandedToCard() {
         if (!expandedNoteId) return;
-        const card = getNoteCardById(expandedNoteId);
-        if (!card) return;
-        const title = card.querySelector(".note-title-input");
-        const body = card.querySelector(".note-body");
-        const linkPreview = card.querySelector(".link-preview");
-        title.value = expandedTitle.value;
-        body.value = expandedBody.value;
-        autoGrowNoteBody(body);
-        renderLinks(linkPreview, body.value);
+        const note = findNoteById(expandedNoteId);
+        if (!note) return;
+        note.title = expandedTitle.value;
+        note.body = expandedBody.value;
         renderLinks(expandedLinks, expandedBody.value);
+        renderNotes();
         updateExpandedToolbar();
         save();
       }
@@ -1769,8 +1742,8 @@
       }
 
       function openMoveNote(id) {
-        const card = getNoteCardById(id);
-        if (!card) return;
+        const note = findNoteById(id);
+        if (!note) return;
         movingNoteId = id;
         movingAllNotes = false;
         moveModalTitle.textContent = "Move Note";
@@ -1785,8 +1758,7 @@
       }
 
       function openMoveAllNotes() {
-        const currentNotes = collectNotes();
-        if (!currentNotes.length) {
+        if (!notes.length) {
           alert("There are no notes to move for this date.");
           return;
         }
@@ -1834,7 +1806,7 @@
 
       function moveAllNotesToDate(targetKey) {
         const sourceKey = toKey(selectedDate);
-        const sourceNotes = collectNotes();
+        const sourceNotes = orderNotes(notes);
         if (!sourceNotes.length) {
           alert("There are no notes to move for this date.");
           return;
@@ -1848,7 +1820,7 @@
 
         if (noteModal.classList.contains("open")) closeExpandedEditor();
 
-        const sourceData = currentDateDataFromDom();
+        const sourceData = currentDateDataFromState();
         sourceData.notes = [];
         writeDateData(sourceKey, sourceData);
 
@@ -1872,12 +1844,11 @@
         const sourceKey = toKey(selectedDate);
         if (expandedNoteId === movingNoteId) closeExpandedEditor();
 
-        const currentNotes = collectNotes();
-        const sourceIndex = currentNotes.findIndex(note => note.id === movingNoteId);
+        const sourceIndex = notes.findIndex(note => note.id === movingNoteId);
         if (sourceIndex === -1) return;
-        const [movingNote] = currentNotes.splice(sourceIndex, 1);
-        const sourceData = currentDateDataFromDom();
-        sourceData.notes = orderNotes(currentNotes);
+        const [movingNote] = notes.splice(sourceIndex, 1);
+        const sourceData = currentDateDataFromState();
+        sourceData.notes = orderNotes(notes);
         writeDateData(sourceKey, sourceData);
 
         const targetData = readDateData(targetKey);
@@ -1888,7 +1859,6 @@
         if (!targetData.evening) targetData.evening = "";
         writeDateData(targetKey, targetData);
 
-        notes = sourceData.notes;
         renderNotes();
         markDateHasData(sourceKey);
         markDateHasData(targetKey);
@@ -1907,19 +1877,19 @@
           alert("Please select a different date.");
           return;
         }
-        if (movingAllNotes) {
-          moveAllNotesToDate(targetKey);
-        } else {
-          moveSingleNoteToDate(targetKey);
-        }
+        if (movingAllNotes) moveAllNotesToDate(targetKey);
+        else moveSingleNoteToDate(targetKey);
       }
 
       function renderNotes() {
         notesList.innerHTML = "";
         notes = orderNotes(notes);
-        notes.forEach(note => notesList.appendChild(createNoteCard(note)));
+        const filteredNotes = notes.filter(noteMatchesSearch);
+        filteredNotes.forEach(note => notesList.appendChild(createNoteCard(note)));
+        notesNoResults.classList.toggle("show", Boolean(notesSearchQuery) && filteredNotes.length === 0);
         document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
         applyNotesCompact();
+        updateSearchUi();
       }
 
       function highlightCurrentTimeBlock() {
@@ -1954,6 +1924,7 @@
         if (moveModal.classList.contains("open")) closeMoveNote();
         selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         if (updateHash) history.replaceState(null, "", `#${toKey(selectedDate)}`);
+        clearSearch();
         loadSelectedDate();
       }
 
@@ -2038,6 +2009,16 @@
 
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", save);
+
+      notesSearchBtn.addEventListener("click", openSearch);
+      notesSearchClear.addEventListener("click", clearSearch);
+      notesSearchInput.addEventListener("input", () => {
+        notesSearchQuery = notesSearchInput.value;
+        renderNotes();
+      });
+      notesSearchInput.addEventListener("keydown", event => {
+        if (event.key === "Escape") clearSearch();
+      });
 
       compactNotesBtn.addEventListener("click", () => {
         notesCompact = !notesCompact;
@@ -2151,6 +2132,7 @@
       });
 
       applyNotesCompact();
+      updateSearchUi();
       buildCalendar();
       loadSelectedDate();
       history.replaceState(null, "", `#${toKey(selectedDate)}`);
