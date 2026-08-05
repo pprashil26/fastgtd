@@ -396,6 +396,20 @@
       text-align:center;
       background:var(--panel)
     }
+    .footer-actions {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      flex-wrap:wrap
+    }
+    .footer-separator {
+      color:var(--line)
+    }
+    .backup-btn {
+      font-size:10.5px;
+      color:var(--muted)
+    }
     .notes-wrap {
       padding:8px
     }
@@ -853,7 +867,14 @@
      </div>
     </section>
     <footer>
-     Select a date from the calendar. Current block highlights only for today. Saved automatically on this device.
+     <span class="footer-actions">
+      <span>Saved locally on this device</span>
+      <span class="footer-separator">·</span>
+      <button class="plain-btn backup-btn" id="exportBackupBtn" type="button" title="Download backup as text file">Export</button>
+      <span class="footer-separator">·</span>
+      <button class="plain-btn backup-btn" id="importBackupBtn" type="button" title="Import backup from text file">Import</button>
+      <input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" />
+     </span>
     </footer>
    </main>
    <aside aria-label="Lined notepad sidebar" class="notes-sidebar" id="notesSidebar">
@@ -947,6 +968,9 @@
         selectedDateText=document.getElementById("selectedDateText"),
         clearBtn=document.getElementById("clearBtn"),
         todayBtn=document.getElementById("todayBtn"),
+        exportBackupBtn=document.getElementById("exportBackupBtn"),
+        importBackupBtn=document.getElementById("importBackupBtn"),
+        importBackupInput=document.getElementById("importBackupInput"),
         focusInput=document.getElementById("focusInput"),
         eveningInput=document.getElementById("eveningInput"),
         addNoteBtn=document.getElementById("addNoteBtn"),
@@ -1085,6 +1109,77 @@
         }
         function writeDateData(k, d) {
           localStorage.setItem(dateStorageKey(k), JSON.stringify(d))
+        }
+        function backupFileName() {
+          return `timeblocks-backup-${toKey(getToday())}.txt`
+        }
+        function exportBackup() {
+          const data={};
+          for(let i=0;i<localStorage.length;i+=1) {
+            const key=localStorage.key(i);
+            if(!key || key===COMPACT_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))continue;
+            try {
+              data[key]=JSON.parse(localStorage.getItem(key))
+            }
+            catch(error) {
+              data[key]=localStorage.getItem(key)
+            }
+          }
+          const backup={
+            app:"Timeblocks",
+            version:"1.0",
+            exportedAt:new Date().toISOString(),
+            preferences:{
+              notesCompact:notesCompact
+            },
+            data:data
+          };
+          const blob=new Blob([JSON.stringify(backup, null, 2)], {type:"text/plain"});
+          const url=URL.createObjectURL(blob);
+          const anchor=document.createElement("a");
+          anchor.href=url;
+          anchor.download=backupFileName();
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url)
+        }
+        function isValidBackupData(data) {
+          return data && typeof data==="object" && !Array.isArray(data)
+        }
+        function importBackupText(text) {
+          let backup;
+          try {
+            backup=JSON.parse(text)
+          }
+          catch(error) {
+            alert("This file is not a valid Timeblocks backup.");
+            return
+          }
+          if(!backup || backup.app!=="Timeblocks" || !isValidBackupData(backup.data)) {
+            alert("This file does not look like a Timeblocks backup.");
+            return
+          }
+          const entries=Object.entries(backup.data).filter(([key, value])=> {
+            return /^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key) && isValidBackupData(value)
+          });
+          if(!entries.length) {
+            alert("No dated Timeblocks data was found in this backup.");
+            return
+          }
+          const ok=confirm(`Import ${entries.length} saved date(s)?\n\nMatching dates in this browser will be replaced. Other dates will remain unchanged.`);
+          if(!ok)return;
+          entries.forEach(([key, value])=> {
+            localStorage.setItem(key, JSON.stringify(value))
+          });
+          if(backup.preferences && typeof backup.preferences.notesCompact==="boolean") {
+            notesCompact=backup.preferences.notesCompact;
+            localStorage.setItem(COMPACT_KEY, String(notesCompact));
+            applyNotesCompact()
+          }
+          buildCalendar();
+          loadSelectedDate();
+          alert(`Imported ${entries.length} saved date(s).`)
         }
         function readSavedData() {
           storageKey=selectedStorageKey();
@@ -1599,6 +1694,19 @@
         todayBtn.addEventListener("click", ()=> {
           const today=getToday();
           if(isWithinRange(today))selectDate(today, true)
+        });
+        exportBackupBtn.addEventListener("click", exportBackup);
+        importBackupBtn.addEventListener("click", ()=> {
+          importBackupInput.value="";
+          importBackupInput.click()
+        });
+        importBackupInput.addEventListener("change", ()=> {
+          const file=importBackupInput.files && importBackupInput.files[0];
+          if(!file)return;
+          const reader=new FileReader();
+          reader.onload=()=>importBackupText(String(reader.result || ""));
+          reader.onerror=()=>alert("Could not read the selected backup file.");
+          reader.readAsText(file)
         });
         sidebarToggle.addEventListener("click", ()=> {
           const collapsed=sidebar.classList.toggle("collapsed");
