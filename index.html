@@ -604,6 +604,23 @@
     .expanded-title:focus {
       background:transparent
     }
+    .expanded-note-tools {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:4px;
+      min-height:32px;
+      padding:3px 12px 5px;
+      border-bottom:1px solid var(--line);
+      background:var(--panel)
+    }
+    .expanded-note-tools .icon-btn {
+      width:26px;
+      height:26px
+    }
+    .expanded-note-tools .delete-note-btn {
+      color:var(--danger)
+    }
     .expanded-body {
       flex:1;
       min-height:460px;
@@ -872,6 +889,17 @@
       Close
      </button>
     </div>
+    <div class="expanded-note-tools" id="expandedNoteTools">
+     <button class="icon-btn" id="expandedPinBtn" title="Pin note" type="button">
+      ☆
+     </button>
+     <button class="icon-btn" id="expandedMoveBtn" title="Move note to another day" type="button">
+      ⇄
+     </button>
+     <button class="icon-btn delete-note-btn" id="expandedDeleteBtn" title="Delete note" type="button">
+      ×
+     </button>
+    </div>
     <textarea class="expanded-body" id="expandedBody" placeholder="Write note..."></textarea>
     <div class="link-preview expanded-links" id="expandedLinks">
     </div>
@@ -928,6 +956,9 @@
         expandedTitle=document.getElementById("expandedTitle"),
         expandedBody=document.getElementById("expandedBody"),
         expandedLinks=document.getElementById("expandedLinks"),
+        expandedPinBtn=document.getElementById("expandedPinBtn"),
+        expandedMoveBtn=document.getElementById("expandedMoveBtn"),
+        expandedDeleteBtn=document.getElementById("expandedDeleteBtn"),
         closeExpandedNote=document.getElementById("closeExpandedNote"),
         moveModal=document.getElementById("moveModal"),
         moveDateInput=document.getElementById("moveDateInput"),
@@ -1265,15 +1296,7 @@
           expandButton.addEventListener("click", ()=>openExpandedNote(card.dataset.id));
           compactExpandButton.addEventListener("click", ()=>openExpandedNote(card.dataset.id));
           moveButton.addEventListener("click", ()=>openMoveNote(card.dataset.id));
-          deleteButton.addEventListener("click", ()=> {
-            if(!confirm("Delete this note?"))return;
-            if(expandedNoteId===card.dataset.id)closeExpandedEditor();
-            if(movingNoteId===card.dataset.id)closeMoveNote();
-            card.remove();
-            notes=orderNotes(collectNotes());
-            renderNotes();
-            save()
-          });
+          deleteButton.addEventListener("click", ()=>deleteNoteById(card.dataset.id));
           titleArea.append(title, compactExpandButton);
           toolsRow.append(pinButton, expandButton, moveButton, deleteButton);
           card.append(titleArea, toolsRow, body, linkPreview);
@@ -1281,6 +1304,26 @@
         }
         function getNoteCardById(id) {
           return document.querySelector(`.note-card[data-id="${id}"]`)
+        }
+        function deleteNoteById(id) {
+          const card=getNoteCardById(id);
+          if(!card)return;
+          if(!confirm("Delete this note?"))return;
+          if(expandedNoteId===id)closeExpandedEditor();
+          if(movingNoteId===id)closeMoveNote();
+          card.remove();
+          notes=orderNotes(collectNotes());
+          renderNotes();
+          save()
+        }
+        function updateExpandedToolbar() {
+          if(!expandedNoteId)return;
+          const card=getNoteCardById(expandedNoteId);
+          if(!card)return;
+          const pinned=card.dataset.pinned==="true";
+          expandedPinBtn.textContent=pinned?"★":"☆";
+          expandedPinBtn.title=pinned?"Unpin note":"Pin note";
+          expandedPinBtn.classList.toggle("pinned", pinned)
         }
         function togglePin(id) {
           const current=collectNotes(), idx=current.findIndex(n=>n.id===id);
@@ -1292,7 +1335,8 @@
           else current.splice(firstNormal, 0, note);
           notes=orderNotes(current);
           renderNotes();
-          save()
+          save();
+          updateExpandedToolbar()
         }
         function openExpandedNote(id) {
           const card=getNoteCardById(id);
@@ -1301,6 +1345,7 @@
           expandedTitle.value=card.querySelector(".note-title-input").value;
           expandedBody.value=card.querySelector(".note-body").value;
           renderLinks(expandedLinks, expandedBody.value);
+          updateExpandedToolbar();
           noteModal.classList.add("open");
           noteModal.setAttribute("aria-hidden", "false");
           setTimeout(()=>expandedBody.focus(), 0)
@@ -1315,6 +1360,7 @@
           autoGrowNoteBody(body);
           renderLinks(linkPreview, body.value);
           renderLinks(expandedLinks, expandedBody.value);
+          updateExpandedToolbar();
           save()
         }
         function closeExpandedEditor() {
@@ -1509,6 +1555,15 @@
         });
         expandedTitle.addEventListener("input", syncExpandedToCard);
         expandedBody.addEventListener("input", syncExpandedToCard);
+        expandedPinBtn.addEventListener("click", ()=> {
+          if(expandedNoteId)togglePin(expandedNoteId)
+        });
+        expandedMoveBtn.addEventListener("click", ()=> {
+          if(expandedNoteId)openMoveNote(expandedNoteId)
+        });
+        expandedDeleteBtn.addEventListener("click", ()=> {
+          if(expandedNoteId)deleteNoteById(expandedNoteId)
+        });
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
         noteModal.addEventListener("click", e=> {
           if(e.target===noteModal)closeExpandedEditor()
