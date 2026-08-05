@@ -897,12 +897,13 @@
       }
 
       function formatTime(hour, minute) {
-        const date = new Date();
-        date.setHours(hour, minute, 0, 0);
-        return date.toLocaleTimeString(undefined, {
-          hour: "numeric",
-          minute: "2-digit"
-        });
+        const displayHour = hour % 12 || 12;
+        const timeText = `${displayHour}:${pad(minute)}`;
+
+        if (hour === 8 && minute === 0) return `${timeText} AM`;
+        if (hour === 12 && minute === 0) return `${timeText} PM`;
+
+        return timeText;
       }
 
       function createId() {
