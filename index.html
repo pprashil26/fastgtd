@@ -119,8 +119,8 @@
     .icon-btn:hover { text-decoration: underline; }
 
     .icon-btn {
-      width: 20px;
-      height: 24px;
+      width: 22px;
+      height: 23px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -308,7 +308,8 @@
       user-select: none;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    input[type="date"] {
       width: 100%;
       height: 27px;
       border: 1px solid var(--line);
@@ -321,7 +322,8 @@
       background: #fffdf8;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    input[type="date"]:focus {
       border-color: var(--entry-border);
       background: var(--soft);
     }
@@ -464,17 +466,24 @@
       background: #fffdf6;
     }
 
-    .note-title-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 4px;
+    .note-title-area {
+      padding: 7px 8px 3px;
+      border-bottom: 0;
+      background: #fbf7f0;
+    }
+
+    .note-tools-row {
+      display: flex;
       align-items: center;
-      padding: 7px 8px 6px;
+      justify-content: flex-end;
+      gap: 3px;
+      padding: 2px 8px 5px;
       border-bottom: 1px solid var(--line);
       background: #fbf7f0;
     }
 
-    .note-card.is-pinned .note-title-row { background: #fff8df; }
+    .note-card.is-pinned .note-title-area,
+    .note-card.is-pinned .note-tools-row { background: #fff8df; }
 
     .note-title-input {
       height: 25px;
@@ -522,12 +531,8 @@
 
     .modal-backdrop.open { display: flex; }
 
-    .expanded-note {
-      width: min(420px, 92vw);
-      min-height: min(600px, 82vh);
-      max-height: 88vh;
-      display: flex;
-      flex-direction: column;
+    .expanded-note,
+    .move-note-panel {
       background: var(--page);
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -535,7 +540,16 @@
       overflow: hidden;
     }
 
-    .expanded-note-head {
+    .expanded-note {
+      width: min(420px, 92vw);
+      min-height: min(600px, 82vh);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .expanded-note-head,
+    .move-note-head {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px;
@@ -579,6 +593,34 @@
     }
 
     .expanded-body:focus { background-color: #fffaf0; }
+
+    .move-note-panel {
+      width: min(340px, 92vw);
+    }
+
+    .move-note-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .move-note-body {
+      padding: 12px;
+    }
+
+    .move-note-body label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .move-note-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 0 12px 12px;
+    }
 
     @media (max-width: 1080px) and (min-width: 760px) {
       .shell,
@@ -668,9 +710,11 @@
       }
 
       input[type="text"],
+      input[type="date"],
       textarea { font-size: 16px; }
 
-      input[type="text"] {
+      input[type="text"],
+      input[type="date"] {
         height: 34px;
         padding: 5px 9px;
       }
@@ -800,6 +844,23 @@
     </section>
   </div>
 
+  <div class="modal-backdrop" id="moveModal" aria-hidden="true">
+    <section class="move-note-panel" role="dialog" aria-modal="true" aria-label="Move note to another day">
+      <div class="move-note-head">
+        <p class="move-note-title">Move Note</p>
+        <button class="plain-btn" id="cancelMoveTop" type="button" title="Cancel move">Close</button>
+      </div>
+      <div class="move-note-body">
+        <label for="moveDateInput">Move to date</label>
+        <input id="moveDateInput" type="date" />
+      </div>
+      <div class="move-note-actions">
+        <button class="plain-btn" id="cancelMoveBtn" type="button">Cancel</button>
+        <button class="plain-btn" id="confirmMoveBtn" type="button">Move</button>
+      </div>
+    </section>
+  </div>
+
   <script>
     (function () {
       const START_DATE = new Date(2026, 6, 1);
@@ -824,6 +885,11 @@
       const expandedTitle = document.getElementById("expandedTitle");
       const expandedBody = document.getElementById("expandedBody");
       const closeExpandedNote = document.getElementById("closeExpandedNote");
+      const moveModal = document.getElementById("moveModal");
+      const moveDateInput = document.getElementById("moveDateInput");
+      const cancelMoveTop = document.getElementById("cancelMoveTop");
+      const cancelMoveBtn = document.getElementById("cancelMoveBtn");
+      const confirmMoveBtn = document.getElementById("confirmMoveBtn");
 
       let selectedDate = getInitialDate();
       let storageKey = "";
@@ -831,6 +897,7 @@
       let notes = [];
       let draggedBox = null;
       let expandedNoteId = null;
+      let movingNoteId = null;
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -881,6 +948,10 @@
 
       function selectedStorageKey() {
         return `timeblocks:${toKey(selectedDate)}`;
+      }
+
+      function dateStorageKey(dateKey) {
+        return `timeblocks:${dateKey}`;
       }
 
       function displayDate(date) {
@@ -938,13 +1009,21 @@
         return pinned.concat(normal);
       }
 
+      function readDateData(dateKey) {
+        try {
+          return JSON.parse(localStorage.getItem(dateStorageKey(dateKey))) || {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function writeDateData(dateKey, data) {
+        localStorage.setItem(dateStorageKey(dateKey), JSON.stringify(data));
+      }
+
       function readSavedData() {
         storageKey = selectedStorageKey();
-        try {
-          saved = JSON.parse(localStorage.getItem(storageKey)) || {};
-        } catch (e) {
-          saved = {};
-        }
+        saved = readDateData(toKey(selectedDate));
         notes = orderNotes(normalizeNotes(saved.notes));
       }
 
@@ -957,13 +1036,13 @@
 
       function hasSavedDataForDate(key) {
         try {
-          const data = JSON.parse(localStorage.getItem(`timeblocks:${key}`)) || {};
+          const data = readDateData(key);
           const hasFocus = Boolean((data.focus || "").trim());
           const hasEvening = Boolean((data.evening || "").trim());
           const hasEntries = data.entries && Object.keys(data.entries).length > 0;
           const hasNotes = hasNotesData(data);
           return hasFocus || hasEvening || hasEntries || hasNotes;
-        } catch (e) {
+        } catch (error) {
           return false;
         }
       }
@@ -977,20 +1056,27 @@
         }));
       }
 
-      function save() {
-        const data = {
+      function collectEntries() {
+        const entries = {};
+        document.querySelectorAll("textarea[data-time]").forEach(box => {
+          if (box.value.trim()) entries[box.dataset.time] = box.value;
+        });
+        return entries;
+      }
+
+      function currentDateDataFromDom() {
+        return {
           focus: focusInput.value,
           evening: eveningInput.value,
           notes: collectNotes(),
-          entries: {}
+          entries: collectEntries()
         };
+      }
 
-        document.querySelectorAll("textarea[data-time]").forEach(box => {
-          if (box.value.trim()) data.entries[box.dataset.time] = box.value;
-        });
-
+      function save() {
+        const data = currentDateDataFromDom();
         notes = data.notes;
-        localStorage.setItem(storageKey, JSON.stringify(data));
+        writeDateData(toKey(selectedDate), data);
         markDateHasData(toKey(selectedDate));
       }
 
@@ -1139,8 +1225,8 @@
         card.dataset.pinned = String(Boolean(note.pinned));
         card.classList.toggle("is-pinned", Boolean(note.pinned));
 
-        const titleRow = document.createElement("div");
-        titleRow.className = "note-title-row";
+        const titleArea = document.createElement("div");
+        titleArea.className = "note-title-area";
 
         const title = document.createElement("input");
         title.className = "note-title-input";
@@ -1148,6 +1234,9 @@
         title.value = note.title || "Untitled";
         title.placeholder = "Note title";
         title.title = note.pinned ? "Pinned note" : "Note title";
+
+        const toolsRow = document.createElement("div");
+        toolsRow.className = "note-tools-row";
 
         const pinButton = document.createElement("button");
         pinButton.className = "icon-btn pin-note-btn";
@@ -1161,6 +1250,12 @@
         expandButton.type = "button";
         expandButton.textContent = "⤢";
         expandButton.title = "Open larger note editor";
+
+        const moveButton = document.createElement("button");
+        moveButton.className = "icon-btn";
+        moveButton.type = "button";
+        moveButton.textContent = "⇄";
+        moveButton.title = "Move note to another day";
 
         const deleteButton = document.createElement("button");
         deleteButton.className = "icon-btn delete-note-btn";
@@ -1186,21 +1281,25 @@
 
         pinButton.addEventListener("click", () => togglePin(card.dataset.id));
         expandButton.addEventListener("click", () => openExpandedNote(card.dataset.id));
+        moveButton.addEventListener("click", () => openMoveNote(card.dataset.id));
 
         deleteButton.addEventListener("click", () => {
           if (!confirm("Delete this note?")) return;
           if (expandedNoteId === card.dataset.id) closeExpandedEditor();
+          if (movingNoteId === card.dataset.id) closeMoveNote();
           card.remove();
           notes = orderNotes(collectNotes());
           renderNotes();
           save();
         });
 
-        titleRow.appendChild(title);
-        titleRow.appendChild(pinButton);
-        titleRow.appendChild(expandButton);
-        titleRow.appendChild(deleteButton);
-        card.appendChild(titleRow);
+        titleArea.appendChild(title);
+        toolsRow.appendChild(pinButton);
+        toolsRow.appendChild(expandButton);
+        toolsRow.appendChild(moveButton);
+        toolsRow.appendChild(deleteButton);
+        card.appendChild(titleArea);
+        card.appendChild(toolsRow);
         card.appendChild(body);
         return card;
       }
@@ -1219,18 +1318,12 @@
 
         if (note.pinned) {
           const firstNormalIndex = currentNotes.findIndex(item => !item.pinned);
-          if (firstNormalIndex === -1) {
-            currentNotes.push(note);
-          } else {
-            currentNotes.splice(firstNormalIndex, 0, note);
-          }
+          if (firstNormalIndex === -1) currentNotes.push(note);
+          else currentNotes.splice(firstNormalIndex, 0, note);
         } else {
           const firstNormalIndex = currentNotes.findIndex(item => !item.pinned);
-          if (firstNormalIndex === -1) {
-            currentNotes.push(note);
-          } else {
-            currentNotes.splice(firstNormalIndex, 0, note);
-          }
+          if (firstNormalIndex === -1) currentNotes.push(note);
+          else currentNotes.splice(firstNormalIndex, 0, note);
         }
 
         notes = orderNotes(currentNotes);
@@ -1267,6 +1360,79 @@
         noteModal.classList.remove("open");
         noteModal.setAttribute("aria-hidden", "true");
         expandedNoteId = null;
+      }
+
+      function openMoveNote(id) {
+        const card = getNoteCardById(id);
+        if (!card) return;
+
+        movingNoteId = id;
+        moveDateInput.min = toKey(START_DATE);
+        moveDateInput.max = toKey(END_DATE);
+        moveDateInput.value = toKey(selectedDate);
+        moveModal.classList.add("open");
+        moveModal.setAttribute("aria-hidden", "false");
+        setTimeout(() => moveDateInput.focus(), 0);
+      }
+
+      function closeMoveNote() {
+        moveModal.classList.remove("open");
+        moveModal.setAttribute("aria-hidden", "true");
+        movingNoteId = null;
+      }
+
+      function insertMovedNote(targetNotes, note) {
+        if (note.pinned) {
+          targetNotes.unshift(note);
+          return orderNotes(targetNotes);
+        }
+
+        const firstNormalIndex = targetNotes.findIndex(item => !item.pinned);
+        if (firstNormalIndex === -1) targetNotes.push(note);
+        else targetNotes.splice(firstNormalIndex, 0, note);
+        return orderNotes(targetNotes);
+      }
+
+      function moveNoteToDate() {
+        if (!movingNoteId) return;
+
+        const targetKey = moveDateInput.value;
+        const targetDate = fromKey(targetKey);
+        if (!targetDate || !isWithinRange(targetDate)) {
+          alert("Please select a date between 1 July 2026 and 31 December 2027.");
+          return;
+        }
+
+        const sourceKey = toKey(selectedDate);
+        if (targetKey === sourceKey) {
+          alert("Please select a different date.");
+          return;
+        }
+
+        if (expandedNoteId === movingNoteId) closeExpandedEditor();
+
+        const currentNotes = collectNotes();
+        const sourceIndex = currentNotes.findIndex(note => note.id === movingNoteId);
+        if (sourceIndex === -1) return;
+
+        const [movingNote] = currentNotes.splice(sourceIndex, 1);
+        const sourceData = currentDateDataFromDom();
+        sourceData.notes = orderNotes(currentNotes);
+        writeDateData(sourceKey, sourceData);
+
+        const targetData = readDateData(targetKey);
+        const targetNotes = normalizeNotes(targetData.notes);
+        targetData.notes = insertMovedNote(targetNotes, movingNote);
+        if (!targetData.entries) targetData.entries = {};
+        if (!targetData.focus) targetData.focus = "";
+        if (!targetData.evening) targetData.evening = "";
+        writeDateData(targetKey, targetData);
+
+        notes = sourceData.notes;
+        renderNotes();
+        markDateHasData(sourceKey);
+        markDateHasData(targetKey);
+        closeMoveNote();
       }
 
       function renderNotes() {
@@ -1311,6 +1477,7 @@
       function selectDate(date, updateHash) {
         if (!isWithinRange(date)) return;
         if (noteModal.classList.contains("open")) closeExpandedEditor();
+        if (moveModal.classList.contains("open")) closeMoveNote();
 
         selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         if (updateHash) history.replaceState(null, "", `#${toKey(selectedDate)}`);
@@ -1436,13 +1603,25 @@
         if (event.target === noteModal) closeExpandedEditor();
       });
 
+      cancelMoveTop.addEventListener("click", closeMoveNote);
+      cancelMoveBtn.addEventListener("click", closeMoveNote);
+      confirmMoveBtn.addEventListener("click", moveNoteToDate);
+
+      moveModal.addEventListener("click", event => {
+        if (event.target === moveModal) closeMoveNote();
+      });
+
       document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && noteModal.classList.contains("open")) closeExpandedEditor();
+        if (event.key === "Escape") {
+          if (noteModal.classList.contains("open")) closeExpandedEditor();
+          if (moveModal.classList.contains("open")) closeMoveNote();
+        }
       });
 
       clearBtn.addEventListener("click", () => {
         if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`)) return;
         if (noteModal.classList.contains("open")) closeExpandedEditor();
+        if (moveModal.classList.contains("open")) closeMoveNote();
 
         localStorage.removeItem(storageKey);
         focusInput.value = "";
