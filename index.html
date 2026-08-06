@@ -1294,7 +1294,7 @@
     </button>
     <button class="mobile-tile" id="mobileCalendarBtn" type="button">
      <span class="mobile-tile-title">Calendar</span>
-     <span class="mobile-tile-sub">Change date</span>
+     <span class="mobile-tile-sub">Open calendar</span>
     </button>
     <button class="mobile-tile" id="mobileNotesBtn" type="button">
      <span class="mobile-tile-title">Notes</span>
@@ -1770,7 +1770,7 @@
       }
 
       function updateMobileHomeDate() {
-        mobileHomeDate.textContent = displayDate(selectedDate);
+        mobileHomeDate.textContent = displayDate(getToday());
       }
 
       function clearMobileSection() {
@@ -2749,7 +2749,11 @@
         if (event.key === "Escape") clearGlobalSearch();
       });
       globalSearchClear.addEventListener("click", clearGlobalSearch);
-      mobilePlanBtn.addEventListener("click", () => setMobileSection("plan"));
+      mobilePlanBtn.addEventListener("click", () => {
+        const today = getToday();
+        if (isWithinRange(today)) selectDate(today, true);
+        setMobileSection("plan");
+      });
       mobileCalendarBtn.addEventListener("click", () => setMobileSection("calendar"));
       mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
       mobileAddNoteBtn.addEventListener("click", () => {
