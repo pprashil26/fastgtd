@@ -643,6 +643,21 @@
           font-weight:650;
           background:var(--soft)
         }
+        .bin-back-btn {
+          display:none;
+          height:auto;
+          padding:1px 0;
+          border-radius:0;
+          color:var(--ink);
+          font-weight:650
+        }
+        .notes-sidebar.bin-open .bin-back-btn {
+          display:inline-flex
+        }
+        .notes-sidebar.bin-open .compact-btn,
+        .notes-sidebar.bin-open .add-note-icon-btn {
+          display:none
+        }
          .search-btn {
           width:32px;
           height:30px;
@@ -1273,6 +1288,9 @@
        <button class="plain-btn compact-btn" id="compactNotesBtn" title="Hide or show note previews" type="button">
         Compact
        </button>
+       <button class="plain-btn bin-back-btn" id="notesBinBackBtn" title="Back to notes" type="button">
+        Back to notes
+       </button>
        <button class="plain-btn add-note-icon-btn" id="addNoteBtn" title="Add note" type="button">
         +
        </button>
@@ -1389,6 +1407,7 @@
       const compactNotesBtn = document.getElementById("compactNotesBtn");
       const moveAllNotesBtn = document.getElementById("moveAllNotesBtn");
       const notesBinBtn = document.getElementById("notesBinBtn");
+      const notesBinBackBtn = document.getElementById("notesBinBackBtn");
       const notesMoreBtn = document.getElementById("notesMoreBtn");
       const notesMoreMenu = document.getElementById("notesMoreMenu");
       const notesList = document.getElementById("notesList");
@@ -1489,8 +1508,6 @@
       function formatTime(hour, minute) {
         const displayHour = hour % 12 || 12;
         const timeText = `${displayHour}:${pad(minute)}`;
-        if (hour === 8 && minute === 0) return `${timeText} AM`;
-        if (hour === 12 && minute === 0) return `${timeText} PM`;
         return timeText;
       }
 
@@ -1823,6 +1840,7 @@
 
       function updateSearchUi() {
         notesSearchRow.classList.toggle("open", notesSearchOpen && !notesBinOpen);
+        notesSidebar.classList.toggle("bin-open", notesBinOpen);
         notesSearchBtn.classList.toggle("active", notesSearchOpen || Boolean(notesSearchQuery));
         notesBinBtn.classList.toggle("active", notesBinOpen);
         notesMoreBtn.classList.toggle("active", notesMoreMenu.classList.contains("open") || notesBinOpen);
@@ -2569,6 +2587,7 @@
         openMoveAllNotes();
       });
       notesBinBtn.addEventListener("click", toggleNotesBin);
+      notesBinBackBtn.addEventListener("click", toggleNotesBin);
 
       addNoteBtn.addEventListener("click", () => {
         closeNotesMoreMenu();
