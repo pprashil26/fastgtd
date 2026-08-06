@@ -833,6 +833,18 @@
           background-color:#fffaf7;
           color:var(--muted)
         }
+        .trash-note-card .note-tools-row {
+          display:flex !important
+        }
+        .trash-note-card .icon-btn {
+          width:auto;
+          min-width:0;
+          padding:0 8px;
+          font-size:12px
+        }
+        .notes-sidebar.notes-compact .trash-note-card .note-tools-row {
+          display:flex !important
+        }
         .note-body:focus {
           background-color:#fffaf0
         }
@@ -2098,13 +2110,13 @@
         const restoreButton = document.createElement("button");
         restoreButton.className = "icon-btn";
         restoreButton.type = "button";
-        restoreButton.textContent = "↩";
+        restoreButton.textContent = "Restore";
         restoreButton.title = "Restore note";
 
         const deleteForeverButton = document.createElement("button");
         deleteForeverButton.className = "icon-btn delete-note-btn";
         deleteForeverButton.type = "button";
-        deleteForeverButton.textContent = "×";
+        deleteForeverButton.textContent = "Delete forever";
         deleteForeverButton.title = "Delete forever";
 
         const body = document.createElement("textarea");
