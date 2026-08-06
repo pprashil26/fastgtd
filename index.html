@@ -1217,6 +1217,9 @@
        A lightweight GTD-inspired daily planner
       </div>
       <div class="actions">
+       <button class="plain-btn" id="focusViewBtn" title="Hide or show both sidebars" type="button">
+        Focus
+       </button>
        <button class="plain-btn" id="todayBtn" title="Open today" type="button">
         Today
        </button>
@@ -1390,6 +1393,7 @@
       const timeline = document.getElementById("timeline");
       const selectedDateText = document.getElementById("selectedDateText");
       const clearBtn = document.getElementById("clearBtn");
+      const focusViewBtn = document.getElementById("focusViewBtn");
       const todayBtn = document.getElementById("todayBtn");
       const prevDayBtn = document.getElementById("prevDayBtn");
       const nextDayBtn = document.getElementById("nextDayBtn");
@@ -2539,6 +2543,27 @@
         }
       }
 
+      function updateFocusViewButton() {
+        const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
+        focusViewBtn.textContent = bothCollapsed ? "Full view" : "Focus";
+        focusViewBtn.title = bothCollapsed ? "Show calendar and notes" : "Hide calendar and notes";
+      }
+
+      function setSidebarCollapsed(panel, button, shellClass, collapsed) {
+        panel.classList.toggle("collapsed", collapsed);
+        shell.classList.toggle(shellClass, collapsed);
+        button.textContent = collapsed ? "Show" : "Hide";
+        button.setAttribute("aria-expanded", String(!collapsed));
+      }
+
+      function toggleFocusView() {
+        const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
+        const collapseBoth = !bothCollapsed;
+        setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapseBoth);
+        setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapseBoth);
+        updateFocusViewButton();
+      }
+
       focusInput.addEventListener("input", save);
       eveningInput.addEventListener("input", () => {
         autoGrowEvening();
@@ -2658,6 +2683,8 @@
         highlightCurrentTimeBlock();
       });
 
+      focusViewBtn.addEventListener("click", toggleFocusView);
+
       todayBtn.addEventListener("click", () => {
         const today = getToday();
         if (isWithinRange(today)) selectDate(today, true);
@@ -2683,17 +2710,15 @@
       });
 
       sidebarToggle.addEventListener("click", () => {
-        const collapsed = sidebar.classList.toggle("collapsed");
-        shell.classList.toggle("left-collapsed", collapsed);
-        sidebarToggle.textContent = collapsed ? "Show" : "Hide";
-        sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+        const collapsed = !sidebar.classList.contains("collapsed");
+        setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapsed);
+        updateFocusViewButton();
       });
 
       notesToggle.addEventListener("click", () => {
-        const collapsed = notesSidebar.classList.toggle("collapsed");
-        shell.classList.toggle("right-collapsed", collapsed);
-        notesToggle.textContent = collapsed ? "Show" : "Hide";
-        notesToggle.setAttribute("aria-expanded", String(!collapsed));
+        const collapsed = !notesSidebar.classList.contains("collapsed");
+        setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed);
+        updateFocusViewButton();
       });
 
       window.addEventListener("resize", () => {
@@ -2709,6 +2734,7 @@
 
       applyNotesCompact();
       updateSearchUi();
+      updateFocusViewButton();
       renderGlobalResults();
       buildCalendar();
       loadSelectedDate();
