@@ -617,7 +617,7 @@
       gap: 8px;
       white-space: nowrap;
       width: 100%;
-      flex-wrap: wrap;
+      position: relative;
     }
 
     .compact-btn,
@@ -714,6 +714,68 @@
 
     .add-note-icon-btn:hover {
       background: #dfece5;
+      text-decoration: none;
+    }
+
+    .notes-more-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .more-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .more-btn:hover,
+    .more-btn.active {
+      background: var(--soft);
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .notes-more-menu {
+      display: none;
+      position: absolute;
+      top: 34px;
+      right: 0;
+      min-width: 145px;
+      padding: 6px;
+      background: var(--page);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 14px 34px rgba(70, 55, 35, 0.14);
+      z-index: 20;
+    }
+
+    .notes-more-menu.open {
+      display: grid;
+      gap: 3px;
+    }
+
+    .notes-more-menu .plain-btn {
+      width: 100%;
+      height: 28px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      text-align: left;
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .notes-more-menu .plain-btn:hover,
+    .notes-more-menu .plain-btn.active {
+      background: var(--soft);
       text-decoration: none;
     }
 
@@ -1204,9 +1266,14 @@
           <div class="notes-actions">
             <button class="plain-btn search-btn" id="notesSearchBtn" type="button" title="Search notes">⌕</button>
             <button class="plain-btn compact-btn" id="compactNotesBtn" type="button" title="Hide or show note previews">Compact</button>
-            <button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes to another day">Move All</button>
-            <button class="plain-btn bin-btn" id="notesBinBtn" type="button" title="Open recycle bin">Bin</button>
             <button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button>
+            <span class="notes-more-wrap">
+              <button class="plain-btn more-btn" id="notesMoreBtn" type="button" title="More note actions">⋯</button>
+              <span class="notes-more-menu" id="notesMoreMenu">
+                <button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes to another day">Move all notes</button>
+                <button class="plain-btn bin-btn" id="notesBinBtn" type="button" title="Open recycle bin">Recycle Bin</button>
+              </span>
+            </span>
           </div>
         </div>
         <div id="notesList"></div>
@@ -1287,6 +1354,8 @@
                   const compactNotesBtn = document.getElementById("compactNotesBtn");
                   const moveAllNotesBtn = document.getElementById("moveAllNotesBtn");
                   const notesBinBtn = document.getElementById("notesBinBtn");
+                  const notesMoreBtn = document.getElementById("notesMoreBtn");
+                  const notesMoreMenu = document.getElementById("notesMoreMenu");
                   const notesList = document.getElementById("notesList");
                   const noteModal = document.getElementById("noteModal");
                   const expandedTitle = document.getElementById("expandedTitle");
@@ -1721,11 +1790,13 @@
                     notesSearchRow.classList.toggle("open", notesSearchOpen && !notesBinOpen);
                     notesSearchBtn.classList.toggle("active", notesSearchOpen || Boolean(notesSearchQuery));
                     notesBinBtn.classList.toggle("active", notesBinOpen);
-                    notesBinBtn.textContent = notesBinOpen ? "Back" : "Bin";
+                    notesMoreBtn.classList.toggle("active", notesMoreMenu.classList.contains("open") || notesBinOpen);
+                    notesBinBtn.textContent = notesBinOpen ? "Back to notes" : "Recycle Bin";
                     notesBinBtn.title = notesBinOpen ? "Back to notes" : "Open recycle bin";
                   }
 
                   function openSearch() {
+                    closeNotesMoreMenu();
                     notesBinOpen = false;
                     notesSearchOpen = true;
                     updateSearchUi();
@@ -1740,7 +1811,18 @@
                     renderNotes();
                   }
 
+                  function closeNotesMoreMenu() {
+                    notesMoreMenu.classList.remove("open");
+                    updateSearchUi();
+                  }
+
+                  function toggleNotesMoreMenu() {
+                    notesMoreMenu.classList.toggle("open");
+                    updateSearchUi();
+                  }
+
                   function toggleNotesBin() {
+                    closeNotesMoreMenu();
                     notesBinOpen = !notesBinOpen;
                     notesSearchOpen = false;
                     notesSearchQuery = "";
@@ -2430,10 +2512,26 @@
                     applyNotesCompact();
                   });
 
-                  moveAllNotesBtn.addEventListener("click", openMoveAllNotes);
+                  notesMoreBtn.addEventListener("click", event => {
+                    event.stopPropagation();
+                    toggleNotesMoreMenu();
+                  });
+                  notesMoreMenu.addEventListener("click", event => {
+                    event.stopPropagation();
+                  });
+                  document.addEventListener("click", event => {
+                    if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn) {
+                      closeNotesMoreMenu();
+                    }
+                  });
+                  moveAllNotesBtn.addEventListener("click", () => {
+                    closeNotesMoreMenu();
+                    openMoveAllNotes();
+                  });
                   notesBinBtn.addEventListener("click", toggleNotesBin);
 
                   addNoteBtn.addEventListener("click", () => {
+                    closeNotesMoreMenu();
                     notesBinOpen = false;
                     const newNote = {
                       id: createId(),
