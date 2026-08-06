@@ -620,7 +620,12 @@
       position: relative;
     }
 
-    .compact-btn,
+    .compact-btn {
+      height: auto;
+      padding: 1px 0;
+      border-radius: 0;
+    }
+
     .move-all-btn,
     .bin-btn {
       height: 26px;
@@ -628,7 +633,11 @@
       border-radius: 8px;
     }
 
-    .compact-btn:hover,
+    .compact-btn:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+
     .move-all-btn:hover,
     .bin-btn:hover,
     .search-btn:hover {
@@ -636,7 +645,12 @@
       text-decoration: none;
     }
 
-    .compact-btn.active,
+    .compact-btn.active {
+      color: var(--ink);
+      font-weight: 650;
+      background: transparent;
+    }
+
     .bin-btn.active {
       color: var(--ink);
       font-weight: 650;
@@ -697,24 +711,25 @@
     .no-results.show { display: block; }
 
     .add-note-icon-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-      background: var(--entry);
-      border: 1px solid var(--entry-border);
-      color: var(--ink);
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: transparent;
+      border: 0;
+      color: var(--muted);
       font-size: 20px;
       font-weight: 650;
       line-height: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
+      padding: 1px 0;
     }
 
     .add-note-icon-btn:hover {
-      background: #dfece5;
-      text-decoration: none;
+      background: transparent;
+      color: var(--ink);
+      text-decoration: underline;
     }
 
     .notes-more-wrap {
