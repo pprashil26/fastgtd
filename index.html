@@ -1173,9 +1173,13 @@
            .calendar-wrap {
              max-height:45vh;
           }
-           body.mobile-view-calendar .calendar-wrap {
-             max-height:320px;
-             overflow:auto;
+           body.mobile-section-active.mobile-view-calendar #calendarWrap {
+             height:360px !important;
+             max-height:360px !important;
+             overflow-y:auto !important;
+             overflow-x:hidden;
+             overscroll-behavior:contain;
+             -webkit-overflow-scrolling:touch;
           }
            .title-row {
              gap:8px;
