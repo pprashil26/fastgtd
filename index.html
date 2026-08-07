@@ -1163,6 +1163,30 @@
              color:var(--muted);
              font-size:var(--font-xs);
           }
+           .mobile-quick-actions {
+             display:flex;
+             margin-top:9px;
+          }
+           .mobile-add-note-action {
+             width:100%;
+             min-height:31px;
+             border:1px solid var(--line);
+             border-radius:14px;
+             background:#fffdf8;
+             color:var(--ink);
+             font:inherit;
+             font-size:14px;
+             font-weight:650;
+             text-align:left;
+             padding:0 12px;
+             display:flex;
+             align-items:center;
+             justify-content:flex-start;
+             box-shadow:none;
+          }
+           .mobile-add-note-action:hover {
+             background:var(--soft);
+          }
            .mobile-section-bar {
              width:100%;
              background:var(--page);
@@ -2622,6 +2646,13 @@
       saveTodoData();
     }
 
+    function resetExpandedEditorView() {
+      expandedBody.hidden = false;
+      globalTasksPanel.hidden = true;
+      globalTasksPanel.classList.remove("open");
+      globalTaskInput.value = "";
+    }
+
     function updateExpandedToolbar() {
           if (globalTodoOpen) {
             expandedPinBtn.style.display = "none";
@@ -2652,6 +2683,7 @@
 
         function openExpandedNote(id) {
           globalTodoOpen = false;
+          resetExpandedEditorView();
           const note = findNoteById(id);
           if (!note) return;
           expandedNoteId = id;
@@ -2682,6 +2714,7 @@
 
         function closeExpandedEditor() {
           globalTodoOpen = false;
+          resetExpandedEditorView();
           expandedPinBtn.style.display = "inline-flex";
           expandedMoveBtn.style.display = "inline-flex";
           expandedDeleteBtn.style.display = "inline-flex";
