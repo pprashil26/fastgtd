@@ -187,6 +187,43 @@
     .help-body h3 { margin: 0 0 7px; font-size: var(--font-md); }
     .help-body ol, .help-body ul { margin: 0 0 12px 18px; padding: 0; }
     .help-note { color: var(--muted); font-size: var(--font-sm); border-top: 1px solid var(--line); padding-top: 10px; }
+
+    body.notes-focus-active:not(.global-search-active) .shell {
+      display: block;
+      max-width: 980px;
+    }
+    body.notes-focus-active .sidebar,
+    body.notes-focus-active .app {
+      display: none;
+    }
+    body.notes-focus-active .notes-sidebar {
+      width: 100%;
+      max-width: 980px;
+    }
+    body.notes-focus-active .notes-sidebar.collapsed {
+      width: 100%;
+    }
+    body.notes-focus-active .notes-sidebar.collapsed .notes-title,
+    body.notes-focus-active .notes-sidebar.collapsed .notes-wrap {
+      display: block;
+    }
+    body.notes-focus-active #notesList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 8px;
+    }
+    body.notes-focus-active .note-card {
+      margin-bottom: 0;
+    }
+    body.notes-focus-active .note-body {
+      min-height: 132px;
+      height: 132px;
+      max-height: 132px;
+    }
+    #notesFocusBtn.active {
+      color: var(--ink);
+      font-weight: 700;
+    }
     @media (max-width: 759px) {
       body { padding: 8px 6px; }
       .mobile-home { background: var(--page); border: 1px solid var(--line); border-radius: var(--radius-panel); box-shadow: var(--shadow); padding: 10px; margin-bottom: 8px; }
@@ -360,6 +397,16 @@
     .notes-more-menu .plain-btn {
       min-height: 29px;
     }
+    body.notes-focus-active #notesList {
+      gap: var(--space-3);
+    }
+    body.notes-focus-active .notes-sidebar {
+      box-shadow: var(--shadow);
+    }
+    body.notes-focus-active .notes-head {
+      border-bottom-color: rgba(231, 223, 212, .95);
+    }
+
     .note-card {
       margin-bottom: var(--space-3);
       border-radius: 13px;
@@ -476,6 +523,18 @@
       .slot {
         min-height: 34px;
       }
+      body.notes-focus-active:not(.global-search-active) .shell {
+        max-width: 100%;
+      }
+      body.notes-focus-active #notesList {
+        grid-template-columns: 1fr;
+      }
+      body.notes-focus-active .note-body {
+        min-height: 132px;
+        height: 132px;
+        max-height: 132px;
+      }
+
       .notes-actions {
         gap: var(--space-2);
       }
@@ -557,7 +616,7 @@
       <div class="notes-wrap">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow"><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn search-btn" id="notesSearchBtn" type="button">⌕</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn search-btn" id="notesSearchBtn" type="button">⌕</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn" id="notesFocusBtn" type="button">Notes focus</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
@@ -597,6 +656,7 @@
         const TASKS_KEY = "timeblocks:globalTasks";
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
+        const NOTE_FOCUS_KEY = "timeblocks:notesFocusView";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -640,6 +700,7 @@
         const addNoteBtn = el("addNoteBtn");
         const compactNotesBtn = el("compactNotesBtn");
         const sortNotesBtn = el("sortNotesBtn");
+        const notesFocusBtn = el("notesFocusBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -685,6 +746,7 @@
         let notesSearchOpen = false;
         let notesSearchQuery = "";
         let notesBinOpen = false;
+        let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
@@ -1150,6 +1212,25 @@
             compactNotesBtn.classList.toggle("active", notesCompact);
             compactNotesBtn.textContent = notesCompact ? "Preview" : "Compact";
             compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
+        }
+
+        function applyNotesFocusView() {
+            document.body.classList.toggle("notes-focus-active", notesFocusView);
+            notesSidebar.classList.toggle("notes-focus-grid", notesFocusView);
+            notesFocusBtn.classList.toggle("active", notesFocusView);
+            notesFocusBtn.textContent = notesFocusView ? "Exit notes focus" : "Notes focus";
+            notesFocusBtn.title = notesFocusView ? "Return to normal planner view" : "Focus on notes in a wider grid view";
+            if (notesFocusView) {
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                if (isMobileViewport())
+                    setMobileSection("notes");
+            }
+        }
+        function toggleNotesFocusView() {
+            notesFocusView = !notesFocusView;
+            localStorage.setItem(NOTE_FOCUS_KEY, String(notesFocusView));
+            closeNotesMoreMenu();
+            applyNotesFocusView();
         }
         function updateSearchUi() {
             notesSearchRow.classList.toggle("open", notesSearchOpen && !notesBinOpen);
@@ -1841,6 +1922,7 @@
                 closeTaskMoveMenus();
         });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
+        notesFocusBtn.addEventListener("click", toggleNotesFocusView);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
         notesBinBackBtn.addEventListener("click", toggleNotesBin);
