@@ -155,8 +155,16 @@
     .expanded-title { height: 30px; border: 0; background: transparent; font-size: var(--font-lg); font-weight: 650; }
     .expanded-note-tools { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-height: 32px; padding: 3px 12px 5px; border-bottom: 1px solid var(--line); background: var(--panel); }
     .expanded-body { flex: 1; min-height: 460px; height: auto; border: 0; padding: 10px 14px; overflow: auto; }
-    .large-note-font .expanded-body { font-size: 17px; line-height: 30px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px); }
-    #expandedFontBtn.active { color: var(--ink); background: var(--soft); font-weight: 700; }
+    .large-note-font .expanded-body {
+      font-size: 17px;
+      line-height: 30px;
+      background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px);
+    }
+    #expandedFontBtn.active {
+      color: var(--ink);
+      background: var(--soft);
+      font-weight: 700;
+    }
     .tasks-panel { display: none; flex: 1; min-height: 460px; padding: 10px 12px; overflow: auto; background: #fffdf8; }
     .tasks-panel.open { display: block; }
     .tasks-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); }
@@ -169,7 +177,16 @@
     .task-row.no-move { grid-template-columns: auto 1fr auto; }
     .task-row.done .task-text { color: var(--muted); text-decoration: line-through; }
     .task-checkbox { width: 16px; height: 16px; accent-color: var(--entry-border); }
-    .task-text { border: 0 !important; background: transparent !important; min-height: 25px !important; height: auto; padding: 2px 0 !important; resize: none; overflow: hidden; line-height: 1.35; }
+    .task-text {
+      border: 0 !important;
+      background: transparent !important;
+      min-height: 25px !important;
+      height: auto;
+      padding: 2px 0 !important;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.35;
+    }
     .task-delete { color: var(--danger); }
     .task-move { color: var(--muted); font-size: var(--font-sm); padding: 1px 0; }
     .task-move-menu { display: none; grid-column: 2 / -1; gap: 4px; padding-top: 2px; }
@@ -588,11 +605,6 @@
 
   <script>
 
-
-
-
-
-
     (function () {
         const START_DATE = new Date(2026, 6, 1);
         const END_DATE = new Date(2027, 11, 31);
@@ -600,6 +612,7 @@
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
+        const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -1435,7 +1448,6 @@
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => expandedBody.focus(), 0);
         }
-
         function openTasksInboxShortcut() {
             openTasks();
             activeTaskContext = "Inbox";
@@ -1837,8 +1849,12 @@
         compactNotesBtn.addEventListener("click", () => { notesCompact = !notesCompact; localStorage.setItem(COMPACT_KEY, String(notesCompact)); applyNotesCompact(); });
         notesMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleNotesMoreMenu(); });
         notesMoreMenu.addEventListener("click", event => event.stopPropagation());
-        document.addEventListener("click", event => { if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
-            closeNotesMoreMenu(); });
+        document.addEventListener("click", event => {
+            if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
+                closeNotesMoreMenu();
+            if (!event.target.closest || !event.target.closest(".task-row"))
+                closeTaskMoveMenus();
+        });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
@@ -1942,11 +1958,6 @@
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
     })();
-  
-  
-  
-  
-  
   
   </script>
 </body>
