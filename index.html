@@ -1107,6 +1107,46 @@
              padding:10px;
              margin-bottom:8px;
           }
+           .mobile-backup-row {
+             display:flex;
+             align-items:center;
+             justify-content:center;
+             gap:6px;
+             flex-wrap:wrap;
+             color:var(--muted);
+             font-size:11.5px;
+             margin-bottom:8px;
+          }
+           .mobile-backup-row .backup-btn {
+             height:22px;
+             padding:0;
+             font-size:11.5px;
+             color:var(--ink);
+          }
+           .mobile-quick-actions {
+             display:flex;
+             margin-top:9px;
+          }
+           .mobile-add-note-action {
+             width:100%;
+             min-height:31px;
+             border:1px solid var(--line);
+             border-radius:14px;
+             background:#fffdf8;
+             color:var(--ink);
+             font:inherit;
+             font-size:14px;
+             font-weight:650;
+             text-align:left;
+             padding:0 12px;
+             display:flex;
+             align-items:center;
+             justify-content:flex-start;
+             box-shadow:none;
+          }
+           .mobile-add-note-action:hover {
+             background:var(--soft);
+          }
            body:not(.mobile-section-active):not(.global-search-active) .mobile-home {
              display:block;
           }
@@ -1115,23 +1155,6 @@
           }
            body.global-search-active .mobile-home, body.global-search-active .mobile-section-bar {
              display:none;
-          }
-           .mobile-home-head {
-             display:flex;
-             align-items:center;
-             justify-content:space-between;
-             gap:8px;
-             margin-bottom:10px;
-          }
-           .mobile-home-title {
-             font-size:16px;
-             font-weight:650;
-             letter-spacing:-.02em;
-          }
-           .mobile-home-date {
-             color:var(--muted);
-             font-size:11.5px;
-             white-space:nowrap;
           }
            .mobile-grid {
              display:grid;
@@ -1162,30 +1185,6 @@
            .mobile-tile-sub {
              color:var(--muted);
              font-size:var(--font-xs);
-          }
-           .mobile-quick-actions {
-             display:flex;
-             margin-top:9px;
-          }
-           .mobile-add-note-action {
-             width:100%;
-             min-height:31px;
-             border:1px solid var(--line);
-             border-radius:14px;
-             background:#fffdf8;
-             color:var(--ink);
-             font:inherit;
-             font-size:14px;
-             font-weight:650;
-             text-align:left;
-             padding:0 12px;
-             display:flex;
-             align-items:center;
-             justify-content:flex-start;
-             box-shadow:none;
-          }
-           .mobile-add-note-action:hover {
-             background:var(--soft);
           }
            .mobile-section-bar {
              width:100%;
@@ -1372,13 +1371,22 @@
    </div>
   </section>
   <section aria-label="Mobile home" class="mobile-home" id="mobileHome">
-   <div class="mobile-home-head">
-    <div class="mobile-home-title">
-     Today's plan
-    </div>
-    <div class="mobile-home-date" id="mobileHomeDate">
-     Selected date
-    </div>
+   <div aria-label="Backup actions" class="mobile-backup-row">
+    <span>
+     Saved locally on this device
+    </span>
+    <span class="footer-separator">
+     ·
+    </span>
+    <button class="plain-btn backup-btn" id="mobileExportBackupBtn" title="Download backup as text file" type="button">
+     Export
+    </button>
+    <span class="footer-separator">
+     ·
+    </span>
+    <button class="plain-btn backup-btn" id="mobileImportBackupBtn" title="Import backup from text file" type="button">
+     Import
+    </button>
    </div>
    <div class="mobile-grid">
     <button class="mobile-tile" id="mobilePlanBtn" type="button">
@@ -1641,11 +1649,13 @@
         const globalResultsHead = document.getElementById("globalResultsHead");
         const globalResultsList = document.getElementById("globalResultsList");
         const mobileHome = document.getElementById("mobileHome");
-        const mobileHomeDate = document.getElementById("mobileHomeDate");
         const mobilePlanBtn = document.getElementById("mobilePlanBtn");
         const mobileCalendarBtn = document.getElementById("mobileCalendarBtn");
         const mobileNotesBtn = document.getElementById("mobileNotesBtn");
+        const mobileTasksBtn = document.getElementById("mobileTasksBtn");
         const mobileAddNoteBtn = document.getElementById("mobileAddNoteBtn");
+        const mobileExportBackupBtn = document.getElementById("mobileExportBackupBtn");
+        const mobileImportBackupBtn = document.getElementById("mobileImportBackupBtn");
         const mobileSectionBar = document.getElementById("mobileSectionBar");
         const mobileSectionTitle = document.getElementById("mobileSectionTitle");
         const mobileHomeBtn = document.getElementById("mobileHomeBtn");
@@ -3080,6 +3090,8 @@
           setTimeout(() => addNoteBtn.click(), 0);
         });
         mobileHomeBtn.addEventListener("click", clearMobileSection);
+        mobileExportBackupBtn.addEventListener("click", exportBackup);
+        mobileImportBackupBtn.addEventListener("click", () => importBackupInput.click());
 
         notesSearchBtn.addEventListener("click", openSearch);
         notesSearchClear.addEventListener("click", clearSearch);
