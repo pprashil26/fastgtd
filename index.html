@@ -155,6 +155,8 @@
     .expanded-title { height: 30px; border: 0; background: transparent; font-size: var(--font-lg); font-weight: 650; }
     .expanded-note-tools { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-height: 32px; padding: 3px 12px 5px; border-bottom: 1px solid var(--line); background: var(--panel); }
     .expanded-body { flex: 1; min-height: 460px; height: auto; border: 0; padding: 10px 14px; overflow: auto; }
+    .large-note-font .expanded-body { font-size: 17px; line-height: 30px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px); }
+    #expandedFontBtn.active { color: var(--ink); background: var(--soft); font-weight: 700; }
     .tasks-panel { display: none; flex: 1; min-height: 460px; padding: 10px 12px; overflow: auto; background: #fffdf8; }
     .tasks-panel.open { display: block; }
     .tasks-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); }
@@ -164,9 +166,10 @@
     .task-context-btn.active { color: var(--ink); background: var(--selected); border-color: var(--entry-border); font-weight: 650; }
     .task-list { display: grid; gap: 5px; }
     .task-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 5px 8px; }
+    .task-row.no-move { grid-template-columns: auto 1fr auto; }
     .task-row.done .task-text { color: var(--muted); text-decoration: line-through; }
     .task-checkbox { width: 16px; height: 16px; accent-color: var(--entry-border); }
-    .task-text { border: 0 !important; background: transparent !important; height: 25px !important; padding: 2px 0 !important; }
+    .task-text { border: 0 !important; background: transparent !important; min-height: 25px !important; height: auto; padding: 2px 0 !important; resize: none; overflow: hidden; line-height: 1.35; }
     .task-delete { color: var(--danger); }
     .task-move { color: var(--muted); font-size: var(--font-sm); padding: 1px 0; }
     .task-move-menu { display: none; grid-column: 2 / -1; gap: 4px; padding-top: 2px; }
@@ -209,6 +212,7 @@
       textarea { min-height: 34px; height: 34px; }
       .expanded-note { width: 100%; min-height: 78vh; max-height: 90vh; }
       .expanded-body, .tasks-panel { min-height: 58vh; font-size: 16px; }
+      body .large-note-font .expanded-body { font-size: 18px; line-height: 32px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(160,145,120,.24) 32px); }
     }
 
 
@@ -462,6 +466,9 @@
         min-height: 34px;
         margin-top: var(--space-3);
       }
+      .mobile-add-task-tile {
+        margin-top: var(--space-2);
+      }
       .mobile-home-footer {
         margin-top: var(--space-3);
         padding-top: var(--space-3);
@@ -505,6 +512,7 @@
       <button class="mobile-tile" id="mobileTasksBtn" type="button"><span class="mobile-tile-title">Tasks</span><span class="mobile-tile-sub">Quick checklist</span></button>
     </div>
     <button class="mobile-add-note-tile" id="mobileAddNoteBtn" type="button">+ Note</button>
+    <button class="mobile-add-note-tile mobile-add-task-tile" id="mobileAddTaskBtn" type="button">+ Task</button>
     <div class="mobile-home-footer">
       <span class="footer-actions">
         <span>Saved locally on this device</span><span>·</span>
@@ -536,7 +544,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="tasksBtn" type="button">Tasks</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="tasksBtn" type="button">Tasks</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Task</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to 6 PM"></section>
@@ -549,7 +557,7 @@
       <div class="notes-wrap">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow"><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn search-btn" id="notesSearchBtn" type="button">⌕</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn search-btn" id="notesSearchBtn" type="button">⌕</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
@@ -558,7 +566,7 @@
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button">☆</button><button class="icon-btn" id="expandedMoveBtn" type="button">⇄</button><button class="icon-btn" id="expandedCopyBtn" type="button">⎘</button><button class="icon-btn delete-note-btn" id="expandedDeleteBtn" type="button">×</button></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button">☆</button><button class="icon-btn" id="expandedMoveBtn" type="button">⇄</button><button class="icon-btn" id="expandedFontBtn" type="button" title="Use larger note font">Aa</button><button class="icon-btn" id="expandedCopyBtn" type="button">⎘</button><button class="icon-btn delete-note-btn" id="expandedDeleteBtn" type="button">×</button></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
@@ -583,6 +591,8 @@
 
 
 
+
+
     (function () {
         const START_DATE = new Date(2026, 6, 1);
         const END_DATE = new Date(2027, 11, 31);
@@ -601,6 +611,7 @@
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileTasksBtn = el("mobileTasksBtn");
         const mobileAddNoteBtn = el("mobileAddNoteBtn");
+        const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -615,6 +626,7 @@
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
         const tasksBtn = el("tasksBtn");
+        const addTaskInboxBtn = el("addTaskInboxBtn");
         const todayBtn = el("todayBtn");
         const prevDayBtn = el("prevDayBtn");
         const nextDayBtn = el("nextDayBtn");
@@ -630,6 +642,7 @@
         const notesNoResults = el("notesNoResults");
         const addNoteBtn = el("addNoteBtn");
         const compactNotesBtn = el("compactNotesBtn");
+        const sortNotesBtn = el("sortNotesBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -644,6 +657,7 @@
         const expandedPinBtn = el("expandedPinBtn");
         const expandedMoveBtn = el("expandedMoveBtn");
         const expandedCopyBtn = el("expandedCopyBtn");
+        const expandedFontBtn = el("expandedFontBtn");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const closeExpandedNote = el("closeExpandedNote");
         const globalTasksPanel = el("globalTasksPanel");
@@ -679,6 +693,7 @@
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
         if (!TASK_CONTEXTS.includes(activeTaskContext))
             activeTaskContext = "Inbox";
+        let expandedNoteLargeFont = localStorage.getItem(NOTE_FONT_KEY) === "true";
         function pad(value) { return String(value).padStart(2, "0"); }
         function toKey(date) { return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`; }
         function dateStorageKey(key) { return `timeblocks:${key}`; }
@@ -837,6 +852,32 @@
             });
         }
 
+
+        function applyExpandedNoteFont() {
+            noteModal.classList.toggle("large-note-font", expandedNoteLargeFont);
+            expandedFontBtn.classList.toggle("active", expandedNoteLargeFont);
+            expandedFontBtn.title = expandedNoteLargeFont ? "Use normal note font" : "Use larger note font";
+        }
+        function toggleExpandedNoteFont() {
+            expandedNoteLargeFont = !expandedNoteLargeFont;
+            localStorage.setItem(NOTE_FONT_KEY, String(expandedNoteLargeFont));
+            applyExpandedNoteFont();
+        }
+        function sortNotesByTitle() {
+            const active = notes.filter(note => !note.deleted);
+            const deleted = notes.filter(note => note.deleted);
+            const byTitle = (a, b) => (a.title || "").localeCompare(b.title || "", undefined, { sensitivity: "base" });
+            const pinned = active.filter(note => note.pinned).sort(byTitle);
+            const normal = active.filter(note => !note.pinned).sort(byTitle);
+            notes = pinned.concat(normal, deleted);
+            renderNotes();
+            save();
+            closeNotesMoreMenu();
+        }
+        function autoGrowTaskText(box) {
+            box.style.height = "auto";
+            box.style.height = Math.max(31, box.scrollHeight) + "px";
+        }
         function closeTaskMoveMenus() {
             document.querySelectorAll(".task-move-menu.open").forEach(menu => menu.classList.remove("open"));
         }
@@ -863,22 +904,27 @@
                 checkbox.type = "checkbox";
                 checkbox.className = "task-checkbox";
                 checkbox.checked = task.done;
-                const text = document.createElement("input");
-                text.type = "text";
+                const text = document.createElement("textarea");
                 text.className = "task-text";
+                text.rows = 1;
                 text.value = task.text;
                 text.placeholder = "Task";
+                setTimeout(() => autoGrowTaskText(text), 0);
+                const canMoveTask = activeTaskContext === "Inbox";
+                row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
                 move.className = "plain-btn task-move";
                 move.textContent = "Move";
                 move.title = "Move task to another list";
+                move.hidden = !canMoveTask;
                 const del = document.createElement("button");
                 del.type = "button";
                 del.className = "plain-btn icon-btn task-delete";
                 del.textContent = "×";
                 const moveMenu = document.createElement("div");
                 moveMenu.className = "task-move-menu";
+                moveMenu.hidden = !canMoveTask;
                 TASK_CONTEXTS.filter(context => context !== activeTaskContext).forEach(context => {
                     const option = document.createElement("button");
                     option.type = "button";
@@ -894,7 +940,14 @@
                 });
                 text.addEventListener("input", () => {
                     task.text = text.value;
+                    autoGrowTaskText(text);
                     saveTasks();
+                });
+                text.addEventListener("keydown", event => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                        event.preventDefault();
+                        text.blur();
+                    }
                 });
                 move.addEventListener("click", event => {
                     event.stopPropagation();
@@ -903,11 +956,14 @@
                     moveMenu.classList.toggle("open", !isOpen);
                 });
                 del.addEventListener("click", () => {
+                    if (!confirm("Delete this task?"))
+                        return;
                     globalTasks[activeTaskContext] = activeTasks().filter(item => item.id !== task.id);
                     saveTasks();
                     renderGlobalTasks();
                 });
-                row.append(checkbox, text, move, del, moveMenu);
+                if (canMoveTask) row.append(checkbox, text, move, del, moveMenu);
+                else row.append(checkbox, text, del);
                 globalTaskList.appendChild(row);
             });
         }
@@ -1374,9 +1430,18 @@
             expandedBody.value = note.body || "";
             renderLinks(expandedLinks, expandedBody.value);
             updateExpandedToolbar();
+            applyExpandedNoteFont();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => expandedBody.focus(), 0);
+        }
+
+        function openTasksInboxShortcut() {
+            openTasks();
+            activeTaskContext = "Inbox";
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
+            setTimeout(() => globalTaskInput.focus(), 0);
         }
         function openTasks() {
             expandedNoteId = null;
@@ -1774,6 +1839,7 @@
         notesMoreMenu.addEventListener("click", event => event.stopPropagation());
         document.addEventListener("click", event => { if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
             closeNotesMoreMenu(); });
+        sortNotesBtn.addEventListener("click", sortNotesByTitle);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
         notesBinBackBtn.addEventListener("click", toggleNotesBin);
@@ -1789,6 +1855,7 @@
             expandedTitle.select();
         });
         tasksBtn.addEventListener("click", openTasks);
+        addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
@@ -1803,6 +1870,7 @@
         expandedMoveBtn.addEventListener("click", () => { if (expandedNoteId)
             openMoveNote(expandedNoteId); });
         expandedCopyBtn.addEventListener("click", copyExpandedNote);
+        expandedFontBtn.addEventListener("click", toggleExpandedNoteFont);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId)
             deleteNoteById(expandedNoteId); });
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
@@ -1866,6 +1934,7 @@
         applyNotesCompact();
         updateSearchUi();
         updateFocusViewButton();
+        applyExpandedNoteFont();
         renderGlobalResults();
         renderGlobalTasks();
         buildCalendar();
@@ -1873,6 +1942,8 @@
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
     })();
+  
+  
   
   
   
