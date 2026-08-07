@@ -1381,13 +1381,18 @@
       View notes
      </span>
     </button>
-    <button class="mobile-tile" id="mobileAddNoteBtn" type="button">
+    <button class="mobile-tile" id="mobileTasksBtn" type="button">
      <span class="mobile-tile-title">
-      + Note
+      Tasks
      </span>
      <span class="mobile-tile-sub">
-      Capture quickly
+      Quick checklist
      </span>
+    </button>
+   </div>
+   <div class="mobile-quick-actions">
+    <button class="plain-btn mobile-add-note-action" id="mobileAddNoteBtn" type="button">
+     + Note
     </button>
    </div>
   </section>
@@ -3034,6 +3039,7 @@
         });
         mobileCalendarBtn.addEventListener("click", () => setMobileSection("calendar"));
         mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
+        mobileTasksBtn.addEventListener("click", openTodoNote);
         mobileAddNoteBtn.addEventListener("click", () => {
           const today = getToday();
           if (isWithinRange(today)) selectDate(today, true);
