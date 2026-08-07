@@ -732,26 +732,6 @@
            color:var(--ink);
            text-decoration:underline;
         }
-         .todo-note-btn {
-           width:auto;
-           height:auto;
-           border-radius:0;
-           background:transparent;
-           border:0;
-           color:var(--muted);
-           font-size:17px;
-           font-weight:650;
-           line-height:1;
-           display:inline-flex;
-           align-items:center;
-           justify-content:center;
-           padding:1px 0;
-        }
-         .todo-note-btn:hover {
-           background:transparent;
-           color:var(--ink);
-           text-decoration:underline;
-        }
          .notes-more-wrap {
            position:relative;
            display:inline-flex;
@@ -1398,6 +1378,9 @@
        <button class="plain-btn" id="focusViewBtn" title="Hide or show both sidebars" type="button">
         Focus
        </button>
+       <button class="plain-btn" id="todoNoteBtn" title="Open global tasks note" type="button">
+        Tasks
+       </button>
        <button class="plain-btn" id="todayBtn" title="Open today" type="button">
         Today
        </button>
@@ -1476,9 +1459,6 @@
        </button>
        <button class="plain-btn add-note-icon-btn" id="addNoteBtn" title="Add note" type="button">
         +
-       </button>
-       <button class="plain-btn todo-note-btn" id="todoNoteBtn" title="Todo" type="button">
-        ☑
        </button>
        <span class="notes-more-wrap">
         <button class="plain-btn more-btn" id="notesMoreBtn" title="More note actions" type="button">
@@ -2419,17 +2399,17 @@
         try {
           const data = JSON.parse(localStorage.getItem(TODO_KEY)) || {};
           return {
-            title: data.title || "Todo",
+            title: data.title || "Tasks",
             body: data.body || "☐ "
           };
         } catch (error) {
-          return { title: "Todo", body: "☐ " };
+          return { title: "Tasks", body: "☐ " };
         }
       }
 
       function saveTodoData() {
         localStorage.setItem(TODO_KEY, JSON.stringify({
-          title: expandedTitle.value || "Todo",
+          title: expandedTitle.value || "Tasks",
           body: expandedBody.value || ""
         }));
       }
