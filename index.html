@@ -155,16 +155,8 @@
     .expanded-title { height: 30px; border: 0; background: transparent; font-size: var(--font-lg); font-weight: 650; }
     .expanded-note-tools { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-height: 32px; padding: 3px 12px 5px; border-bottom: 1px solid var(--line); background: var(--panel); }
     .expanded-body { flex: 1; min-height: 460px; height: auto; border: 0; padding: 10px 14px; overflow: auto; }
-    .large-note-font .expanded-body {
-      font-size: 17px;
-      line-height: 30px;
-      background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px);
-    }
-    #expandedFontBtn.active {
-      color: var(--ink);
-      background: var(--soft);
-      font-weight: 700;
-    }
+    .large-note-font .expanded-body { font-size: 17px; line-height: 30px; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 29px, rgba(160,145,120,.24) 30px); }
+    #expandedFontBtn.active { color: var(--ink); background: var(--soft); font-weight: 700; }
     .tasks-panel { display: none; flex: 1; min-height: 460px; padding: 10px 12px; overflow: auto; background: #fffdf8; }
     .tasks-panel.open { display: block; }
     .tasks-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--muted); }
@@ -177,16 +169,7 @@
     .task-row.no-move { grid-template-columns: auto 1fr auto; }
     .task-row.done .task-text { color: var(--muted); text-decoration: line-through; }
     .task-checkbox { width: 16px; height: 16px; accent-color: var(--entry-border); }
-    .task-text {
-      border: 0 !important;
-      background: transparent !important;
-      min-height: 25px !important;
-      height: auto;
-      padding: 2px 0 !important;
-      resize: none;
-      overflow: hidden;
-      line-height: 1.35;
-    }
+    .task-text { border: 0 !important; background: transparent !important; min-height: 25px !important; height: auto; padding: 2px 0 !important; resize: none; overflow: hidden; line-height: 1.35; }
     .task-delete { color: var(--danger); }
     .task-move { color: var(--muted); font-size: var(--font-sm); padding: 1px 0; }
     .task-move-menu { display: none; grid-column: 2 / -1; gap: 4px; padding-top: 2px; }
@@ -604,6 +587,7 @@
   </div>
 
   <script>
+
 
     (function () {
         const START_DATE = new Date(2026, 6, 1);
@@ -1834,6 +1818,7 @@
         mobileTasksBtn.addEventListener("click", openTasks);
         mobileAddNoteBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
             selectDate(today, true); setMobileSection("notes"); setTimeout(() => addNoteBtn.click(), 0); });
+        mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
         document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
         document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
@@ -1958,6 +1943,7 @@
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
     })();
+  
   
   </script>
 </body>
