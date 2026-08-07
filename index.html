@@ -211,6 +211,277 @@
       .expanded-body, .tasks-panel { min-height: 58vh; font-size: 16px; }
     }
 
+
+    /* Visual consistency polish pass */
+    :root {
+      --space-1: 4px;
+      --space-2: 6px;
+      --space-3: 8px;
+      --space-4: 10px;
+      --space-5: 12px;
+      --header-height: 44px;
+      --control-height: 28px;
+      --tap-height: 32px;
+    }
+    body {
+      letter-spacing: -0.005em;
+    }
+    .sidebar,
+    .notes-sidebar,
+    .app,
+    .global-search-box,
+    .global-results,
+    .mobile-home,
+    .mobile-section-bar,
+    .expanded-note,
+    .move-note-panel,
+    .help-panel {
+      border-color: rgba(231, 223, 212, .92);
+    }
+    .sidebar-head,
+    .notes-head,
+    header,
+    .expanded-note-head,
+    .move-note-head,
+    .help-head {
+      min-height: var(--header-height);
+    }
+    .sidebar-head,
+    .notes-head {
+      padding: var(--space-3) var(--space-4);
+    }
+    header {
+      padding: var(--space-3) var(--space-5) var(--space-2);
+    }
+    .sidebar-title,
+    .notes-title,
+    .mobile-section-title,
+    .tasks-title,
+    .help-title,
+    .move-note-title {
+      letter-spacing: -0.01em;
+    }
+    .plain-btn,
+    .backup-btn {
+      line-height: 1.25;
+      border-radius: 7px;
+    }
+    .plain-btn:focus-visible,
+    .icon-btn:focus-visible,
+    .mobile-tile:focus-visible,
+    .mobile-add-note-tile:focus-visible,
+    .task-context-btn:focus-visible,
+    .task-move-option:focus-visible,
+    .day-btn:focus-visible {
+      outline: 2px solid rgba(123, 146, 133, .42);
+      outline-offset: 2px;
+    }
+    .icon-btn,
+    .more-btn,
+    .search-btn,
+    .nav-day-btn {
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .icon-btn {
+      width: var(--control-height);
+      height: var(--control-height);
+      border-radius: 8px;
+    }
+    .search-btn,
+    .more-btn {
+      width: var(--tap-height);
+      height: var(--tap-height);
+    }
+    .actions {
+      gap: var(--space-4);
+    }
+    .toolbar {
+      gap: var(--space-4);
+    }
+    .calendar-wrap,
+    .notes-wrap {
+      padding: var(--space-3);
+    }
+    .month {
+      margin-bottom: var(--space-5);
+    }
+    .day-btn {
+      min-height: 24px;
+      transition: background .15s ease, border-color .15s ease, color .15s ease;
+    }
+    .timeline {
+      padding: var(--space-2) var(--space-4) var(--space-3);
+      gap: var(--space-1);
+    }
+    .time-pair-row {
+      gap: var(--space-2);
+      padding-bottom: var(--space-1);
+    }
+    .slot {
+      min-height: 25px;
+    }
+    .time {
+      letter-spacing: -0.01em;
+      color: rgba(61, 58, 52, .92);
+    }
+    .half-slot .time {
+      color: rgba(138, 131, 120, .66);
+    }
+    .drag-handle {
+      font-size: 12px;
+      opacity: .62;
+    }
+    .note-block,
+    .evening-planner {
+      padding-left: var(--space-5);
+      padding-right: var(--space-5);
+    }
+    .evening-textarea {
+      border-color: rgba(231, 223, 212, .95);
+    }
+    footer,
+    .mobile-home-footer {
+      letter-spacing: .005em;
+    }
+    .notes-top {
+      margin-bottom: var(--space-3);
+    }
+    .notes-actions {
+      gap: var(--space-3);
+    }
+    .notes-more-menu {
+      padding: var(--space-2);
+      border-radius: 13px;
+    }
+    .notes-more-menu .plain-btn {
+      min-height: 29px;
+    }
+    .note-card {
+      margin-bottom: var(--space-3);
+      border-radius: 13px;
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .note-title-area {
+      padding: var(--space-3) 9px var(--space-1);
+    }
+    .note-tools-row {
+      min-height: 32px;
+      padding: 3px 8px 6px;
+      gap: var(--space-1);
+    }
+    .note-title-input {
+      font-size: var(--font-md);
+      letter-spacing: -0.01em;
+    }
+    .note-card.is-pinned {
+      border-color: #c9b96e;
+      background: #fff8df;
+      box-shadow: inset 3px 0 0 rgba(122, 106, 42, .42), 0 2px 10px rgba(122, 106, 42, .05);
+    }
+    .note-card.is-pinned .note-title-area,
+    .note-card.is-pinned .note-tools-row {
+      background: #fff2c2;
+    }
+    .notes-sidebar.notes-compact .note-card.is-pinned .note-title-area {
+      background: #fff2c2;
+    }
+    .note-card.is-pinned .note-title-input {
+      color: #604f17;
+      font-weight: 700;
+    }
+    .link-preview {
+      padding: var(--space-2) 9px var(--space-3);
+    }
+    .expanded-note-tools {
+      min-height: 34px;
+      padding: var(--space-1) var(--space-5) var(--space-2);
+    }
+    .expanded-body,
+    .tasks-panel {
+      padding: var(--space-4) var(--space-5);
+    }
+    .tasks-toolbar {
+      margin-bottom: var(--space-3);
+    }
+    .task-contexts {
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+    .task-context-btn,
+    .task-move-option {
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .task-row {
+      border-color: rgba(231, 223, 212, .88);
+      background: #fffbf4;
+      padding: var(--space-2) var(--space-3);
+      border-radius: 11px;
+    }
+    .task-text {
+      color: var(--ink);
+    }
+    .task-row.done {
+      background: rgba(251, 247, 240, .75);
+    }
+    .task-row.done .task-text {
+      color: rgba(138, 131, 120, .78);
+    }
+    .task-input {
+      margin-top: var(--space-3);
+    }
+    .task-add-btn {
+      border-color: rgba(231, 223, 212, .95);
+      background: #f6f0e6;
+    }
+    .task-add-btn:hover {
+      background: var(--soft);
+      text-decoration: none;
+    }
+    .modal-backdrop {
+      backdrop-filter: blur(1px);
+    }
+    .help-body {
+      line-height: 1.45;
+    }
+    @media (max-width: 759px) {
+      .mobile-home {
+        padding: var(--space-4);
+      }
+      .mobile-grid {
+        gap: var(--space-3);
+      }
+      .mobile-tile {
+        min-height: 94px;
+        padding: var(--space-5);
+        border-radius: 17px;
+      }
+      .mobile-tile-title {
+        font-size: 14.5px;
+      }
+      .mobile-add-note-tile {
+        min-height: 34px;
+        margin-top: var(--space-3);
+      }
+      .mobile-home-footer {
+        margin-top: var(--space-3);
+        padding-top: var(--space-3);
+      }
+      .slot {
+        min-height: 34px;
+      }
+      .notes-actions {
+        gap: var(--space-2);
+      }
+      .task-row {
+        grid-template-columns: auto 1fr auto auto;
+        min-height: 38px;
+      }
+      .task-move-menu {
+        grid-column: 1 / -1;
+        padding-left: 24px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -308,6 +579,8 @@
   </div>
 
   <script>
+
+
 
 
     (function () {
@@ -1600,6 +1873,8 @@
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
     })();
+  
+  
   
   
   </script>
