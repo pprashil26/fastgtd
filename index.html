@@ -224,6 +224,10 @@
       color: var(--ink);
       font-weight: 700;
     }
+    .notes-actions #notesFocusBtn {
+      min-height: 29px;
+      padding: 2px 6px;
+    }
     @media (max-width: 759px) {
       body { padding: 8px 6px; }
       .mobile-home { background: var(--page); border: 1px solid var(--line); border-radius: var(--radius-panel); box-shadow: var(--shadow); padding: 10px; margin-bottom: 8px; }
@@ -615,8 +619,9 @@
       <div class="notes-head"><div class="notes-title">Notepad</div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
-        <div class="notes-search-row" id="notesSearchRow"><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn search-btn" id="notesSearchBtn" type="button">⌕</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn" id="notesFocusBtn" type="button">Notes focus</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
+        <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
+        <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn" id="notesFocusBtn" type="button">Notes focus</button><button class="plain-btn compact-btn" id="compactNotesBtn" type="button">Compact</button><button class="plain-btn bin-back-btn" id="notesBinBackBtn" type="button">Back to notes</button><button class="plain-btn add-note-icon-btn" id="addNoteBtn" type="button">+</button><span class="notes-more-wrap"><button class="plain-btn more-btn" id="notesMoreBtn" type="button">⋯</button><span class="notes-more-menu" id="notesMoreMenu"><button class="plain-btn" id="sortNotesBtn" type="button">Sort notes A-Z</button><button class="plain-btn move-all-btn" id="moveAllNotesBtn" type="button">Move all notes</button><button class="plain-btn bin-btn" id="notesBinBtn" type="button">Recycle Bin</button></span></span></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
     </aside>
