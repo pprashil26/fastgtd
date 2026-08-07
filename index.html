@@ -1595,6 +1595,15 @@
      <button class="icon-btn" id="expandedMoveBtn" title="Move note to another day" type="button">
       ⇄
      </button>
+     <button class="icon-btn" id="expandedCopyBtn" title="Copy note" type="button">
+      ⎘
+     </button>
+     <button class="plain-btn task-action-btn" id="taskSortBtn" title="Sort tasks A-Z" type="button">
+      Sort
+     </button>
+     <button class="plain-btn task-action-btn" id="taskClearDoneBtn" title="Clear completed tasks" type="button">
+      Clear done
+     </button>
      <button class="icon-btn delete-note-btn" id="expandedDeleteBtn" title="Delete note" type="button">
       ×
      </button>
@@ -1702,6 +1711,9 @@
     const globalTaskInput = document.getElementById("globalTaskInput");
         const expandedPinBtn = document.getElementById("expandedPinBtn");
         const expandedMoveBtn = document.getElementById("expandedMoveBtn");
+        const expandedCopyBtn = document.getElementById("expandedCopyBtn");
+        const taskSortBtn = document.getElementById("taskSortBtn");
+        const taskClearDoneBtn = document.getElementById("taskClearDoneBtn");
         const expandedDeleteBtn = document.getElementById("expandedDeleteBtn");
         const closeExpandedNote = document.getElementById("closeExpandedNote");
         const moveModal = document.getElementById("moveModal");
@@ -2632,6 +2644,19 @@
       setTimeout(() => globalTaskInput.focus(), 0);
     }
 
+    function sortGlobalTasksByTitle() {
+      globalTasks = normalizeGlobalTasks(globalTasks).sort((a, b) => {
+        if (Boolean(a.done) !== Boolean(b.done)) return a.done ? 1 : -1;
+        return a.text.localeCompare(b.text, undefined, { sensitivity: "base" });
+      });
+      renderGlobalTasks();
+    }
+
+    function clearCompletedGlobalTasks() {
+      globalTasks = normalizeGlobalTasks(globalTasks).filter(task => !task.done);
+      renderGlobalTasks();
+    }
+
     function openTodoNote() {
       closeNotesMoreMenu();
       if (noteModal.classList.contains("open")) closeExpandedEditor();
@@ -2663,23 +2688,68 @@
       globalTaskInput.value = "";
     }
 
-    function updateExpandedToolbar() {
-          if (globalTodoOpen) {
-            expandedPinBtn.style.display = "none";
-            expandedMoveBtn.style.display = "none";
-            expandedDeleteBtn.style.display = "none";
-            return;
-          }
-          expandedPinBtn.style.display = "inline-flex";
-          expandedMoveBtn.style.display = "inline-flex";
-          expandedDeleteBtn.style.display = "inline-flex";
-          if (!expandedNoteId) return;
-          const note = findNoteById(expandedNoteId);
-          if (!note) return;
-          expandedPinBtn.textContent = note.pinned ? "★" : "☆";
-          expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
-          expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
+    function getExpandedNoteCopyText() {
+      const title = expandedTitle.value.trim();
+      const body = expandedBody.value.trim();
+      if (title && body) return `${title}
+
+${body}`;
+      return title || body;
+    }
+
+    function fallbackCopyText(text) {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      temp.setAttribute("readonly", "");
+      temp.style.position = "fixed";
+      temp.style.left = "-9999px";
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+    }
+
+    async function copyExpandedNote() {
+      if (globalTodoOpen || !expandedNoteId) return;
+      const text = getExpandedNoteCopyText();
+      if (!text) return;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          fallbackCopyText(text);
         }
+      } catch (error) {
+        fallbackCopyText(text);
+      }
+      const originalText = expandedCopyBtn.textContent;
+      expandedCopyBtn.textContent = "✓";
+      setTimeout(() => { expandedCopyBtn.textContent = originalText; }, 900);
+    }
+
+    function updateExpandedToolbar() {
+      if (globalTodoOpen) {
+        expandedPinBtn.style.display = "none";
+        expandedMoveBtn.style.display = "none";
+        expandedCopyBtn.style.display = "none";
+        expandedDeleteBtn.style.display = "none";
+        taskSortBtn.style.display = "inline-flex";
+        taskClearDoneBtn.style.display = "inline-flex";
+        return;
+      }
+      expandedPinBtn.style.display = "inline-flex";
+      expandedMoveBtn.style.display = "inline-flex";
+      expandedCopyBtn.style.display = "inline-flex";
+      expandedDeleteBtn.style.display = "inline-flex";
+      taskSortBtn.style.display = "none";
+      taskClearDoneBtn.style.display = "none";
+      if (!expandedNoteId) return;
+      const note = findNoteById(expandedNoteId);
+      if (!note) return;
+      expandedPinBtn.textContent = note.pinned ? "★" : "☆";
+      expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
+      expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
+    }
 
         function togglePin(id) {
           const note = findNoteById(id);
@@ -2727,7 +2797,10 @@
           resetExpandedEditorView();
           expandedPinBtn.style.display = "inline-flex";
           expandedMoveBtn.style.display = "inline-flex";
+          expandedCopyBtn.style.display = "inline-flex";
           expandedDeleteBtn.style.display = "inline-flex";
+          taskSortBtn.style.display = "none";
+          taskClearDoneBtn.style.display = "none";
           noteModal.classList.remove("open");
           noteModal.setAttribute("aria-hidden", "true");
           expandedLinks.innerHTML = "";
@@ -3162,6 +3235,9 @@
         expandedMoveBtn.addEventListener("click", () => {
           if (expandedNoteId) openMoveNote(expandedNoteId);
         });
+        expandedCopyBtn.addEventListener("click", copyExpandedNote);
+        taskSortBtn.addEventListener("click", sortGlobalTasksByTitle);
+        taskClearDoneBtn.addEventListener("click", clearCompletedGlobalTasks);
         expandedDeleteBtn.addEventListener("click", () => {
           if (expandedNoteId) deleteNoteById(expandedNoteId);
         });
