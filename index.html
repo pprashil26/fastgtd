@@ -2141,8 +2141,13 @@
         }
 
         function collectEntries() {
+          const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
+          if (!boxes.length) {
+            const existingData = readDateData(toKey(selectedDate));
+            return existingData.entries || {};
+          }
           const entries = {};
-          document.querySelectorAll("textarea[data-time]").forEach(box => {
+          boxes.forEach(box => {
             if (box.value.trim()) entries[box.dataset.time] = box.value;
           });
           return entries;
