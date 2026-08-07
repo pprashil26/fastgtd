@@ -1927,7 +1927,8 @@
         }
 
         function updateMobileHomeDate() {
-          mobileHomeDate.textContent = displayDate(getToday());
+          // Mobile homepage header was intentionally removed for compact layout.
+          // Keep this function as a safe no-op so date loading never blocks timeline rendering.
         }
 
         function clearMobileSection() {
