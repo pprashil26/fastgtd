@@ -806,7 +806,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Tasks</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="addTaskInboxBtn" type="button">+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button">+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to 6 PM"></section>
@@ -889,6 +889,7 @@
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
+        const addTaskTodayBtn = el("addTaskTodayBtn");
         const todayBtn = el("todayBtn");
         const prevDayBtn = el("prevDayBtn");
         const nextDayBtn = el("nextDayBtn");
@@ -1228,7 +1229,10 @@
                 text.value = task.text;
                 text.placeholder = "Task";
                 setTimeout(() => autoGrowTaskText(text), 0);
-                const canMoveTask = activeTaskContext === "Inbox";
+                const canMoveTask = activeTaskContext === "Inbox" || ["Home", "Work", "Projects"].includes(activeTaskContext);
+                const moveTargets = activeTaskContext === "Inbox"
+                    ? TASK_CONTEXTS.filter(context => context !== activeTaskContext)
+                    : canMoveTask ? ["Today"] : [];
                 row.classList.toggle("no-move", !canMoveTask);
                 const move = document.createElement("button");
                 move.type = "button";
@@ -1243,7 +1247,7 @@
                 const moveMenu = document.createElement("div");
                 moveMenu.className = "task-move-menu";
                 moveMenu.hidden = !canMoveTask;
-                TASK_CONTEXTS.filter(context => context !== activeTaskContext).forEach(context => {
+                moveTargets.forEach(context => {
                     const option = document.createElement("button");
                     option.type = "button";
                     option.className = "task-move-option";
@@ -1800,6 +1804,13 @@
             renderGlobalTasks();
             setTimeout(() => globalTaskInput.focus(), 0);
         }
+        function openTasksTodayShortcut() {
+            openTasks();
+            activeTaskContext = "Today";
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
+            setTimeout(() => globalTaskInput.focus(), 0);
+        }
         function openTasks() {
             expandedNoteId = null;
             activeTaskContext = "Inbox";
@@ -2197,7 +2208,7 @@
             selectDate(today, true); setMobileSection("plan"); });
         mobileCalendarBtn.addEventListener("click", () => setMobileSection("calendar"));
         mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
-        mobileTasksBtn.addEventListener("click", openTasks);
+        mobileTasksBtn.addEventListener("click", openTasksTodayShortcut);
         mobileAddNoteBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
             selectDate(today, true); setMobileSection("notes"); setTimeout(() => addNoteBtn.click(), 0); });
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
@@ -2239,6 +2250,7 @@
             expandedTitle.select();
         });
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
+        addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
         sortTasksBtn.addEventListener("click", sortTasks);
         clearDoneTasksBtn.addEventListener("click", clearDoneTasks);
         taskAddBtn.addEventListener("click", addGlobalTask);
