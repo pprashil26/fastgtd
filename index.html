@@ -1222,38 +1222,58 @@
 /* Mobile capture-first home */
 @media (max-width: 759px) {
   .mobile-home {
-    min-height: calc(100vh - 16px);
-    padding: 18px 14px 12px;
+    height: calc(100vh - 76px);
+    height: calc(100dvh - 76px);
+    min-height: 0;
+    max-height: calc(100dvh - 76px);
+    margin-bottom: 0;
+    padding: 10px 14px 8px;
     display: none;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
   }
   body:not(.mobile-section-active):not(.global-search-active) .mobile-home {
     display: flex;
   }
-  .mobile-home-quote-wrap {
+  .mobile-home-brand {
     flex: 1;
+    min-height: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 28px 12px;
-  }
-  .mobile-home-quote {
-    max-width: 320px;
-    margin: 0;
-    color: var(--ink);
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.45;
-    letter-spacing: -0.02em;
+    gap: 8px;
+    padding: 12px;
     text-align: center;
-    white-space: pre-wrap;
+  }
+  .mobile-home-logo {
+    display: block;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+  }
+  .mobile-home-brand-motto {
+    margin: 0;
+    color: rgba(61, 58, 52, .88);
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: .005em;
+  }
+  .mobile-home-brand-tagline {
+    margin: -2px 0 0;
+    color: rgba(138, 131, 120, .76);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: .005em;
   }
   .mobile-home-bottom {
     margin-top: auto;
   }
   .mobile-home-status {
-    margin-top: 10px;
+    margin-top: 6px;
   }
   .mobile-home-nav {
     display: grid;
@@ -1335,28 +1355,455 @@
     background: var(--soft);
   }
 }
+@media (max-width: 759px) and (max-height: 650px) {
+  .mobile-home-brand {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .mobile-home-logo {
+    width: 64px;
+    height: 64px;
+  }
+  .mobile-home-link {
+    min-height: 38px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}
 @media (max-width: 360px) {
   .mobile-home-nav {
     grid-template-columns: 1fr 1fr;
   }
 }
-/* Mobile homepage tagline */
-.mobile-home-tagline {
+
+/* Mobile-only planner, Tasks and Activity consistency pass */
+@media (max-width: 759px) {
+  /* Calendar already includes Today's plan, so keep its planner header compact. */
+  body.mobile-section-active.mobile-view-calendar .app header .hint,
+  body.mobile-section-active.mobile-view-calendar .app header #focusViewBtn {
+    display: none;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .app header .toolbar {
+    justify-content: flex-end;
+    min-height: 0;
+  }
+
+  body.mobile-section-active.mobile-view-calendar .app header .actions {
+    margin-left: auto;
+  }
+
+  /* Larger shared mobile sheet for Tasks and Activity. */
+  #noteModal:has(#globalTasksPanel.open),
+  #noteModal:has(#activityPanel.open) {
+    padding: 6px;
+    align-items: center;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .expanded-note,
+  #noteModal:has(#activityPanel.open) .expanded-note,
+  #noteModal.wide-note-page:has(#globalTasksPanel.open) .expanded-note,
+  #noteModal.wide-note-page:has(#activityPanel.open) .expanded-note {
+    width: min(520px, calc(100vw - 12px));
+    height: min(90dvh, 760px);
+    min-height: min(82dvh, 620px);
+    max-height: 90dvh;
+    aspect-ratio: auto;
+    border-radius: 16px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .tasks-panel,
+  #noteModal:has(#activityPanel.open) .activity-panel {
+    min-height: 0;
+    height: auto;
+    flex: 1;
+    padding: 8px 10px 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--page);
+  }
+
+  /* Keep task contexts on one compact, swipeable line. */
+  #noteModal:has(#globalTasksPanel.open) .task-contexts {
+    flex-wrap: nowrap;
+    gap: 5px;
+    margin: 0 -2px 8px;
+    padding: 1px 2px 5px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-contexts::-webkit-scrollbar {
+    display: none;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-context-btn {
+    flex: 0 0 auto;
+    padding: 4px 9px;
+    white-space: nowrap;
+  }
+
+  /* Notes-like compact cards for Tasks. */
+  #noteModal:has(#globalTasksPanel.open) .task-list {
+    gap: 6px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-row {
+    gap: 6px;
+    min-height: 36px;
+    padding: 5px 7px;
+    border-color: rgba(231, 223, 212, .92);
+    border-radius: 12px;
+    background: #fffdf8;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-text {
+    min-height: 25px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 1.3;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-checkbox {
+    margin-top: 5px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-highlight {
+    margin-top: 1px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-move {
+    margin-top: 4px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-delete {
+    margin-top: 1px;
+  }
+
+  #noteModal:has(#globalTasksPanel.open) .task-input {
+    margin-top: 8px;
+  }
+
+  /* Matching compact card language for Activity. */
+  #noteModal:has(#activityPanel.open) .activity-input {
+    margin-bottom: 8px;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-day {
+    margin-top: 10px;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-list {
+    gap: 6px;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-row {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    column-gap: 7px;
+    row-gap: 2px;
+    padding: 5px 7px;
+    border-color: rgba(231, 223, 212, .92);
+    border-radius: 12px;
+    background: #fffdf8;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-time {
+    padding-top: 4px;
+    font-size: 10.5px;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-text {
+    min-height: 25px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    line-height: 1.3;
+  }
+
+  #noteModal:has(#activityPanel.open) .activity-row-actions {
+    gap: 3px;
+    min-height: 22px;
+  }
+}
+
+
+/* Mobile homepage Help action */
+@media (max-width: 759px) {
+  .mobile-home-nav {
+    grid-template-columns: minmax(52px, .85fr) minmax(62px, .95fr) minmax(128px, 1.75fr) minmax(48px, .72fr) 38px;
+  }
+  .mobile-home-help {
+    width: 38px;
+    min-width: 38px;
+    padding-left: 0;
+    padding-right: 0;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+@media (max-width: 430px) {
+  .mobile-home-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mobile-home-help {
+    width: 100%;
+  }
+}
+
+
+/* Mobile homepage direct navigation and backup footer */
+@media (max-width: 759px) {
+  .mobile-home-nav {
+    grid-template-columns: minmax(52px, .9fr) minmax(68px, 1.05fr) minmax(52px, .85fr) minmax(48px, .75fr) 38px;
+  }
+
+  .mobile-home-data-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 28px;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 10.5px;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .mobile-home-data-row .mobile-home-status {
+    margin-top: 0;
+  }
+
+  .mobile-home-data-link {
+    min-height: 28px;
+    padding: 4px 2px;
+    color: var(--muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .mobile-home-data-link:hover,
+  .mobile-home-data-link:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .mobile-home-data-separator {
+    color: rgba(138, 131, 120, .62);
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-home-nav {
+    gap: 2px;
+  }
+
+  .mobile-home-link {
+    padding-left: 1px;
+    padding-right: 1px;
+    font-size: 11px;
+  }
+}
+
+
+/* Responsive Help content; Help panel UI remains unchanged */
+.help-mobile-content {
   display: none;
 }
 
 @media (max-width: 759px) {
-  .mobile-home-tagline {
+  .help-desktop-content {
+    display: none;
+  }
+
+  .help-mobile-content {
     display: block;
-    margin-top: 7px;
-    color: rgba(138, 131, 120, 0.72);
-    font-size: 10.5px;
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: 0.01em;
-    text-align: center;
   }
 }
+
+
+/* Desktop-only brighter theme, sidebar restore bars and Notes Focus scope */
+@media (min-width: 760px) {
+  :root {
+    --bg: #f4f5f3;
+    --page: #ffffff;
+    --panel: #f8f9f7;
+    --ink: #343832;
+    --muted: #737970;
+    --line: #dce1dc;
+    --soft: #eef1ed;
+    --entry: #edf4f0;
+    --entry-border: #b8cec2;
+    --selected: #d7e7de;
+    --shadow: 0 10px 26px rgba(46, 57, 50, .07);
+  }
+
+  body,
+  .sidebar,
+  .notes-sidebar,
+  .app,
+  .global-search-box,
+  .global-results,
+  .expanded-note,
+  .move-note-panel,
+  .help-panel {
+    background-color: var(--page);
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  .sidebar-head,
+  .notes-head,
+  header,
+  .expanded-note-head,
+  .move-note-head,
+  .help-head {
+    background: linear-gradient(180deg, #ffffff 0%, #f6f8f5 100%);
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea,
+  .slot,
+  .note-card,
+  .global-result-card {
+    background-color: #ffffff;
+  }
+
+  #todayBtn {
+    display: inline-flex;
+  }
+
+  .shell.left-collapsed:not(.right-collapsed) {
+    grid-template-columns: 116px minmax(0, 1fr) clamp(280px, 28vw, 380px);
+  }
+
+  .shell.right-collapsed:not(.left-collapsed) {
+    grid-template-columns: clamp(190px, 17vw, 230px) minmax(0, 1fr) 126px;
+  }
+
+  .shell.left-collapsed.right-collapsed {
+    grid-template-columns: 116px minmax(0, 1fr) 126px;
+  }
+
+  .sidebar.collapsed,
+  .notes-sidebar.collapsed {
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .sidebar.collapsed .sidebar-head,
+  .notes-sidebar.collapsed .notes-head {
+    display: block;
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .sidebar.collapsed .calendar-head-actions {
+    display: block;
+    width: 100%;
+  }
+
+  .sidebar.collapsed #sidebarToggle,
+  .notes-sidebar.collapsed #notesToggle {
+    display: flex;
+    width: 100%;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border: 1px solid var(--entry-border);
+    border-radius: 12px;
+    background: var(--selected);
+    color: var(--ink);
+    font-size: 11.5px;
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .sidebar.collapsed #sidebarToggle:hover,
+  .notes-sidebar.collapsed #notesToggle:hover {
+    background: #cadfd3;
+    text-decoration: none;
+  }
+
+  .notes-focus-scope {
+    display: none;
+    justify-content: center;
+    gap: 4px;
+    margin: 0 0 9px;
+  }
+
+  .notes-focus-scope.show {
+    display: flex;
+  }
+
+  .notes-scope-btn {
+    min-height: 28px;
+    padding: 4px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--page);
+    color: var(--muted);
+    font-size: 11px;
+    text-decoration: none !important;
+  }
+
+  .notes-scope-btn.active {
+    background: var(--selected);
+    border-color: var(--entry-border);
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .all-notes-card .note-title-area {
+    display: grid;
+    gap: 2px;
+  }
+
+  .all-notes-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: var(--font-md);
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .all-notes-date {
+    color: var(--muted);
+    font-size: 10.5px;
+  }
+
+  .all-notes-preview {
+    display: -webkit-box;
+    min-height: 96px;
+    max-height: 132px;
+    overflow: hidden;
+    white-space: pre-wrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+}
+
+@media (max-width: 759px) {
+  #todayBtn,
+  .notes-focus-scope {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1376,35 +1823,26 @@
     <nav class="mobile-home-nav" aria-label="Quick actions">
       <button class="plain-btn mobile-home-link primary" id="mobileAddTaskBtn" type="button">+ Inbox</button>
       <button class="plain-btn mobile-home-link primary" id="mobileActivityBtn" type="button">+ Activity</button>
-      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Calendar</button>
-      <button class="plain-btn mobile-home-link" id="mobileMoreBtn" type="button" aria-expanded="false">More</button>
-      </nav>
-    <div class="mobile-home-tagline">  A lightweight GTD app - empty your mind </div>
-    <div class="mobile-home-quote-wrap">
-      <p class="mobile-home-quote" id="mobileHomeQuote">You have to assemble your life yourself, action by action.</p>
+      <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
+      <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
+      <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
+    </nav>
+    <div class="mobile-home-brand" aria-label="Timeblocks">
+      <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
+      <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
+      <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
     </div>
     <div class="mobile-home-bottom">
-      <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
+      <div class="mobile-home-data-row">
+        <div class="last-import-status mobile-home-status" data-last-import-status>Last import: Never</div>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-export-btn" type="button">Export</button>
+        <span class="mobile-home-data-separator" aria-hidden="true">·</span>
+        <button class="plain-btn mobile-home-data-link mobile-import-btn" type="button">Import</button>
+      </div>
     </div>
   </section>
 
-  <div class="mobile-more-backdrop" id="mobileMoreMenu" aria-hidden="true">
-    <section class="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="More options">
-      <div class="mobile-more-head">
-        <span class="mobile-more-title">More</span>
-        <button class="plain-btn" id="mobileMoreCloseBtn" type="button">Close</button>
-      </div>
-      <div class="mobile-more-list">
-        <button class="plain-btn mobile-more-item" id="mobilePlanBtn" type="button">Today's plan</button>
-        <button class="plain-btn mobile-more-item" id="mobileNotesBtn" type="button">Notes</button>
-        <button class="plain-btn mobile-more-item" id="mobileTasksBtn" type="button">Tasks</button>
-        <button class="plain-btn mobile-more-item" id="mobileMoreActivityBtn" type="button">Activity</button>
-        <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
-        <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
-        <button class="plain-btn mobile-more-item help-btn" type="button">Help</button>
-      </div>
-    </section>
-  </div>
 
   <div class="mobile-section-bar" id="mobileSectionBar">
     <button class="plain-btn" id="mobileHomeBtn" type="button">Home</button>
@@ -1427,7 +1865,7 @@
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD-inspired daily planner</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button" hidden>Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
@@ -1442,6 +1880,7 @@
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes focus scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -1480,7 +1919,7 @@
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use Notes for details, links, and reminders.</li><li>Use Tasks for a simple global checklist by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Compact to show more notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are global and grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by context.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Use Compact to show more notes and the star to show pinned notes only.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Home, Work, Projects, and Today.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>How to use</h3><ol><li>Use + Inbox to capture a task and open the Tasks panel.</li><li>Use + Activity to record an Activity entry.</li><li>Use Planner to open Calendar and Today’s plan.</li><li>Use Notes to open notes for the selected date.</li><li>Use ? to open Help at any time.</li><li>Use Export in the homepage footer regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>In Tasks, switch between Inbox, Home, Work, Projects, and Today.</li><li>In Notes, use the star to show pinned notes only and Compact to show more entries.</li><li>Select the required date in Planner before opening date-specific Notes.</li><li>Import and Last import are available in the homepage footer.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div></div></section>
   </div>
 
   <script>
@@ -1510,7 +1949,6 @@
         const CALENDAR_COLLAPSED_KEY = "timeblocks:calendarCollapsed";
         const QUOTE_KEY = "timeblocks:favouriteQuote";
         const LAST_IMPORT_KEY = "timeblocks:lastImportAt";
-        const MOBILE_HOME_QUOTE_FALLBACK = "You have to assemble your life yourself, action by action.";
         const TASK_CONTEXTS = ["Inbox", "Home", "Work", "Projects", "Today"];
         const el = id => document.getElementById(id);
         const globalSearchInput = el("globalSearchInput");
@@ -1518,16 +1956,10 @@
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
-        const mobilePlanBtn = el("mobilePlanBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
-        const mobileTasksBtn = el("mobileTasksBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
-        const mobileMoreBtn = el("mobileMoreBtn");
-        const mobileMoreMenu = el("mobileMoreMenu");
-        const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
-        const mobileMoreActivityBtn = el("mobileMoreActivityBtn");
-        const mobileHomeQuote = el("mobileHomeQuote");
+        const mobileHelpBtn = el("mobileHelpBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -1568,6 +2000,9 @@
         const sortNotesBtn = el("sortNotesBtn");
         const notesFocusBtn = el("notesFocusBtn");
         const notesPinnedBtn = el("notesPinnedBtn");
+        const notesFocusScope = el("notesFocusScope");
+        const notesScopeDateBtn = el("notesScopeDateBtn");
+        const notesScopeAllBtn = el("notesScopeAllBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -1627,6 +2062,7 @@
         let notesSearchQuery = "";
         let notesBinOpen = false;
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
+        let notesFocusAll = false;
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
@@ -1690,19 +2126,6 @@
                 element.textContent = shortText;
                 element.title = fullText;
             });
-        }
-        function renderMobileHomeQuote() {
-            mobileHomeQuote.textContent = favouriteQuote.trim() || MOBILE_HOME_QUOTE_FALLBACK;
-        }
-        function openMobileMoreMenu() {
-            mobileMoreMenu.classList.add("open");
-            mobileMoreMenu.setAttribute("aria-hidden", "false");
-            mobileMoreBtn.setAttribute("aria-expanded", "true");
-        }
-        function closeMobileMoreMenu() {
-            mobileMoreMenu.classList.remove("open");
-            mobileMoreMenu.setAttribute("aria-hidden", "true");
-            mobileMoreBtn.setAttribute("aria-expanded", "false");
         }
         function formatTime(hour, minute) { return `${hour % 12 || 12}:${pad(minute)}`; }
         function createId(prefix = "note") { return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`; }
@@ -2390,7 +2813,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 favouriteQuote = backup.quote;
                 quoteInput.value = favouriteQuote;
                 localStorage.setItem(QUOTE_KEY, favouriteQuote);
-                renderMobileHomeQuote();
             }
             if (backup.tasks) {
                 globalTasks = normalizeTaskLists(backup.tasks);
@@ -2438,6 +2860,104 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
         }
 
+        function applyNotesFocusScope() {
+            const allActive = !isMobileViewport() && notesFocusView && notesFocusAll;
+            notesFocusScope.classList.toggle("show", !isMobileViewport() && notesFocusView && !notesBinOpen);
+            notesScopeDateBtn.classList.toggle("active", !allActive);
+            notesScopeAllBtn.classList.toggle("active", allActive);
+            notesScopeDateBtn.setAttribute("aria-pressed", String(!allActive));
+            notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
+        }
+        function setNotesFocusScope(showAll) {
+            if (isMobileViewport() || !notesFocusView || notesBinOpen)
+                return;
+            notesFocusAll = Boolean(showAll);
+            applyNotesFocusScope();
+            renderNotes();
+        }
+        function collectAllFocusNotes() {
+            const results = [];
+            allDateKeys().forEach(dateKey => {
+                const data = readDateData(dateKey);
+                normalizeNotes(data.notes).forEach(note => {
+                    if (!note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note))
+                        results.push({ dateKey, note });
+                });
+            });
+            return results.sort((a, b) => {
+                if (a.note.pinned !== b.note.pinned)
+                    return a.note.pinned ? -1 : 1;
+                if (a.dateKey !== b.dateKey)
+                    return b.dateKey.localeCompare(a.dateKey);
+                return (a.note.title || "").localeCompare(b.note.title || "", undefined, { sensitivity: "base" });
+            });
+        }
+        function updateAllFocusNotePin(dateKey, noteId) {
+            const data = readDateData(dateKey);
+            const targetNotes = normalizeNotes(data.notes);
+            const target = targetNotes.find(note => note.id === noteId && !note.deleted);
+            if (!target)
+                return;
+            target.pinned = !target.pinned;
+            data.notes = orderNotes(targetNotes);
+            writeDateData(dateKey, data);
+            if (dateKey === toKey(selectedDate))
+                notes = orderNotes(normalizeNotes(data.notes));
+            markDateHasData(dateKey);
+            renderNotes();
+        }
+        function openAllFocusNote(dateKey, noteId) {
+            const targetDate = fromKey(dateKey);
+            if (!targetDate)
+                return;
+            selectDate(targetDate, true);
+            setTimeout(() => openExpandedNote(noteId), 0);
+        }
+        function createAllFocusNoteCard(result) {
+            const { dateKey, note } = result;
+            const card = document.createElement("section");
+            card.className = "note-card all-notes-card";
+            card.classList.toggle("is-pinned", Boolean(note.pinned));
+            const titleArea = document.createElement("div");
+            titleArea.className = "note-title-area";
+            const title = document.createElement("div");
+            title.className = "all-notes-title";
+            title.textContent = note.title || "Untitled";
+            const date = document.createElement("div");
+            date.className = "all-notes-date";
+            const parsedDate = fromKey(dateKey);
+            date.textContent = parsedDate ? displayDate(parsedDate) : dateKey;
+            const tools = document.createElement("div");
+            tools.className = "note-tools-row";
+            const pin = document.createElement("button");
+            pin.className = "icon-btn pin-note-btn";
+            pin.type = "button";
+            pin.textContent = note.pinned ? "★" : "☆";
+            pin.title = note.pinned ? "Unpin note" : "Pin note";
+            pin.classList.toggle("pinned", Boolean(note.pinned));
+            const open = document.createElement("button");
+            open.className = "icon-btn";
+            open.type = "button";
+            open.textContent = "⤢";
+            open.title = "Open note";
+            const body = document.createElement("div");
+            body.className = "note-body all-notes-preview";
+            body.textContent = note.body || "No note body";
+            pin.addEventListener("click", () => updateAllFocusNotePin(dateKey, note.id));
+            open.addEventListener("click", () => openAllFocusNote(dateKey, note.id));
+            titleArea.append(title, date);
+            tools.append(pin, open);
+            card.append(titleArea, tools, body);
+            return card;
+        }
+        function renderAllFocusNotes() {
+            const results = collectAllFocusNotes();
+            results.forEach(result => notesList.appendChild(createAllFocusNoteCard(result)));
+            notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+            notesNoResults.classList.toggle("show", results.length === 0);
+            applyNotesCompact();
+            updateSearchUi();
+        }
         function applyNotesFocusView() {
             document.body.classList.toggle("notes-focus-active", notesFocusView);
             notesSidebar.classList.toggle("notes-focus-grid", notesFocusView);
@@ -2449,6 +2969,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 if (isMobileViewport())
                     setMobileSection("notes");
             }
+            else {
+                notesFocusAll = false;
+            }
+            applyNotesFocusScope();
+            renderNotes();
         }
         function toggleNotesFocusView() {
             if (!isMobileViewport()) {
@@ -3126,6 +3651,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function renderNotes() {
             notesList.innerHTML = "";
             notes = orderNotes(notes);
+            applyNotesFocusScope();
+            if (!isMobileViewport() && notesFocusView && notesFocusAll && !notesBinOpen) {
+                renderAllFocusNotes();
+                return;
+            }
             const visibleNotes = notesBinOpen
                 ? notes.filter(note => note.deleted)
                 : notes.filter(note => !note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note));
@@ -3308,11 +3838,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function setSidebarCollapsed(panel, button, shellClass, collapsed) {
             panel.classList.toggle("collapsed", collapsed);
             shell.classList.toggle(shellClass, collapsed);
-            button.textContent = collapsed && panel === sidebar && isMobileViewport()
-                ? "Show Calendar"
-                : collapsed
-                    ? "Show"
-                    : "Hide";
+            button.textContent = collapsed
+                ? panel === sidebar
+                    ? "Show Calendar"
+                    : isMobileViewport()
+                        ? "Show"
+                        : "Show Workspace"
+                : "Hide";
             button.setAttribute("aria-expanded", String(!collapsed));
         }
         function applyDesktopCalendarPreference() {
@@ -3333,7 +3865,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
-            renderMobileHomeQuote();
         });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
         globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -3345,25 +3876,14 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 selectDate(today, true);
             setMobileSection("calendar");
         });
-        mobilePlanBtn.addEventListener("click", () => {
-            closeMobileMoreMenu();
-            const today = getToday();
-            if (isWithinRange(today))
-                selectDate(today, true);
-            setMobileSection("plan");
-        });
-        mobileNotesBtn.addEventListener("click", () => { closeMobileMoreMenu(); setMobileSection("notes"); });
-        mobileTasksBtn.addEventListener("click", () => { closeMobileMoreMenu(); openTasksTodayShortcut(); });
+        mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
         mobileActivityBtn.addEventListener("click", openActivity);
-        mobileMoreActivityBtn.addEventListener("click", () => { closeMobileMoreMenu(); openActivity(); });
-        mobileMoreBtn.addEventListener("click", openMobileMoreMenu);
-        mobileMoreCloseBtn.addEventListener("click", closeMobileMoreMenu);
-        mobileMoreMenu.addEventListener("click", event => { if (event.target === mobileMoreMenu) closeMobileMoreMenu(); });
+        mobileHelpBtn.addEventListener("click", openHelp);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
-        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); exportBackup(); }));
-        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); importBackupBtn.click(); }));
-        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", () => { closeMobileMoreMenu(); openHelp(); }));
+        document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
+        document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
+        document.querySelectorAll(".help-btn").forEach(button => button.addEventListener("click", openHelp));
         closeHelpBtn.addEventListener("click", closeHelp);
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
@@ -3383,6 +3903,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         });
         sortNotesBtn.addEventListener("click", sortNotesByTitle);
         notesFocusBtn.addEventListener("click", toggleNotesFocusView);
+        notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
+        notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
@@ -3447,8 +3969,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             closeMoveNote(); });
         document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
-                if (mobileMoreMenu.classList.contains("open"))
-                    closeMobileMoreMenu();
                 if (globalSearchQuery)
                     clearGlobalSearch();
                 if (noteModal.classList.contains("open"))
@@ -3526,7 +4046,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         applyCalendarRangeView();
         buildCalendar();
         quoteInput.value = favouriteQuote;
-        renderMobileHomeQuote();
         renderLastImportStatus();
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
