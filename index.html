@@ -1985,6 +1985,42 @@
     padding-bottom: 6px;
   }
 }
+/* Desktop keyboard shortcut hints */
+/* Desktop keyboard shortcut hints */
+.desktop-shortcut-hints {
+  display: none;
+}
+
+@media (min-width: 760px) {
+  .app > footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .desktop-shortcut-hints {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 5px 10px;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .desktop-shortcut-hints strong {
+    color: rgba(61, 58, 52, 0.78);
+    font-weight: 650;
+  }
+
+  .desktop-shortcut-hints:hover {
+    color: var(--ink);
+  }
+}
 
   </style>
 </head>
@@ -2055,7 +2091,18 @@
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
-      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div></footer>
+      <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
+  class="desktop-shortcut-hints"
+  title="Press G, then the second key"
+>
+  <span>Shortcuts:</span>
+  <span><strong>GF</strong> Focus</span>
+  <span><strong>GT</strong> Today task</span>
+  <span><strong>GI</strong> Inbox</span>
+  <span><strong>GA</strong> Activity</span>
+  <span><strong>GN</strong> New note</span>
+  <span><strong>GS</strong> Search</span>
+</div></footer>
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
@@ -4094,14 +4141,96 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         }
         function openHelp() { helpModal.classList.add("open"); helpModal.setAttribute("aria-hidden", "false"); }
         function closeHelp() { helpModal.classList.remove("open"); helpModal.setAttribute("aria-hidden", "true"); }
+      function handleEscapeKey() {
+  clearShortcutPrefix();
+
+  if (helpModal.classList.contains("open")) {
+    closeHelp();
+    return;
+  }
+
+  if (moveModal.classList.contains("open")) {
+    closeMoveNote();
+    return;
+  }
+
+  if (noteModal.classList.contains("open")) {
+    closeExpandedEditor();
+    return;
+  }
+
+  if (
+  globalSearchQuery ||
+  document.activeElement === globalSearchInput ||
+  document.body.classList.contains("global-search-active")
+) {
+  clearGlobalSearch();
+  globalSearchInput.blur();
+  return;
+}
+
+  closeExpandedMoreMenu();
+  closeNotesMoreMenu();
+  closeTaskMoveMenus();
+
+  if (isMobileViewport()) {
+    return;
+  }
+
+  if (notesFocusView) {
+    notesFocusView = false;
+    notesFocusAll = false;
+    localStorage.setItem(NOTE_FOCUS_KEY, "false");
+    applyNotesFocusView();
+    return;
+  }
+
+  if (workspaceFocusPanel) {
+    workspaceFocusPanel = null;
+    applyWorkspaceFocusState();
+    return;
+  }
+
+  const bothCollapsed =
+    sidebar.classList.contains("collapsed") &&
+    notesSidebar.classList.contains("collapsed");
+
+  if (bothCollapsed) {
+    setSidebarCollapsed(
+      sidebar,
+      sidebarToggle,
+      "left-collapsed",
+      false
+    );
+
+    setSidebarCollapsed(
+      notesSidebar,
+      notesToggle,
+      "right-collapsed",
+      false
+    );
+
+    updateFocusViewButton();
+    return;
+  }
+
+  if (desktopWorkspacePanel !== "notes") {
+    showDesktopWorkspacePanel("notes");
+  }
+}
         focusInput.addEventListener("input", save);
         quoteInput.addEventListener("input", () => {
             favouriteQuote = quoteInput.value;
             localStorage.setItem(QUOTE_KEY, favouriteQuote);
         });
         globalSearchInput.addEventListener("input", () => { globalSearchQuery = globalSearchInput.value; renderGlobalResults(); });
-        globalSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
-            clearGlobalSearch(); });
+        globalSearchInput.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    clearGlobalSearch();
+    globalSearchInput.blur();
+  }
+});
         globalSearchClear.addEventListener("click", clearGlobalSearch);
         mobileCalendarBtn.addEventListener("click", () => {
             const today = getToday();
@@ -4203,17 +4332,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         moveModal.addEventListener("click", event => { if (event.target === moveModal)
             closeMoveNote(); });
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                if (globalSearchQuery)
-                    clearGlobalSearch();
-                if (noteModal.classList.contains("open"))
-                    closeExpandedEditor();
-                if (moveModal.classList.contains("open"))
-                    closeMoveNote();
-                if (helpModal.classList.contains("open"))
-                    closeHelp();
-            }
-        });
+  if (event.key === "Escape") {
+    handleEscapeKey();
+  }
+});
         clearBtn.addEventListener("click", () => {
             if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`))
                 return;
@@ -4305,7 +4427,7 @@ function clearShortcutPrefix() {
 }
 
 document.addEventListener("keydown", event => {
-  if (
+    if (
     isTypingField(event.target) ||
     event.ctrlKey ||
     event.altKey ||
@@ -4348,6 +4470,22 @@ document.addEventListener("keydown", event => {
   if (key === "a") {
     document.getElementById("activityBtn")?.click();
   }
+  if (key === "n") {
+  const today = getToday();
+
+  if (isWithinRange(today)) {
+    selectDate(today, true);
+  }
+
+  setTimeout(() => {
+    addNoteBtn.click();
+  }, 0);
+}
+
+if (key === "s") {
+  globalSearchInput.focus();
+  globalSearchInput.select();
+}
 });
     })();
   
