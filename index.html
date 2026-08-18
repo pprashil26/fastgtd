@@ -107,7 +107,11 @@
     .note-label { color: var(--muted); font-size: var(--font-xs); text-align: right; }
     .timeline { display: grid; gap: 3px; padding: 5px 10px 6px; }
     .time-pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-    .slot { position: relative; display: grid; grid-template-columns: 42px 16px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
+    .slot { position: relative; display: grid; grid-template-columns: 42px 16px 24px 1fr; min-height: 24px; border-radius: 8px; background: #fffdf8; }
+    .timeblock-status { width: 22px; height: 22px; margin: 1px 0; padding: 0; border-radius: 7px; font-size: 11px; font-weight: 700; line-height: 1; }
+    .timeblock-status-planned { color: var(--muted); }
+    .timeblock-status-in-progress { color: #526b7a; background: #eaf1f4; }
+    .timeblock-status-done { color: #4f6f5f; background: #e7f1eb; }
     .slot.current-slot { background: #fff3c7; }
     .slot.current-slot::after {
       content: "";
@@ -259,7 +263,8 @@
       .calendar-wrap { max-height: 45vh; }
       .timeline { padding: 6px 10px; }
       .time-pair-row { grid-template-columns: 1fr; border-bottom: 0; }
-      .slot { grid-template-columns: 50px 1fr; min-height: 32px; border-bottom: 1px solid var(--line); }
+      .slot { grid-template-columns: 50px 28px 1fr; min-height: 32px; border-bottom: 1px solid var(--line); }
+      .timeblock-status { width: 26px; height: 30px; margin: 1px 0; font-size: 13px; }
       .drag-handle { display: none; }
       input[type="text"], input[type="date"], textarea { font-size: 16px; }
       textarea { min-height: 34px; height: 34px; }
@@ -2022,6 +2027,756 @@
   }
 }
 
+
+/* Note labels, label selector and mobile note sharing */
+.note-label-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 9px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.note-label-chips[hidden] {
+  display: none !important;
+}
+.note-label-chip {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+button.note-label-chip {
+  cursor: pointer;
+}
+.note-label-chip.removable:hover {
+  color: var(--danger);
+  border-color: #d9b7b2;
+}
+.expanded-label-chips {
+  padding: 6px 12px;
+}
+.notes-sidebar.notes-compact .note-card > .note-label-chips {
+  display: none;
+}
+.notes-label-filter {
+  display: none;
+  min-height: 28px;
+  max-width: 150px;
+  padding: 3px 24px 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--ink);
+  font-size: 11px;
+}
+.notes-label-filter.show {
+  display: inline-block;
+}
+.label-panel {
+  width: min(380px, 92vw);
+  max-height: 78vh;
+  overflow: hidden;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(50, 40, 28, .22);
+}
+.label-panel-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.label-panel-title {
+  margin: 0;
+  font-size: var(--font-lg);
+  font-weight: 650;
+}
+.label-panel-body {
+  max-height: calc(78vh - 45px);
+  padding: 12px;
+  overflow-y: auto;
+}
+.label-add-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.label-add-btn {
+  min-width: 48px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--ink);
+}
+.label-section-title {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.label-empty {
+  color: var(--muted);
+  font-size: var(--font-sm);
+}
+.label-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.label-option {
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--muted);
+  text-decoration: none !important;
+}
+.label-option.active {
+  background: var(--selected);
+  border-color: var(--entry-border);
+  color: var(--ink);
+  font-weight: 700;
+}
+.expanded-share-btn {
+  display: none;
+}
+@media (max-width: 759px) {
+  .expanded-share-btn {
+    display: inline-flex;
+  }
+  .notes-label-filter {
+    display: none !important;
+  }
+}
+
+
+/* Desktop Labels workspace: global labelled notes using the existing Notes UI */
+@media (min-width: 760px) {
+  .workspace-tabs {
+    gap: 2px;
+  }
+
+  .workspace-tab {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .notes-focus-scope.labels-mode {
+    display: flex;
+    justify-content: flex-start;
+    padding: 7px 8px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--panel);
+  }
+
+  .notes-focus-scope.labels-mode .notes-scope-btn {
+    display: none;
+  }
+
+  .notes-focus-scope.labels-mode .notes-label-filter {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 32px;
+    padding-left: 10px;
+    font-weight: 650;
+  }
+}
+
+
+/* Expanded note View/Edit mode and direct Labels access */
+.expanded-edit-btn {
+  min-width: 54px;
+  min-height: 30px;
+  padding: 5px 11px;
+  border: 1px solid #e7d26d;
+  border-radius: 999px;
+  background: #FFEE8C;
+  color: #4b431f;
+  font-size: 11.5px;
+  font-weight: 750;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+.expanded-edit-btn:hover,
+.expanded-edit-btn:focus-visible,
+.expanded-edit-btn.active {
+  background: #ffe66e;
+  color: #3f3818;
+  text-decoration: none;
+}
+
+.expanded-labels-toolbar-btn {
+  min-width: 58px;
+  min-height: 30px;
+  padding: 5px 11px;
+  border: 1px solid var(--entry-border);
+  border-radius: 999px;
+  background: var(--selected);
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none !important;
+}
+
+.expanded-labels-toolbar-btn:hover,
+.expanded-labels-toolbar-btn:focus-visible {
+  background: #cfe0d6;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+#noteModal.note-view-mode .expanded-title,
+#noteModal.note-view-mode .expanded-body {
+  cursor: text;
+}
+
+@media (max-width: 759px) {
+  .expanded-note-tools {
+    gap: 3px;
+  }
+
+  .expanded-labels-toolbar-btn {
+    min-width: 56px;
+    min-height: 32px;
+    padding: 6px 9px;
+  }
+
+  .expanded-edit-btn {
+    min-width: 52px;
+    min-height: 32px;
+    padding: 6px 10px;
+  }
+}
+
+
+/* Mobile All Notes default and compact Notes toolbar */
+@media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-notes .mobile-notes-date {
+    display: none;
+  }
+
+  body.mobile-section-active.mobile-view-notes .notes-head {
+    min-height: 40px;
+  }
+
+  body.mobile-section-active.mobile-view-notes .notes-head .notes-title {
+    display: block;
+  }
+
+  body.mobile-section-active.mobile-view-notes .notes-top {
+    margin-bottom: 0;
+  }
+
+  body.mobile-section-active.mobile-view-notes .notes-actions {
+    display: none;
+  }
+
+  .notes-focus-scope.mobile-scope {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin: 0 0 7px;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+  }
+
+  .notes-focus-scope.mobile-scope #notesScopeAllBtn {
+    order: 1;
+  }
+
+  .notes-focus-scope.mobile-scope #notesScopeDateBtn {
+    order: 2;
+  }
+
+  .notes-focus-scope.mobile-scope .notes-label-filter {
+    order: 3;
+  }
+
+  .notes-focus-scope.mobile-scope .notes-scope-btn {
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  .notes-focus-scope.mobile-scope .notes-label-filter {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    min-height: 36px;
+    margin-top: 2px;
+    padding: 5px 30px 5px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .mobile-notes-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 38px 38px;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .mobile-notes-toolbar[hidden] {
+    display: none !important;
+  }
+
+  .mobile-notes-tool,
+  .mobile-notes-add,
+  .mobile-notes-more-btn {
+    min-height: 36px;
+    padding: 6px 7px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--page);
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 650;
+    text-align: center;
+    text-decoration: none !important;
+  }
+
+  .mobile-notes-tool.active {
+    background: var(--selected);
+    border-color: var(--entry-border);
+    color: var(--ink);
+  }
+
+  .mobile-notes-add {
+    background: #FFEE8C;
+    border-color: #e2cd61;
+    color: #4f4518;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .mobile-notes-more-wrap {
+    position: relative;
+  }
+
+  .mobile-notes-more-btn {
+    width: 38px;
+    font-size: 19px;
+  }
+
+  .mobile-notes-more-menu {
+    display: none;
+    position: absolute;
+    top: 41px;
+    right: 0;
+    z-index: 30;
+    min-width: 172px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--page);
+    box-shadow: 0 14px 34px rgba(46, 57, 50, .14);
+  }
+
+  .mobile-notes-more-menu.open {
+    display: grid;
+    gap: 2px;
+  }
+
+  .mobile-notes-more-menu .plain-btn {
+    min-height: 38px;
+    padding: 8px 10px;
+    color: var(--ink);
+    text-align: left;
+    text-decoration: none;
+  }
+
+  body.mobile-section-active.mobile-view-notes #notesList .all-notes-card {
+    margin-bottom: 8px;
+  }
+
+  body.mobile-section-active.mobile-view-notes .all-notes-title {
+    font-size: 13px;
+  }
+
+  body.mobile-section-active.mobile-view-notes .all-notes-date {
+    margin-top: 2px;
+    font-size: 11px;
+  }
+
+  body.mobile-section-active.mobile-view-notes .all-notes-preview {
+    min-height: 104px;
+    max-height: 132px;
+  }
+}
+
+
+/* Mobile Notes unified toolbar and compact-card open behaviour */
+@media (max-width: 759px) {
+  .mobile-notes-toolbar {
+    grid-template-columns: minmax(148px, 1fr) auto 36px 36px 36px;
+    gap: 4px;
+  }
+
+  .mobile-notes-scope-slot {
+    min-width: 0;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    margin: 0;
+    padding: 2px;
+    border-radius: 10px;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope .notes-scope-btn {
+    min-width: 0;
+    min-height: 32px;
+    padding: 5px 6px;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+
+  .mobile-notes-scope-slot .notes-label-filter {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    z-index: 25;
+    width: calc(100% - 16px);
+    margin-top: 39px;
+    box-shadow: 0 10px 24px rgba(46, 57, 50, .13);
+  }
+
+  #mobileNotesLabelsBtn {
+    min-width: 52px;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .mobile-notes-pinned,
+  .mobile-notes-add,
+  .mobile-notes-more-btn {
+    width: 36px;
+    min-width: 36px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .notes-sidebar.notes-compact .note-card,
+  .notes-sidebar.notes-compact .note-title-area {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-notes-toolbar {
+    grid-template-columns: minmax(132px, 1fr) 49px 34px 34px 34px;
+    gap: 3px;
+  }
+
+  .mobile-notes-scope-slot .notes-focus-scope.mobile-scope .notes-scope-btn {
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 10px;
+  }
+}
+
+
+/* Expanded note main-toolbar font control */
+.expanded-font-toolbar-btn {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.expanded-font-toolbar-btn.active {
+  color: var(--ink);
+  background: var(--selected);
+  font-weight: 800;
+}
+
+
+/* Lightweight Events: selected-date strip, workspace and editor */
+.events-strip {
+  padding: 6px 11px 7px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.events-strip-head,
+.events-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.events-strip-title,
+.events-title {
+  color: var(--ink);
+  font-size: var(--font-sm);
+  font-weight: 700;
+}
+.events-strip-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.event-add-link {
+  color: #536b60;
+  font-weight: 700;
+}
+.events-strip-list {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.events-strip-list::-webkit-scrollbar { display: none; }
+.event-strip-item {
+  flex: 0 0 auto;
+  max-width: 280px;
+  min-height: 27px;
+  padding: 4px 8px;
+  overflow: hidden;
+  border: 1px solid var(--entry-border);
+  border-radius: 999px;
+  background: var(--page);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.events-strip-empty,
+.event-empty {
+  color: var(--muted);
+  font-size: 11px;
+}
+.events-panel {
+  display: none;
+  flex: 1;
+  min-height: 460px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  background: var(--page);
+}
+.events-panel.open { display: block; }
+.events-toolbar { margin-bottom: 9px; }
+.event-group { margin-top: 12px; }
+.event-group:first-child { margin-top: 0; }
+.event-group-title {
+  margin: 0 0 5px 2px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+.event-list { display: grid; gap: 5px; }
+.event-row {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--page);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.event-row:hover { background: var(--soft); }
+.event-today { background: #fff5cf; border-color: #d8bd5d; }
+.event-past { background: #f4f5f3; color: var(--muted); }
+.event-when { color: var(--muted); font-size: 10.5px; }
+.event-row-title { font-size: 12.5px; font-weight: 650; }
+.event-editor-panel {
+  width: min(390px, 94vw);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--page);
+  box-shadow: 0 18px 50px rgba(50,40,28,.22);
+}
+.event-editor-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.event-editor-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.event-editor-body { display: grid; gap: 6px; padding: 12px 14px; }
+.event-editor-body label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.event-editor-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 4px; }
+.event-editor-date-row > div { display: grid; gap: 5px; }
+.event-optional { font-weight: 400; }
+.event-editor-actions {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 12px;
+}
+.event-save-btn {
+  min-height: 31px;
+  padding: 5px 12px;
+  border: 1px solid #e2cd61;
+  border-radius: 10px;
+  background: #FFEE8C;
+  color: #4f4518;
+  font-weight: 700;
+}
+@media (min-width: 760px) {
+  .workspace-panel-host .events-panel {
+    display: block;
+    min-height: 0;
+    max-height: calc(100vh - 82px);
+    padding: 8px;
+  }
+  .workspace-panel-host .events-panel[hidden] { display: none !important; }
+  body.workspace-focus-active .workspace-panel-host .events-panel {
+    max-height: calc(100vh - 76px);
+    padding: 12px;
+  }
+}
+@media (max-width: 759px) {
+  .events-strip { padding: 6px 9px 7px; }
+  .event-strip-item { max-width: 230px; min-height: 30px; font-size: 11.5px; }
+  #noteModal:has(#eventsPanel.open) { padding: 6px; }
+  #noteModal:has(#eventsPanel.open) .expanded-note {
+    width: min(520px, calc(100vw - 12px));
+    height: min(90dvh, 760px);
+    min-height: min(82dvh, 620px);
+    max-height: 90dvh;
+  }
+  #noteModal:has(#eventsPanel.open) .events-panel {
+    min-height: 0;
+    height: auto;
+    flex: 1;
+    padding: 8px 10px 10px;
+    overflow-y: auto;
+  }
+  .event-editor-date-row { grid-template-columns: 1fr; }
+}
+
+
+/* Mobile homepage compact Event capture and view */
+.mobile-home-capture-row,
+.mobile-quick-event-btn,
+.mobile-all-events-btn {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  .mobile-home-capture-row {
+    display: flex;
+    width: min(310px, 92%);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-quick-event-btn {
+    display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 42px;
+    margin-top: 0;
+    padding: 8px 11px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2cd61;
+    border-radius: 999px;
+    background: #FFEE8C;
+    color: #4f4518;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none !important;
+    box-shadow: 0 3px 10px rgba(122, 106, 42, .12);
+  }
+
+  .mobile-quick-event-btn {
+    border-color: var(--entry-border);
+    background: var(--selected);
+    color: var(--ink);
+    box-shadow: 0 3px 10px rgba(67, 94, 78, .08);
+  }
+
+  .mobile-quick-event-btn:hover,
+  .mobile-quick-event-btn:focus-visible {
+    background: #cfe0d6;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .mobile-all-events-btn {
+    display: inline-flex;
+    min-height: 30px;
+    margin-top: 6px;
+    padding: 4px 10px;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .mobile-all-events-btn:hover,
+  .mobile-all-events-btn:focus-visible {
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 759px) and (max-height: 650px) {
+  .mobile-home-capture-row {
+    margin-top: 6px;
+  }
+
+  .mobile-home-capture-row .mobile-quick-note-btn,
+  .mobile-quick-event-btn {
+    min-height: 38px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .mobile-all-events-btn {
+    min-height: 26px;
+    margin-top: 3px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -2049,7 +2804,11 @@
       <img class="mobile-home-logo" src="logo.png" alt="Timeblocks logo" />
       <p class="mobile-home-brand-motto">Finish Actions, Save Time</p>
       <p class="mobile-home-brand-tagline">A lightweight GTD app · empty your mind</p>
-      <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+      <div class="mobile-home-capture-row" aria-label="Quick capture">
+        <button class="plain-btn mobile-quick-note-btn" id="mobileQuickNoteBtn" type="button" title="Add a quick note for today">＋ Quick note</button>
+        <button class="plain-btn mobile-quick-event-btn" id="mobileQuickEventBtn" type="button" title="Add an event for today">＋ Event</button>
+      </div>
+      <button class="plain-btn mobile-all-events-btn" id="mobileAllEventsBtn" type="button">All events</button>
     </div>
     <div class="mobile-home-bottom">
       <div class="mobile-home-data-row">
@@ -2089,6 +2848,7 @@
         <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button">Focus</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
+      <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button">+ Event</button></span></div><div class="events-strip-list" id="eventsStripList"></div></section>
       <section class="timeline" id="timeline" aria-label="Day planning from 8 AM to midnight"></section>
       <section class="quote-block" aria-label="Favourite quote or reminder"><div class="quote-line"><label class="quote-label" for="quoteInput">Quote</label><input id="quoteInput" type="text" placeholder="Favourite quote, mantra or reminder..." autocomplete="off" /></div></section>
       <footer><span class="footer-actions"><span>Saved locally on this device</span><span>·</span><button class="plain-btn backup-btn" id="exportBackupBtn" type="button">Export</button><span>·</span><button class="plain-btn backup-btn" id="importBackupBtn" type="button">Import</button><span>·</span><button class="plain-btn backup-btn help-btn" type="button">Help</button><input accept=".txt,text/plain,application/json" hidden id="importBackupInput" type="file" /></span><div class="last-import-status" data-last-import-status>Last import: Never</div><div
@@ -2102,17 +2862,20 @@
   <span><strong>GA</strong> Activity</span>
   <span><strong>GN</strong> New note</span>
   <span><strong>GS</strong> Search</span>
+  <span><strong>GL</strong> Labels</span>
+  <span><strong>GE</strong> Event</span>
 </div></footer>
     </main>
 
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
-      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
+      <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceLabelsTab" type="button" role="tab" aria-selected="false">Labels</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
         <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
         <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon" id="notesPinnedBtn" type="button" title="Show pinned notes only" aria-pressed="false">☆</button><button class="plain-btn icon-btn notes-toolbar-icon compact-btn" id="compactNotesBtn" type="button" title="Hide note previews">▤</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
-        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes focus scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button></div>
+        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><button class="plain-btn notes-scope-btn active" id="notesScopeDateBtn" type="button">This date</button><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-tool mobile-notes-pinned" id="mobileNotesPinnedBtn" type="button" title="Show pinned notes only" aria-label="Show pinned notes only">☆</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesCompactBtn" type="button">Compact view</button><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -2122,7 +2885,8 @@
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
-      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedFontBtn" type="button">Larger font</button><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="expanded-note-tools" id="expandedNoteTools"><button class="icon-btn" id="expandedPinBtn" type="button" title="Pin note">☆</button><button class="plain-btn expanded-labels-toolbar-btn" id="expandedLabelsBtn" type="button" title="Add or remove labels" aria-label="Add or remove labels">Labels</button><button class="plain-btn expanded-edit-btn" id="expandedEditBtn" type="button" title="Edit note" aria-pressed="false">Edit</button><button class="icon-btn expanded-font-toolbar-btn" id="expandedFontBtn" type="button" title="Use larger note font" aria-pressed="false">Aa</button><button class="icon-btn" id="expandedWideBtn" type="button" title="Toggle wide note view">↔</button><button class="icon-btn" id="expandedLineBtn" type="button" title="Insert horizontal line"><span class="expanded-line-icon" aria-hidden="true">─</span><span class="expanded-line-text">Insert line</span></button><button class="icon-btn expanded-share-btn" id="expandedShareBtn" type="button" title="Share note" aria-label="Share note">↗</button><span class="expanded-more-wrap"><button class="icon-btn" id="expandedMoreBtn" type="button" title="More note actions">⋯</button><span class="expanded-more-menu" id="expandedMoreMenu"><button class="plain-btn" id="expandedCopyBtn" type="button">Copy note</button><button class="plain-btn" id="expandedMoveBtn" type="button">Move note</button><button class="plain-btn delete-note-btn" id="expandedDeleteBtn" type="button">Delete note</button></span></span></div>
+      <div class="note-label-chips expanded-label-chips" id="expandedLabelChips" hidden></div>
       <textarea id="expandedBody" class="expanded-body" placeholder="Write note..."></textarea>
       <div class="tasks-panel" id="globalTasksPanel" hidden>
         <div class="tasks-toolbar"><span class="tasks-title">Tasks</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="tasksFocusBtn" type="button" title="Focus on Tasks">⛶</button><button class="plain-btn" id="sortTasksBtn" type="button">Sort</button><span> · </span><button class="plain-btn" id="clearDoneTasksBtn" type="button">Clear done</button></span></div>
@@ -2142,7 +2906,33 @@
         <div class="activity-input"><input id="activityInput" type="text" placeholder="What are you doing?" autocomplete="off" /><button class="plain-btn activity-add-btn" id="activityAddBtn" type="button">Add</button></div>
         <div id="activityLog"></div>
       </div>
+      <div class="events-panel" id="eventsPanel" hidden>
+        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link" id="eventsPanelAddBtn" type="button">+ Event</button></span></div>
+        <div id="eventsList"></div>
+      </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="labelModal" aria-hidden="true">
+    <section class="label-panel" role="dialog" aria-modal="true" aria-label="Note labels">
+      <div class="label-panel-head"><p class="label-panel-title">Labels</p><button class="plain-btn" id="closeLabelBtn" type="button">Close</button></div>
+      <div class="label-panel-body">
+        <div class="label-current" id="labelCurrent"></div>
+        <div class="label-add-row"><input id="labelInput" type="text" maxlength="30" placeholder="Add a label..." autocomplete="off" /><button class="plain-btn label-add-btn" id="labelAddBtn" type="button">Add</button></div>
+        <div class="label-existing" id="labelExisting"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="eventModal" aria-hidden="true">
+    <section class="event-editor-panel" role="dialog" aria-modal="true" aria-label="Event editor">
+      <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
+      <div class="event-editor-body">
+        <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <div class="event-editor-date-row"><div><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
+      </div>
+      <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
     </section>
   </div>
 
@@ -2164,8 +2954,14 @@
         const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const COMPACT_KEY = "timeblocks:notesCompact";
         const TASKS_KEY = "timeblocks:globalTasks";
+        const EVENTS_KEY = "timeblocks:events";
         const ACTIVITY_KEY = "timeblocks:activityLog";
         const ACTIVITY_HIDE_COMPLETED_KEY = "timeblocks:activityHideCompleted";
+        const TIMEBLOCK_STATUSES = [
+            { id: "planned", icon: "○", label: "Planned" },
+            { id: "in-progress", icon: "▶", label: "In progress" },
+            { id: "done", icon: "✓", label: "Done" }
+        ];
         const ACTIVITY_STATUSES = [
             { id: "started", icon: "▶", label: "Started" },
             { id: "waiting", icon: "◷", label: "Waiting" },
@@ -2194,6 +2990,8 @@
         const mobileHelpBtn = el("mobileHelpBtn");
         const mobileShareBtn = el("mobileShareBtn");
         const mobileQuickNoteBtn = el("mobileQuickNoteBtn");
+        const mobileQuickEventBtn = el("mobileQuickEventBtn");
+        const mobileAllEventsBtn = el("mobileAllEventsBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const mobileNotesDate = el("mobileNotesDate");
@@ -2205,11 +3003,17 @@
         const notesWorkspacePanel = el("notesWorkspacePanel");
         const workspacePanelHost = el("workspacePanelHost");
         const workspaceNotesTab = el("workspaceNotesTab");
+        const workspaceLabelsTab = el("workspaceLabelsTab");
         const workspaceTasksTab = el("workspaceTasksTab");
         const workspaceActivityTab = el("workspaceActivityTab");
+        const workspaceEventsTab = el("workspaceEventsTab");
         const notesToggle = el("notesToggle");
         const calendarWrap = el("calendarWrap");
         const timeline = el("timeline");
+        const eventsStrip = el("eventsStrip");
+        const eventsStripList = el("eventsStripList");
+        const addEventBtn = el("addEventBtn");
+        const viewEventsBtn = el("viewEventsBtn");
         const selectedDateText = el("selectedDateText");
         const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
@@ -2237,6 +3041,18 @@
         const notesFocusScope = el("notesFocusScope");
         const notesScopeDateBtn = el("notesScopeDateBtn");
         const notesScopeAllBtn = el("notesScopeAllBtn");
+        const notesLabelFilter = el("notesLabelFilter");
+        const mobileNotesToolbar = el("mobileNotesToolbar");
+        const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
+        const mobileNotesLabelsBtn = el("mobileNotesLabelsBtn");
+        const mobileNotesPinnedBtn = el("mobileNotesPinnedBtn");
+        const mobileNotesAddBtn = el("mobileNotesAddBtn");
+        const mobileNotesMoreBtn = el("mobileNotesMoreBtn");
+        const mobileNotesMoreMenu = el("mobileNotesMoreMenu");
+        const mobileNotesCompactBtn = el("mobileNotesCompactBtn");
+        const mobileNotesSortBtn = el("mobileNotesSortBtn");
+        const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
+        const mobileNotesBinBtn = el("mobileNotesBinBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
         const notesBinBtn = el("notesBinBtn");
         const notesBinBackBtn = el("notesBinBackBtn");
@@ -2249,12 +3065,16 @@
         const expandedLinks = el("expandedLinks");
         const expandedNoteTools = el("expandedNoteTools");
         const expandedPinBtn = el("expandedPinBtn");
+        const expandedEditBtn = el("expandedEditBtn");
         const expandedWideBtn = el("expandedWideBtn");
         const expandedLineBtn = el("expandedLineBtn");
         const expandedMoreBtn = el("expandedMoreBtn");
         const expandedMoreMenu = el("expandedMoreMenu");
         const expandedMoveBtn = el("expandedMoveBtn");
         const expandedCopyBtn = el("expandedCopyBtn");
+        const expandedLabelsBtn = el("expandedLabelsBtn");
+        const expandedShareBtn = el("expandedShareBtn");
+        const expandedLabelChips = el("expandedLabelChips");
         const expandedFontBtn = el("expandedFontBtn");
         const expandedDeleteBtn = el("expandedDeleteBtn");
         const closeExpandedNote = el("closeExpandedNote");
@@ -2274,6 +3094,26 @@
         const activityFilterBtn = el("activityFilterBtn");
       const exportActivityBtn = el("exportActivityBtn");
         const activityLog = el("activityLog");
+        const eventsPanel = el("eventsPanel");
+        const eventsList = el("eventsList");
+        const eventsFocusBtn = el("eventsFocusBtn");
+        const eventsPastBtn = el("eventsPastBtn");
+        const eventsPanelAddBtn = el("eventsPanelAddBtn");
+        const eventModal = el("eventModal");
+        const eventEditorTitle = el("eventEditorTitle");
+        const eventTitleInput = el("eventTitleInput");
+        const eventDateInput = el("eventDateInput");
+        const eventTimeInput = el("eventTimeInput");
+        const closeEventBtn = el("closeEventBtn");
+        const cancelEventBtn = el("cancelEventBtn");
+        const saveEventBtn = el("saveEventBtn");
+        const deleteEventBtn = el("deleteEventBtn");
+        const labelModal = el("labelModal");
+        const closeLabelBtn = el("closeLabelBtn");
+        const labelInput = el("labelInput");
+        const labelAddBtn = el("labelAddBtn");
+        const labelCurrent = el("labelCurrent");
+        const labelExisting = el("labelExisting");
         const moveModal = el("moveModal");
         const moveModalTitle = el("moveModalTitle");
         const moveDateLabel = el("moveDateLabel");
@@ -2289,6 +3129,7 @@
         let notes = [];
         let draggedBox = null;
         let expandedNoteId = null;
+        let expandedNoteEditing = false;
         let movingNoteId = null;
         let movingAllNotes = false;
         let notesCompact = localStorage.getItem(COMPACT_KEY) === "true";
@@ -2297,6 +3138,8 @@
         let notesBinOpen = false;
         let notesFocusView = localStorage.getItem(NOTE_FOCUS_KEY) === "true";
         let notesFocusAll = false;
+        let mobileNotesAll = true;
+        let notesLabelFilterValue = "";
         let notesPinnedOnly = localStorage.getItem(NOTES_PINNED_ONLY_KEY) === "true";
         let threeMonthCalendar = localStorage.getItem(CALENDAR_RANGE_KEY) === "true";
         let desktopCalendarCollapsed = localStorage.getItem(CALENDAR_COLLAPSED_KEY) === "true";
@@ -2304,6 +3147,9 @@
         let workspaceFocusPanel = null;
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
+        let events = normalizeEvents(loadJson(EVENTS_KEY, []));
+        let editingEventId = null;
+        let showPastEvents = false;
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = localStorage.getItem(TASK_CONTEXT_KEY) || "Inbox";
@@ -2398,19 +3244,32 @@
             });
             container.append(title, list);
         }
+        function normalizeNoteLabels(rawLabels) {
+            if (!Array.isArray(rawLabels))
+                return [];
+            const seen = new Set();
+            return rawLabels.map(label => String(label || "").trim()).filter(label => {
+                const key = label.toLowerCase();
+                if (!label || seen.has(key))
+                    return false;
+                seen.add(key);
+                return true;
+            });
+        }
         function normalizeNotes(rawNotes) {
             if (Array.isArray(rawNotes)) {
                 return rawNotes.map(note => ({
                     id: note.id || createId(),
                     title: note.title || "Untitled",
                     body: note.body || "",
+                    labels: normalizeNoteLabels(note.labels),
                     pinned: Boolean(note.pinned),
                     deleted: Boolean(note.deleted),
                     deletedAt: note.deletedAt || null
                 }));
             }
             if (typeof rawNotes === "string" && rawNotes.trim()) {
-                return [{ id: createId(), title: "Note", body: rawNotes, pinned: false, deleted: false, deletedAt: null }];
+                return [{ id: createId(), title: "Note", body: rawNotes, labels: [], pinned: false, deleted: false, deletedAt: null }];
             }
             return [];
         }
@@ -2423,9 +3282,9 @@
             const query = notesSearchQuery.trim().toLowerCase();
             if (!query)
                 return true;
-            return `${note.title || ""} ${note.body || ""}`.toLowerCase().includes(query);
+            return `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query);
         }
-        function noteMatchesGlobalSearch(note, query) { return `${note.title || ""} ${note.body || ""}`.toLowerCase().includes(query); }
+        function noteMatchesGlobalSearch(note, query) { return `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query); }
         function allDateKeys() {
             const keys = [];
             for (let index = 0; index < localStorage.length; index += 1) {
@@ -2449,6 +3308,194 @@
                 });
             });
             return results;
+        }
+        function normalizeEvents(raw) {
+            if (!Array.isArray(raw))
+                return [];
+            return raw.map(item => ({
+                id: item.id || createId("event"),
+                title: typeof item.title === "string" ? item.title.trim() : "",
+                date: fromKey(item.date) ? item.date : toKey(getToday()),
+                time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
+                createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
+            })).filter(item => item.title).sort(compareEvents);
+        }
+        function compareEvents(a, b) {
+            const aValue = `${a.date}T${a.time || "23:59"}`;
+            const bValue = `${b.date}T${b.time || "23:59"}`;
+            return aValue.localeCompare(bValue) || a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+        }
+        function saveEvents() {
+            events = normalizeEvents(events);
+            localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        }
+        function eventPhase(event) {
+            const todayKey = toKey(getToday());
+            if (event.date < todayKey)
+                return "past";
+            if (event.date > todayKey)
+                return "upcoming";
+            return "today";
+        }
+        function eventTimeLabel(event) {
+            if (!event.time)
+                return "All day";
+            const [hour, minute] = event.time.split(":").map(Number);
+            return new Date(2000, 0, 1, hour, minute).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        }
+        function eventsForDate(dateKey) {
+            return events.filter(event => event.date === dateKey).sort(compareEvents);
+        }
+        function renderSelectedDateEvents() {
+            const selectedKey = toKey(selectedDate);
+            const selectedEvents = eventsForDate(selectedKey);
+            eventsStripList.innerHTML = "";
+            eventsStrip.classList.toggle("has-events", selectedEvents.length > 0);
+            selectedEvents.forEach(event => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "event-strip-item";
+                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}`;
+                button.title = `Edit ${event.title}`;
+                button.addEventListener("click", () => openEventEditor(event.id));
+                eventsStripList.appendChild(button);
+            });
+            if (!selectedEvents.length) {
+                const empty = document.createElement("span");
+                empty.className = "events-strip-empty";
+                empty.textContent = "No events for this date";
+                eventsStripList.appendChild(empty);
+            }
+        }
+        function createEventRow(event) {
+            const row = document.createElement("button");
+            row.type = "button";
+            row.className = `event-row event-${eventPhase(event)}`;
+            const date = fromKey(event.date);
+            const dateText = eventPhase(event) === "today" ? "Today" : date ? displayDate(date) : event.date;
+            const when = document.createElement("span");
+            when.className = "event-when";
+            when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
+            const title = document.createElement("span");
+            title.className = "event-row-title";
+            title.textContent = event.title;
+            row.append(when, title);
+            row.addEventListener("click", () => openEventEditor(event.id));
+            return row;
+        }
+        function renderEvents() {
+            eventsList.innerHTML = "";
+            const groups = [
+                ["Today", events.filter(event => eventPhase(event) === "today")],
+                ["Upcoming", events.filter(event => eventPhase(event) === "upcoming")],
+                ["Past", events.filter(event => eventPhase(event) === "past").sort((a, b) => compareEvents(b, a))]
+            ];
+            groups.forEach(([label, items]) => {
+                if (label === "Past" && !showPastEvents)
+                    return;
+                const section = document.createElement("section");
+                section.className = "event-group";
+                const heading = document.createElement("div");
+                heading.className = "event-group-title";
+                heading.textContent = label;
+                const list = document.createElement("div");
+                list.className = "event-list";
+                if (!items.length) {
+                    const empty = document.createElement("div");
+                    empty.className = "event-empty";
+                    empty.textContent = `No ${label.toLowerCase()} events`;
+                    list.appendChild(empty);
+                }
+                else {
+                    items.forEach(event => list.appendChild(createEventRow(event)));
+                }
+                section.append(heading, list);
+                eventsList.appendChild(section);
+            });
+            eventsPastBtn.textContent = showPastEvents ? "Hide past" : "Show past";
+            eventsPastBtn.setAttribute("aria-expanded", String(showPastEvents));
+        }
+        function openEventEditor(eventId = null) {
+            const event = eventId ? events.find(item => item.id === eventId) : null;
+            editingEventId = event ? event.id : null;
+            eventEditorTitle.textContent = event ? "Edit Event" : "New Event";
+            eventTitleInput.value = event ? event.title : "";
+            eventDateInput.min = toKey(START_DATE);
+            eventDateInput.max = toKey(END_DATE);
+            eventDateInput.value = event ? event.date : toKey(selectedDate);
+            eventTimeInput.value = event ? event.time : "";
+            deleteEventBtn.hidden = !event;
+            eventModal.classList.add("open");
+            eventModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => eventTitleInput.focus(), 0);
+        }
+        function closeEventEditor() {
+            eventModal.classList.remove("open");
+            eventModal.setAttribute("aria-hidden", "true");
+            editingEventId = null;
+        }
+        function saveEventFromEditor() {
+            const title = eventTitleInput.value.trim();
+            const date = eventDateInput.value;
+            if (!title) {
+                alert("Please enter an event title.");
+                eventTitleInput.focus();
+                return;
+            }
+            if (!fromKey(date) || !isWithinRange(fromKey(date))) {
+                alert("Please select a valid event date.");
+                return;
+            }
+            if (editingEventId) {
+                const current = events.find(item => item.id === editingEventId);
+                if (!current)
+                    return;
+                current.title = title;
+                current.date = date;
+                current.time = eventTimeInput.value || "";
+            }
+            else {
+                events.push({ id: createId("event"), title, date, time: eventTimeInput.value || "", createdAt: new Date().toISOString() });
+            }
+            saveEvents();
+            closeEventEditor();
+            renderSelectedDateEvents();
+            renderEvents();
+            buildCalendar();
+        }
+        function deleteEditingEvent() {
+            if (!editingEventId)
+                return;
+            if (!confirm("Delete this event?"))
+                return;
+            events = events.filter(event => event.id !== editingEventId);
+            saveEvents();
+            closeEventEditor();
+            renderSelectedDateEvents();
+            renderEvents();
+            buildCalendar();
+        }
+        function openEvents() {
+            if (!isMobileViewport()) {
+                showDesktopWorkspacePanel("events");
+                return;
+            }
+            moveWorkspacePanelsToModal();
+            expandedNoteId = null;
+            expandedTitle.value = "Events";
+            expandedTitle.readOnly = true;
+            expandedBody.hidden = true;
+            expandedLinks.hidden = true;
+            expandedNoteTools.hidden = true;
+            globalTasksPanel.hidden = true;
+            globalTasksPanel.classList.remove("open");
+            activityPanel.hidden = true;
+            activityPanel.classList.remove("open");
+            eventsPanel.hidden = false;
+            eventsPanel.classList.add("open");
+            renderEvents();
+            noteModal.classList.add("open");
+            noteModal.setAttribute("aria-hidden", "false");
         }
         function normalizeActivityEntries(raw) {
             if (!Array.isArray(raw))
@@ -2745,8 +3792,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function applyExpandedNoteFont() {
             noteModal.classList.toggle("large-note-font", expandedNoteLargeFont);
             expandedFontBtn.classList.toggle("active", expandedNoteLargeFont);
-            expandedFontBtn.textContent = expandedNoteLargeFont ? "Standard font" : "Larger font";
+            expandedFontBtn.textContent = "Aa";
             expandedFontBtn.title = expandedNoteLargeFont ? "Use standard note font" : "Use larger note font";
+            expandedFontBtn.setAttribute("aria-pressed", String(expandedNoteLargeFont));
         }
         function toggleExpandedNoteFont() {
             expandedNoteLargeFont = !expandedNoteLargeFont;
@@ -2923,8 +3971,15 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             mobileSectionTitle.textContent = { plan: "Today's plan", calendar: "Calendar", notes: "Notes" }[section] || "Section";
             if (section === "calendar")
                 setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", false);
-            if (section === "notes")
+            if (section === "notes") {
                 setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                notesSidebar.classList.add("mobile-notes-open");
+                applyNotesFocusScope();
+                renderNotes();
+            }
+            else {
+                notesSidebar.classList.remove("mobile-notes-open");
+            }
             updateFocusViewButton();
         }
         function renderGlobalResults() {
@@ -2990,7 +4045,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             const data = {};
             for (let index = 0; index < localStorage.length; index += 1) {
                 const key = localStorage.key(index);
-                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === ACTIVITY_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
+                if (!key || key === COMPACT_KEY || key === TASKS_KEY || key === TASK_CONTEXT_KEY || key === ACTIVITY_KEY || key === EVENTS_KEY || key === QUOTE_KEY || !/^timeblocks:\d{4}-\d{2}-\d{2}$/.test(key))
                     continue;
                 try {
                     data[key] = JSON.parse(localStorage.getItem(key));
@@ -3006,6 +4061,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 preferences: { notesCompact, activeTaskContext },
                 quote: favouriteQuote,
                 tasks: globalTasks,
+                events,
                 activity: activityEntries,
                 data
             };
@@ -3052,6 +4108,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 globalTasks = normalizeTaskLists(backup.tasks);
                 saveTasks();
             }
+            if (Array.isArray(backup.events)) {
+                events = normalizeEvents(backup.events);
+                saveEvents();
+            }
             if (Array.isArray(backup.activity)) {
                 activityEntries = normalizeActivityEntries(backup.activity);
                 saveActivity();
@@ -3072,7 +4132,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
         function hasSavedDataForDate(key) {
             const data = readDateData(key);
-            return Boolean((data.focus || "").trim()) || Boolean((data.evening || "").trim()) || Boolean(data.entries && Object.keys(data.entries).length) || hasNotesData(data);
+            return Boolean((data.focus || "").trim()) || Boolean((data.evening || "").trim()) || Boolean(data.entries && Object.keys(data.entries).length) || hasNotesData(data) || eventsForDate(key).length > 0;
         }
         function collectEntries() {
             const entries = {};
@@ -3080,7 +4140,19 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 entries[box.dataset.time] = box.value; });
             return entries;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries() }; }
+        function normalizeTimeblockStatus(status) {
+            return TIMEBLOCK_STATUSES.some(item => item.id === status) ? status : "planned";
+        }
+        function collectTimeblockStatuses() {
+            const statuses = {};
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
+                const status = normalizeTimeblockStatus(button.dataset.status);
+                if (status !== "planned")
+                    statuses[button.dataset.time] = status;
+            });
+            return statuses;
+        }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses() }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -3094,16 +4166,208 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             compactNotesBtn.title = notesCompact ? "Show note previews" : "Hide note previews";
         }
 
+        function createLabelChip(label, removable = false, onRemove = null) {
+            const chip = document.createElement(removable ? "button" : "span");
+            if (removable)
+                chip.type = "button";
+            chip.className = "note-label-chip" + (removable ? " removable" : "");
+            chip.textContent = removable ? `${label} ×` : label;
+            chip.title = removable ? `Remove ${label}` : label;
+            if (removable && onRemove)
+                chip.addEventListener("click", onRemove);
+            return chip;
+        }
+        function renderLabelChips(container, labels, removable = false, onRemove = null) {
+            container.innerHTML = "";
+            const cleanLabels = normalizeNoteLabels(labels);
+            container.hidden = cleanLabels.length === 0;
+            cleanLabels.forEach(label => container.appendChild(createLabelChip(label, removable, onRemove ? () => onRemove(label) : null)));
+        }
+        function getAllLabels() {
+            const labels = new Map();
+            allDateKeys().forEach(dateKey => {
+                normalizeNotes(readDateData(dateKey).notes).forEach(note => {
+                    if (!note.deleted)
+                        note.labels.forEach(label => labels.set(label.toLowerCase(), label));
+                });
+            });
+            return Array.from(labels.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+        }
+        function updateLabelFilterOptions() {
+            const labels = getAllLabels();
+            const current = notesLabelFilterValue;
+            notesLabelFilter.innerHTML = '<option value="">All labels</option>';
+            labels.forEach(label => {
+                const option = document.createElement("option");
+                option.value = label;
+                option.textContent = label;
+                notesLabelFilter.appendChild(option);
+            });
+            notesLabelFilterValue = labels.some(label => label.toLowerCase() === current.toLowerCase()) ? current : "";
+            notesLabelFilter.value = notesLabelFilterValue;
+        }
+        function renderExpandedLabels() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            renderLabelChips(expandedLabelChips, note ? note.labels : []);
+        }
+        function removeCurrentNoteLabel(label) {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            note.labels = note.labels.filter(item => item.toLowerCase() !== label.toLowerCase());
+            save();
+            renderExpandedLabels();
+            renderLabelSelector();
+            renderNotes();
+        }
+        function toggleCurrentNoteLabel(label) {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            const exists = note.labels.some(item => item.toLowerCase() === label.toLowerCase());
+            note.labels = exists
+                ? note.labels.filter(item => item.toLowerCase() !== label.toLowerCase())
+                : normalizeNoteLabels(note.labels.concat(label));
+            save();
+            renderExpandedLabels();
+            renderLabelSelector();
+            renderNotes();
+        }
+        function renderLabelSelector() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            labelCurrent.innerHTML = "";
+            labelExisting.innerHTML = "";
+            if (!note || note.deleted)
+                return;
+            const currentTitle = document.createElement("div");
+            currentTitle.className = "label-section-title";
+            currentTitle.textContent = "Current labels";
+            labelCurrent.appendChild(currentTitle);
+            if (!note.labels.length) {
+                const empty = document.createElement("div");
+                empty.className = "label-empty";
+                empty.textContent = "No labels";
+                labelCurrent.appendChild(empty);
+            }
+            else {
+                const chips = document.createElement("div");
+                chips.className = "note-label-chips";
+                renderLabelChips(chips, note.labels, true, removeCurrentNoteLabel);
+                labelCurrent.appendChild(chips);
+            }
+            const allLabels = getAllLabels();
+            if (allLabels.length) {
+                const existingTitle = document.createElement("div");
+                existingTitle.className = "label-section-title";
+                existingTitle.textContent = "Existing labels";
+                labelExisting.appendChild(existingTitle);
+                const options = document.createElement("div");
+                options.className = "label-options";
+                allLabels.forEach(label => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "plain-btn label-option";
+                    button.textContent = label;
+                    button.classList.toggle("active", note.labels.some(item => item.toLowerCase() === label.toLowerCase()));
+                    button.addEventListener("click", () => toggleCurrentNoteLabel(label));
+                    options.appendChild(button);
+                });
+                labelExisting.appendChild(options);
+            }
+        }
+        function openLabelSelector() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            closeExpandedMoreMenu();
+            labelInput.value = "";
+            renderLabelSelector();
+            labelModal.classList.add("open");
+            labelModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => labelInput.focus(), 0);
+        }
+        function closeLabelSelector() {
+            labelModal.classList.remove("open");
+            labelModal.setAttribute("aria-hidden", "true");
+            labelInput.value = "";
+            if (expandedNoteId && noteModal.classList.contains("open"))
+                expandedBody.focus();
+        }
+        function addLabelFromInput() {
+            const label = labelInput.value.trim();
+            if (!label)
+                return;
+            toggleCurrentNoteLabel(label);
+            labelInput.value = "";
+            labelInput.focus();
+        }
+        function shareExpandedNote() {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!isMobileViewport() || !note || note.deleted)
+                return;
+            const title = note.title || "Untitled";
+            const body = note.body || "";
+            const shareData = { title, text: body ? `${title}
+
+${body}` : title };
+            const markCopied = () => {
+                const original = expandedShareBtn.textContent;
+                expandedShareBtn.textContent = "✓";
+                setTimeout(() => { expandedShareBtn.textContent = original; }, 900);
+            };
+            const copyNote = () => {
+                const text = shareData.text;
+                if (navigator.clipboard && navigator.clipboard.writeText)
+                    navigator.clipboard.writeText(text).then(markCopied).catch(() => fallbackCopy(text, markCopied));
+                else
+                    fallbackCopy(text, markCopied);
+            };
+            if (navigator.share)
+                navigator.share(shareData).catch(error => { if (error && error.name !== "AbortError") copyNote(); });
+            else
+                copyNote();
+        }
+        function isLabelsWorkspace() {
+            return !isMobileViewport() && desktopWorkspacePanel === "labels";
+        }
         function applyNotesFocusScope() {
-            const allActive = !isMobileViewport() && notesFocusView && notesFocusAll;
-            notesFocusScope.classList.toggle("show", !isMobileViewport() && notesFocusView && !notesBinOpen);
+            const mobileMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open");
+            const labelsMode = isLabelsWorkspace();
+            const allActive = mobileMode ? mobileNotesAll : labelsMode || (notesFocusView && notesFocusAll);
+            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (notesFocusView || labelsMode))));
+            notesFocusScope.classList.toggle("labels-mode", labelsMode);
+            notesFocusScope.classList.toggle("mobile-scope", mobileMode);
+            if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
+                mobileNotesScopeSlot.appendChild(notesFocusScope);
+            else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel)
+                notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
+            notesLabelFilter.classList.toggle("show", (allActive && labelsMode) || mobileMode);
+            if (allActive || mobileMode)
+                updateLabelFilterOptions();
             notesScopeDateBtn.classList.toggle("active", !allActive);
             notesScopeAllBtn.classList.toggle("active", allActive);
             notesScopeDateBtn.setAttribute("aria-pressed", String(!allActive));
             notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
+            mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
+            mobileNotesPinnedBtn.classList.toggle("active", notesPinnedOnly);
+            mobileNotesPinnedBtn.textContent = notesPinnedOnly ? "★" : "☆";
+            mobileNotesPinnedBtn.title = notesPinnedOnly ? "Show all notes" : "Show pinned notes only";
+            mobileNotesPinnedBtn.setAttribute("aria-label", mobileNotesPinnedBtn.title);
+            mobileNotesCompactBtn.textContent = notesCompact ? "Show previews" : "Compact view";
         }
         function setNotesFocusScope(showAll) {
-            if (isMobileViewport() || !notesFocusView || notesBinOpen)
+            if (notesBinOpen)
+                return;
+            if (isMobileViewport()) {
+                mobileNotesAll = Boolean(showAll);
+                notesLabelFilterValue = "";
+                notesSearchQuery = "";
+                notesSearchInput.value = "";
+                applyNotesFocusScope();
+                renderNotes();
+                return;
+            }
+            if (!notesFocusView)
                 return;
             notesFocusAll = Boolean(showAll);
             applyNotesFocusScope();
@@ -3114,7 +4378,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             allDateKeys().forEach(dateKey => {
                 const data = readDateData(dateKey);
                 normalizeNotes(data.notes).forEach(note => {
-                    if (!note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note))
+                    const labelsMode = isLabelsWorkspace();
+                    const hasRequiredLabel = labelsMode ? note.labels.length > 0 : true;
+                    if (!note.deleted && hasRequiredLabel && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note))
                         results.push({ dateKey, note });
                 });
             });
@@ -3174,20 +4440,34 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             open.type = "button";
             open.textContent = "⤢";
             open.title = "Open note";
+            const labelChips = document.createElement("div");
+            labelChips.className = "note-label-chips";
+            renderLabelChips(labelChips, note.labels);
             const body = document.createElement("div");
             body.className = "note-body all-notes-preview";
             body.textContent = note.body || "No note body";
-            pin.addEventListener("click", () => updateAllFocusNotePin(dateKey, note.id));
-            open.addEventListener("click", () => openAllFocusNote(dateKey, note.id));
+            pin.addEventListener("click", event => { event.stopPropagation(); updateAllFocusNotePin(dateKey, note.id); });
+            open.addEventListener("click", event => { event.stopPropagation(); openAllFocusNote(dateKey, note.id); });
+            card.addEventListener("click", event => {
+                if (notesCompact && !event.target.closest("button"))
+                    openAllFocusNote(dateKey, note.id);
+            });
             titleArea.append(title, date);
             tools.append(pin, open);
-            card.append(titleArea, tools, body);
+            card.append(titleArea, tools, labelChips, body);
             return card;
         }
         function renderAllFocusNotes() {
             const results = collectAllFocusNotes();
             results.forEach(result => notesList.appendChild(createAllFocusNoteCard(result)));
-            notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+            if (isLabelsWorkspace()) {
+                notesNoResults.textContent = notesLabelFilterValue
+                    ? `No notes with label “${notesLabelFilterValue}”`
+                    : "No labelled notes yet";
+            }
+            else {
+                notesNoResults.textContent = notesPinnedOnly ? "No pinned notes across saved dates" : "No notes found across saved dates";
+            }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
             updateSearchUi();
@@ -3203,7 +4483,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 if (isMobileViewport())
                     setMobileSection("notes");
             }
-            else {
+            else if (!isLabelsWorkspace()) {
                 notesFocusAll = false;
             }
             applyNotesFocusScope();
@@ -3211,8 +4491,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         }
         function toggleNotesFocusView() {
             if (!isMobileViewport()) {
-                if (desktopWorkspacePanel !== "notes")
+                if (desktopWorkspacePanel !== "notes" && desktopWorkspacePanel !== "labels")
                     showDesktopWorkspacePanel("notes");
+                if (desktopWorkspacePanel === "labels")
+                    notesFocusAll = true;
                 notesFocusView = !notesFocusView;
                 workspaceFocusPanel = null;
                 localStorage.setItem(NOTE_FOCUS_KEY, String(notesFocusView));
@@ -3279,6 +4561,25 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             handle.textContent = "⋮⋮";
             handle.title = "Drag entry";
             handle.draggable = true;
+            const statusButton = document.createElement("button");
+            statusButton.type = "button";
+            statusButton.className = "plain-btn timeblock-status";
+            statusButton.dataset.time = timeId;
+            statusButton.dataset.status = normalizeTimeblockStatus(saved.timeblockStatuses && saved.timeblockStatuses[timeId]);
+            function applyTimeblockStatus() {
+                const details = TIMEBLOCK_STATUSES.find(item => item.id === statusButton.dataset.status) || TIMEBLOCK_STATUSES[0];
+                statusButton.textContent = details.icon;
+                statusButton.title = `Status: ${details.label}. Click to change.`;
+                statusButton.setAttribute("aria-label", statusButton.title);
+                TIMEBLOCK_STATUSES.forEach(item => statusButton.classList.toggle(`timeblock-status-${item.id}`, item.id === details.id));
+            }
+            applyTimeblockStatus();
+            statusButton.addEventListener("click", () => {
+                const currentIndex = TIMEBLOCK_STATUSES.findIndex(item => item.id === statusButton.dataset.status);
+                statusButton.dataset.status = TIMEBLOCK_STATUSES[(currentIndex + 1) % TIMEBLOCK_STATUSES.length].id;
+                applyTimeblockStatus();
+                save();
+            });
             const box = document.createElement("textarea");
             box.dataset.time = timeId;
             box.value = (saved.entries && saved.entries[timeId]) || saved[timeId] || "";
@@ -3313,8 +4614,19 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     return;
                 }
                 event.preventDefault();
+                const sourceStatus = document.querySelector(`.timeblock-status[data-time="${draggedBox.dataset.time}"]`);
                 box.value = draggedBox.value;
                 draggedBox.value = "";
+                if (sourceStatus) {
+                    statusButton.dataset.status = normalizeTimeblockStatus(sourceStatus.dataset.status);
+                    sourceStatus.dataset.status = "planned";
+                    applyTimeblockStatus();
+                    const sourceDetails = TIMEBLOCK_STATUSES[0];
+                    sourceStatus.textContent = sourceDetails.icon;
+                    sourceStatus.title = `Status: ${sourceDetails.label}. Click to change.`;
+                    sourceStatus.setAttribute("aria-label", sourceStatus.title);
+                    TIMEBLOCK_STATUSES.forEach(item => sourceStatus.classList.toggle(`timeblock-status-${item.id}`, item.id === sourceDetails.id));
+                }
                 autoGrow(draggedBox);
                 autoGrow(box);
                 save();
@@ -3330,7 +4642,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                         boxes[index + 1].focus();
                 }
             });
-            slot.append(label, handle, box);
+            slot.append(label, handle, statusButton, box);
             return slot;
         }
         function buildTimeline() {
@@ -3388,6 +4700,9 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             body.className = "note-body";
             body.value = note.body || "";
             body.placeholder = "Write note...";
+            const labelChips = document.createElement("div");
+            labelChips.className = "note-label-chips";
+            renderLabelChips(labelChips, note.labels);
             const linkPreview = document.createElement("div");
             linkPreview.className = "link-preview";
             renderLinks(linkPreview, body.value);
@@ -3409,12 +4724,16 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             });
             pinButton.addEventListener("click", () => togglePin(note.id));
             expandButton.addEventListener("click", () => openExpandedNote(note.id));
-            compactExpandButton.addEventListener("click", () => openExpandedNote(note.id));
+            compactExpandButton.addEventListener("click", event => { event.stopPropagation(); openExpandedNote(note.id); });
+            titleArea.addEventListener("click", event => {
+                if (notesCompact && event.target !== compactExpandButton)
+                    openExpandedNote(note.id);
+            });
             moveButton.addEventListener("click", () => openMoveNote(note.id));
             deleteButton.addEventListener("click", () => deleteNoteById(note.id));
             titleArea.append(title, compactExpandButton);
             toolsRow.append(pinButton, expandButton, moveButton, deleteButton);
-            card.append(titleArea, toolsRow, body, linkPreview);
+            card.append(titleArea, toolsRow, labelChips, body, linkPreview);
             return card;
         }
         function createTrashCard(note) {
@@ -3483,9 +4802,15 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             save();
         }
         function resetExpandedEditorView() {
+            expandedNoteEditing = false;
+            noteModal.classList.remove("note-view-mode");
             expandedBody.hidden = false;
             expandedBody.readOnly = false;
             expandedTitle.readOnly = false;
+            expandedEditBtn.textContent = "Edit";
+            expandedEditBtn.title = "Edit note";
+            expandedEditBtn.setAttribute("aria-pressed", "false");
+            expandedLineBtn.hidden = true;
             expandedLinks.hidden = true;
             expandedNoteTools.hidden = false;
             closeExpandedMoreMenu();
@@ -3500,6 +4825,37 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 activityPanel.classList.remove("open");
                 activityInput.value = "";
             }
+            if (eventsPanel.parentElement === expandedNoteShell) {
+                eventsPanel.hidden = true;
+                eventsPanel.classList.remove("open");
+            }
+        }
+        function setExpandedNoteEditMode(editing, focusEditor = true) {
+            const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+            if (!note || note.deleted)
+                return;
+            expandedNoteEditing = Boolean(editing);
+            expandedTitle.readOnly = !expandedNoteEditing;
+            expandedBody.readOnly = !expandedNoteEditing;
+            expandedEditBtn.textContent = expandedNoteEditing ? "Done" : "Edit";
+            expandedEditBtn.title = expandedNoteEditing ? "Finish editing" : "Edit note";
+            expandedEditBtn.setAttribute("aria-pressed", String(expandedNoteEditing));
+            expandedEditBtn.classList.toggle("active", expandedNoteEditing);
+            expandedLineBtn.hidden = !expandedNoteEditing;
+            noteModal.classList.toggle("note-view-mode", !expandedNoteEditing);
+            if (focusEditor) {
+                setTimeout(() => {
+                    if (expandedNoteEditing)
+                        expandedBody.focus();
+                    else
+                        closeExpandedNote.focus();
+                }, 0);
+            }
+        }
+        function toggleExpandedNoteEditMode() {
+            if (!expandedNoteId)
+                return;
+            setExpandedNoteEditMode(!expandedNoteEditing);
         }
         function updateExpandedToolbar() {
             if (!expandedNoteId)
@@ -3511,6 +4867,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedPinBtn.title = note.pinned ? "Unpin note" : "Pin note";
             expandedPinBtn.classList.toggle("pinned", Boolean(note.pinned));
             applyExpandedNoteWide();
+            renderExpandedLabels();
         }
         function togglePin(id) {
             const note = findNoteById(id);
@@ -3522,7 +4879,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             save();
             updateExpandedToolbar();
         }
-        function openExpandedNote(id) {
+        function openExpandedNote(id, startInEditMode = false, editFocusTarget = "body") {
             const note = findNoteById(id);
             if (!note)
                 return;
@@ -3530,35 +4887,58 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             expandedNoteId = id;
             const isDeletedPreview = Boolean(note.deleted);
             expandedTitle.value = note.title || "Untitled";
-            expandedTitle.readOnly = isDeletedPreview;
             expandedBody.value = note.body || "";
-            expandedBody.readOnly = isDeletedPreview;
             expandedNoteTools.hidden = isDeletedPreview;
+            expandedLabelChips.hidden = isDeletedPreview;
             renderLinks(expandedLinks, expandedBody.value);
-            if (!isDeletedPreview)
+            if (isDeletedPreview) {
+                expandedTitle.readOnly = true;
+                expandedBody.readOnly = true;
+                noteModal.classList.add("note-view-mode");
+            }
+            else {
                 updateExpandedToolbar();
+                setExpandedNoteEditMode(Boolean(startInEditMode), false);
+            }
             applyExpandedNoteFont();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
-            setTimeout(() => isDeletedPreview ? closeExpandedNote.focus() : expandedBody.focus(), 0);
+            setTimeout(() => {
+                if (isDeletedPreview || !startInEditMode) {
+                    closeExpandedNote.focus();
+                }
+                else if (editFocusTarget === "title") {
+                    expandedTitle.focus();
+                    expandedTitle.select();
+                }
+                else {
+                    expandedBody.focus();
+                }
+            }, 0);
         }
         function moveWorkspacePanelsToSidebar() {
             if (globalTasksPanel.parentElement !== workspacePanelHost)
                 workspacePanelHost.appendChild(globalTasksPanel);
             if (activityPanel.parentElement !== workspacePanelHost)
                 workspacePanelHost.appendChild(activityPanel);
+            if (eventsPanel.parentElement !== workspacePanelHost)
+                workspacePanelHost.appendChild(eventsPanel);
         }
         function moveWorkspacePanelsToModal() {
             if (globalTasksPanel.parentElement !== expandedNoteShell)
                 expandedNoteShell.insertBefore(globalTasksPanel, expandedLinks);
             if (activityPanel.parentElement !== expandedNoteShell)
                 expandedNoteShell.insertBefore(activityPanel, expandedLinks);
+            if (eventsPanel.parentElement !== expandedNoteShell)
+                expandedNoteShell.insertBefore(eventsPanel, expandedLinks);
         }
         function updateWorkspaceTabs() {
             const tabs = [
                 [workspaceNotesTab, "notes"],
+                [workspaceLabelsTab, "labels"],
                 [workspaceTasksTab, "tasks"],
-                [workspaceActivityTab, "activity"]
+                [workspaceActivityTab, "activity"],
+                [workspaceEventsTab, "events"]
             ];
             tabs.forEach(([button, panel]) => {
                 const active = desktopWorkspacePanel === panel;
@@ -3571,10 +4951,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             document.body.classList.toggle("workspace-focus-active", active);
             tasksFocusBtn.classList.toggle("active", workspaceFocusPanel === "tasks");
             activityFocusBtn.classList.toggle("active", workspaceFocusPanel === "activity");
+            eventsFocusBtn.classList.toggle("active", workspaceFocusPanel === "events");
             tasksFocusBtn.textContent = workspaceFocusPanel === "tasks" ? "↩" : "⛶";
             activityFocusBtn.textContent = workspaceFocusPanel === "activity" ? "↩" : "⛶";
+            eventsFocusBtn.textContent = workspaceFocusPanel === "events" ? "↩" : "⛶";
             tasksFocusBtn.title = workspaceFocusPanel === "tasks" ? "Return to normal planner view" : "Focus on Tasks";
             activityFocusBtn.title = workspaceFocusPanel === "activity" ? "Return to normal planner view" : "Focus on Activity";
+            eventsFocusBtn.title = workspaceFocusPanel === "events" ? "Return to normal planner view" : "Focus on Events";
         }
         function showDesktopWorkspacePanel(panel, focusCapture = false) {
             if (isMobileViewport())
@@ -3586,27 +4969,46 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 applyNotesFocusView();
             }
             desktopWorkspacePanel = panel;
+            const notesPanelActive = panel === "notes" || panel === "labels";
+            if (panel === "labels") {
+                notesFocusAll = true;
+                notesLabelFilterValue = "";
+                notesBinOpen = false;
+                notesSearchOpen = false;
+                notesSearchQuery = "";
+                notesSearchInput.value = "";
+            }
+            else if (panel === "notes" && !notesFocusView) {
+                notesFocusAll = false;
+                notesLabelFilterValue = "";
+            }
             moveWorkspacePanelsToSidebar();
-            notesWorkspacePanel.hidden = panel !== "notes";
+            notesWorkspacePanel.hidden = !notesPanelActive;
             globalTasksPanel.hidden = panel !== "tasks";
             globalTasksPanel.classList.toggle("open", panel === "tasks");
             activityPanel.hidden = panel !== "activity";
             activityPanel.classList.toggle("open", panel === "activity");
-            workspaceFocusPanel = wasFocused && panel !== "notes" ? panel : null;
-            if (wasFocused && panel === "notes") {
+            eventsPanel.hidden = panel !== "events";
+            eventsPanel.classList.toggle("open", panel === "events");
+            workspaceFocusPanel = wasFocused && !notesPanelActive ? panel : null;
+            if (wasFocused && notesPanelActive) {
                 notesFocusView = true;
                 localStorage.setItem(NOTE_FOCUS_KEY, "true");
                 applyNotesFocusView();
             }
+            if (notesPanelActive)
+                renderNotes();
             if (panel === "tasks")
                 renderGlobalTasks();
             if (panel === "activity")
                 renderActivity();
+            if (panel === "events")
+                renderEvents();
             updateWorkspaceTabs();
             applyWorkspaceFocusState();
             setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
             if (focusCapture)
-                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : activityInput.focus(), 0);
+                setTimeout(() => panel === "tasks" ? globalTaskInput.focus() : panel === "activity" ? activityInput.focus() : eventTitleInput.focus(), 0);
         }
         function toggleWorkspacePanelFocus(panel) {
             if (isMobileViewport())
@@ -3630,10 +5032,19 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             globalTasksPanel.classList.remove("open");
             activityPanel.hidden = false;
             activityPanel.classList.add("open");
+            eventsPanel.hidden = true;
+            eventsPanel.classList.remove("open");
             renderActivity();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
             setTimeout(() => activityInput.focus(), 0);
+        }
+        function openMobileQuickEvent() {
+            const today = getToday();
+            if (!isWithinRange(today))
+                return;
+            selectDate(today, true);
+            openEventEditor();
         }
         function openQuickNote() {
             const today = getToday();
@@ -3641,11 +5052,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 return;
             selectDate(today, true);
             notesBinOpen = false;
-            const newNote = { id: createId(), title: "Quick note", body: "", pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "Quick note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
-            openExpandedNote(newNote.id);
+            openExpandedNote(newNote.id, true);
             setTimeout(() => expandedBody.focus(), 0);
         }
         function openTasksInboxShortcut() {
@@ -3680,6 +5091,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             globalTasksPanel.classList.add("open");
             activityPanel.hidden = true;
             activityPanel.classList.remove("open");
+            eventsPanel.hidden = true;
+            eventsPanel.classList.remove("open");
             renderGlobalTasks();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
@@ -3932,20 +5345,20 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             notesList.innerHTML = "";
             notes = orderNotes(notes);
             applyNotesFocusScope();
-            if (!isMobileViewport() && notesFocusView && notesFocusAll && !notesBinOpen) {
+            if (!notesBinOpen && ((isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
             const visibleNotes = notesBinOpen
                 ? notes.filter(note => note.deleted)
-                : notes.filter(note => !note.deleted && (!notesPinnedOnly || note.pinned) && noteMatchesSearch(note));
+                : notes.filter(note => !note.deleted && (!notesPinnedOnly || note.pinned) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
             visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
             if (notesBinOpen) {
                 notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
                 notesNoResults.classList.toggle("show", !visibleNotes.length);
             }
             else {
-                notesNoResults.textContent = notesPinnedOnly ? "No pinned notes" : "No matching notes";
+                notesNoResults.textContent = notesLabelFilterValue ? `No notes with label “${notesLabelFilterValue}”` : notesPinnedOnly ? "No pinned notes" : "No matching notes";
                 notesNoResults.classList.toggle("show", visibleNotes.length === 0 && (notesPinnedOnly || Boolean(notesSearchQuery)));
             }
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
@@ -3980,6 +5393,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             focusInput.value = saved.focus || "";
             quoteInput.value = favouriteQuote;
             buildTimeline();
+            renderSelectedDateEvents();
             renderNotes();
             updateSelectedCalendarDay();
             updateDayNavigation();
@@ -4073,7 +5487,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                         button.type = "button";
                         button.textContent = day.getDate();
                         button.dataset.date = key;
-                        button.title = displayDate(day);
+                        const eventCount = eventsForDate(key).length;
+                        button.title = `${displayDate(day)}${eventCount ? ` · ${eventCount} event${eventCount === 1 ? "" : "s"}` : ""}`;
                         if (day.getDay() === 0 || day.getDay() === 6)
                             button.classList.add("weekend");
                         if (hasSavedDataForDate(key))
@@ -4144,6 +5559,14 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (eventModal.classList.contains("open")) {
+    closeEventEditor();
+    return;
+  }
+  if (labelModal.classList.contains("open")) {
+    closeLabelSelector();
+    return;
+  }
   if (helpModal.classList.contains("open")) {
     closeHelp();
     return;
@@ -4238,12 +5661,21 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                 selectDate(today, true);
             setMobileSection("calendar");
         });
-        mobileNotesBtn.addEventListener("click", () => setMobileSection("notes"));
+        mobileNotesBtn.addEventListener("click", () => {
+            mobileNotesAll = true;
+            notesBinOpen = false;
+            notesLabelFilterValue = "";
+            notesSearchQuery = "";
+            notesSearchInput.value = "";
+            setMobileSection("notes");
+        });
         mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
         mobileActivityBtn.addEventListener("click", openActivity);
         mobileHelpBtn.addEventListener("click", openHelp);
         mobileShareBtn.addEventListener("click", shareFastGtd);
         mobileQuickNoteBtn.addEventListener("click", openQuickNote);
+        mobileQuickEventBtn.addEventListener("click", openMobileQuickEvent);
+        mobileAllEventsBtn.addEventListener("click", openEvents);
         mobileHomeBtn.addEventListener("click", clearMobileSection);
         document.querySelectorAll(".mobile-export-btn").forEach(button => button.addEventListener("click", exportBackup));
         document.querySelectorAll(".mobile-import-btn").forEach(button => button.addEventListener("click", () => importBackupBtn.click()));
@@ -4252,6 +5684,23 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
+        mobileNotesLabelsBtn.addEventListener("click", () => {
+            applyNotesFocusScope();
+            notesLabelFilter.focus();
+        });
+        mobileNotesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
+        mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
+        mobileNotesMoreBtn.addEventListener("click", event => {
+            event.stopPropagation();
+            const open = !mobileNotesMoreMenu.classList.contains("open");
+            mobileNotesMoreMenu.classList.toggle("open", open);
+            mobileNotesMoreBtn.setAttribute("aria-expanded", String(open));
+        });
+        mobileNotesMoreMenu.addEventListener("click", event => event.stopPropagation());
+        mobileNotesCompactBtn.addEventListener("click", () => { compactNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); applyNotesFocusScope(); });
+        mobileNotesSortBtn.addEventListener("click", () => { sortNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
+        mobileNotesMoveAllBtn.addEventListener("click", () => { moveAllNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
+        mobileNotesBinBtn.addEventListener("click", () => { notesBinBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
         notesSearchClear.addEventListener("click", clearSearch);
         notesSearchInput.addEventListener("input", () => { notesSearchQuery = notesSearchInput.value; renderNotes(); });
         notesSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -4262,6 +5711,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         document.addEventListener("click", event => {
             if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
                 closeNotesMoreMenu();
+            if (!mobileNotesMoreMenu.contains(event.target) && event.target !== mobileNotesMoreBtn) {
+                mobileNotesMoreMenu.classList.remove("open");
+                mobileNotesMoreBtn.setAttribute("aria-expanded", "false");
+            }
             if (!event.target.closest || !event.target.closest(".task-row"))
                 closeTaskMoveMenus();
         });
@@ -4269,6 +5722,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         notesFocusBtn.addEventListener("click", toggleNotesFocusView);
         notesScopeDateBtn.addEventListener("click", () => setNotesFocusScope(false));
         notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
+        notesLabelFilter.addEventListener("change", () => { notesLabelFilterValue = notesLabelFilter.value; renderNotes(); });
         notesPinnedBtn.addEventListener("click", toggleNotesPinnedFilter);
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
         notesBinBtn.addEventListener("click", toggleNotesBin);
@@ -4276,19 +5730,30 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         addNoteBtn.addEventListener("click", () => {
             closeNotesMoreMenu();
             notesBinOpen = false;
-            const newNote = { id: createId(), title: "New Note", body: "", pinned: false, deleted: false, deletedAt: null };
+            const newNote = { id: createId(), title: "New Note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
             notes.unshift(newNote);
             renderNotes();
             save();
-            openExpandedNote(newNote.id);
-            expandedTitle.focus();
-            expandedTitle.select();
+            openExpandedNote(newNote.id, true, "title");
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
+        workspaceLabelsTab.addEventListener("click", () => showDesktopWorkspacePanel("labels"));
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
+        workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
         tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
         activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
+        eventsFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("events"));
+        addEventBtn.addEventListener("click", () => openEventEditor());
+        viewEventsBtn.addEventListener("click", openEvents);
+        eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
+        eventsPastBtn.addEventListener("click", () => { showPastEvents = !showPastEvents; renderEvents(); });
+        closeEventBtn.addEventListener("click", closeEventEditor);
+        cancelEventBtn.addEventListener("click", closeEventEditor);
+        saveEventBtn.addEventListener("click", saveEventFromEditor);
+        deleteEventBtn.addEventListener("click", deleteEditingEvent);
+        eventTitleInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); saveEventFromEditor(); } });
+        eventModal.addEventListener("click", event => { if (event.target === eventModal) closeEventEditor(); });
         activityBtn.addEventListener("click", openActivity);
         addTaskInboxBtn.addEventListener("click", openTasksInboxShortcut);
         addTaskTodayBtn.addEventListener("click", openTasksTodayShortcut);
@@ -4310,6 +5775,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         expandedBody.addEventListener("input", syncExpandedToCard);
         expandedPinBtn.addEventListener("click", () => { if (expandedNoteId)
             togglePin(expandedNoteId); });
+        expandedEditBtn.addEventListener("click", toggleExpandedNoteEditMode);
         expandedWideBtn.addEventListener("click", toggleExpandedNoteWide);
         expandedLineBtn.addEventListener("click", insertExpandedHorizontalLine);
         expandedMoreBtn.addEventListener("click", event => { event.stopPropagation(); toggleExpandedMoreMenu(); });
@@ -4318,6 +5784,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             openMoveNote(expandedNoteId);
         } });
         expandedCopyBtn.addEventListener("click", copyExpandedNote);
+        expandedLabelsBtn.addEventListener("click", openLabelSelector);
+        expandedShareBtn.addEventListener("click", shareExpandedNote);
         expandedFontBtn.addEventListener("click", toggleExpandedNoteFont);
         expandedDeleteBtn.addEventListener("click", () => { if (expandedNoteId) {
             closeExpandedMoreMenu();
@@ -4326,6 +5794,10 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         closeExpandedNote.addEventListener("click", closeExpandedEditor);
         noteModal.addEventListener("click", event => { if (event.target === noteModal)
             closeExpandedEditor(); });
+        closeLabelBtn.addEventListener("click", closeLabelSelector);
+        labelAddBtn.addEventListener("click", addLabelFromInput);
+        labelInput.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addLabelFromInput(); } });
+        labelModal.addEventListener("click", event => { if (event.target === labelModal) closeLabelSelector(); });
         cancelMoveTop.addEventListener("click", closeMoveNote);
         cancelMoveBtn.addEventListener("click", closeMoveNote);
         confirmMoveBtn.addEventListener("click", moveNoteToDate);
@@ -4348,6 +5820,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             notes = [];
             renderNotes();
             document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
+            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => {
+                button.dataset.status = "planned";
+                button.textContent = TIMEBLOCK_STATUSES[0].icon;
+                button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`;
+                button.setAttribute("aria-label", button.title);
+                TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned"));
+            });
             markDateHasData(toKey(selectedDate));
             highlightCurrentTimeBlock();
         });
@@ -4398,6 +5877,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         renderGlobalTasks();
         applyActivityFilter();
         renderActivity();
+        renderEvents();
+        renderSelectedDateEvents();
         if (!isMobileViewport())
             showDesktopWorkspacePanel("notes");
         applyCalendarRangeView();
@@ -4407,7 +5888,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
         loadSelectedDate();
         history.replaceState(null, "", `#${toKey(selectedDate)}`);
         setInterval(highlightCurrentTimeBlock, 60000);
-      /* Keyboard shortcuts: G then F/T/I/A */
+      /* Keyboard shortcuts: G then F/T/I/A/N/S/L/E */
 let shortcutPrefixActive = false;
 let shortcutTimer = null;
 
@@ -4485,6 +5966,14 @@ document.addEventListener("keydown", event => {
 if (key === "s") {
   globalSearchInput.focus();
   globalSearchInput.select();
+}
+if (key === "l") {
+  const note = expandedNoteId ? findNoteById(expandedNoteId) : null;
+  if (noteModal.classList.contains("open") && note && !note.deleted)
+    openLabelSelector();
+}
+if (key === "e") {
+  openEventEditor();
 }
 });
     })();
