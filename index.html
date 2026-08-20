@@ -3176,6 +3176,243 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 .task-linked-note-btn { color:#5c4b18;background:#fff6d8;font-weight:750; }
 .task-linked-note-btn:hover,.task-linked-note-btn:focus-visible { background:#ffefb8;color:#4f4014; }
 @media (max-width:759px){.events-strip-head{gap:6px}.events-strip-title{font-size:11px}.events-strip-actions{gap:6px}#viewEventsBtn{font-size:11px}.task-note-section{padding:8px}.task-note-actions{gap:6px}}
+
+/* Desktop Navigate / Work / Plan layout */
+@media (min-width: 760px) {
+  .shell {
+    grid-template-areas: "calendar workspace planner";
+    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    align-items: stretch;
+  }
+  .sidebar { grid-area: calendar; }
+  .notes-sidebar { grid-area: workspace; width: 100%; min-width: 0; }
+  .app { grid-area: planner; min-width: 0; }
+  .sidebar,
+  .notes-sidebar,
+  .app { max-height: calc(100vh - 20px); }
+  .notes-sidebar { display: flex; flex-direction: column; }
+  .notes-sidebar .notes-wrap,
+  .workspace-panel-host { min-height: 0; flex: 1; overflow: hidden; }
+  .notes-sidebar .notes-wrap { overflow-y: auto; }
+  .workspace-panel-host .tasks-panel,
+  .workspace-panel-host .activity-panel,
+  .workspace-panel-host .events-panel { max-height: none; height: 100%; }
+  .app { display: flex; flex-direction: column; }
+  .app .timeline { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .app > header,
+  .app > .note-block,
+  .app > .events-strip,
+  .app > .quote-block,
+  .app > footer { flex: 0 0 auto; }
+  .app .time-pair-row { grid-template-columns: 1fr; gap: 2px; border-bottom: 0; padding-bottom: 0; }
+  .app .slot { grid-template-columns: 48px 16px 24px minmax(0, 1fr); min-height: 24px; border-bottom: 1px solid var(--line); }
+  .app textarea[data-time] { min-height: 23px; height: 23px; }
+  .shell.left-collapsed:not(.right-collapsed) { grid-template-columns: 116px minmax(480px, 1fr) clamp(380px, 31vw, 460px); }
+  .shell.right-collapsed:not(.left-collapsed) { grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) 126px; }
+  .shell.left-collapsed.right-collapsed { grid-template-columns: 116px minmax(480px, 1fr) 126px; }
+  body.workspace-focus-active:not(.global-search-active) .shell,
+  body.notes-focus-active:not(.global-search-active) .shell { display: block; max-width: 1180px; }
+  body.workspace-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar { width: 100%; max-width: 1180px; max-height: calc(100vh - 20px); }
+}
+
+/* Desktop Planner source-aware quick creation */
+.planner-create-panel { width: min(360px, 94vw); overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--page); box-shadow: 0 18px 50px rgba(50,40,28,.22); }
+.planner-create-head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 44px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.planner-create-title { margin: 0; font-size: var(--font-lg); font-weight: 700; }
+.planner-create-body { display: grid; gap: 8px; padding: 12px 14px; }
+.planner-create-body label { color: var(--muted); font-size: 11px; font-weight: 650; }
+.planner-create-body select, .planner-create-body input { width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--page); color: var(--ink); }
+.planner-create-meta { color: var(--muted); font-size: 11px; }
+.planner-create-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 14px 12px; }
+.planner-create-save { min-height: 31px; padding: 5px 12px; border: 1px solid var(--entry-border); border-radius: 10px; background: var(--selected); color: var(--ink); font-weight: 700; }
+textarea.activity-timeblock { background: #ddf1e9 !important; border-left: 3px solid #94c8b4 !important; color: #315f50; font-weight: 650; cursor: pointer; }
+textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { background: #cee8de !important; outline: 2px solid rgba(131,188,166,.48); outline-offset: -2px; }
+.slot:has(textarea.activity-timeblock) .drag-handle { cursor: default; opacity: .3; }
+@media (min-width: 760px) {
+  .app > .events-strip, .app > .quote-block { display: none; }
+  textarea[data-time].planner-empty-slot { cursor: pointer; }
+  textarea[data-time].planner-empty-slot:hover, textarea[data-time].planner-empty-slot:focus { background: var(--soft); outline: 2px solid rgba(123,146,133,.30); outline-offset: -2px; }
+}
+@media (max-width: 759px) { #plannerCreateModal { display: none !important; } }
+
+
+/* Desktop-only minimal-colour workspace refinement */
+@media (min-width: 760px) {
+  /* The workspace is now a permanent primary area. */
+  #notesToggle { display: none !important; }
+  .notes-sidebar,
+  .notes-sidebar.collapsed { width: 100%; min-width: 0; background: var(--page); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
+  .notes-sidebar.collapsed .notes-head { display: flex; min-height: var(--header-height); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #ffffff 0%, #f6f8f5 100%); }
+  .notes-sidebar.collapsed .notes-wrap,
+  .notes-sidebar.collapsed .workspace-tabs,
+  .notes-sidebar.collapsed .workspace-panel-host { display: block; }
+  .notes-sidebar.collapsed .workspace-tabs { display: inline-flex; }
+
+  /* Keep inactive workspace tabs calm and neutral. */
+  #workspaceNotesTab,
+  #workspaceTasksTab,
+  #workspaceActivityTab,
+  #workspaceEventsTab {
+    background: #ffffff;
+    border-color: var(--line);
+    color: var(--muted);
+    box-shadow: none;
+  }
+  #workspaceNotesTab:hover,
+  #workspaceTasksTab:hover,
+  #workspaceActivityTab:hover,
+  #workspaceEventsTab:hover,
+  #workspaceNotesTab:focus-visible,
+  #workspaceTasksTab:focus-visible,
+  #workspaceActivityTab:focus-visible,
+  #workspaceEventsTab:focus-visible { background: var(--soft); border-color: #cfd6cf; color: var(--ink); }
+  #workspaceNotesTab.active { background: #fff6d8; border-color: #e5d28b; color: #5c4b18; }
+  #workspaceTasksTab.active { background: #fbe7d3; border-color: #e5b98d; color: #704a2d; }
+  #workspaceActivityTab.active { background: #ddf1e9; border-color: #94c8b4; color: #315f50; }
+  #workspaceEventsTab.active { background: #dceaf7; border-color: #a9c9e5; color: #35566f; }
+
+  /* Pinned and highlighted items use structure, not filled backgrounds. */
+  .note-card.is-pinned,
+  .note-card.is-pinned .note-title-area,
+  .note-card.is-pinned .note-tools-row,
+  .notes-sidebar.notes-compact .note-card.is-pinned .note-title-area {
+    background: #ffffff;
+  }
+  .note-card.is-pinned { border-color: #c9b96e; box-shadow: inset 3px 0 0 #c9b96e; }
+  .note-card.is-pinned .note-title-input { color: var(--ink); font-weight: 700; }
+  .task-row.highlighted,
+  .task-row.is-highlighted,
+  .task-row.task-highlighted { background: #ffffff; border-color: #c9b96e; box-shadow: inset 3px 0 0 #c9b96e; }
+  .task-row.highlighted .task-text,
+  .task-row.is-highlighted .task-text,
+  .task-row.task-highlighted .task-text { color: var(--ink); font-weight: 650; }
+  .activity-row.highlighted { background: #ffffff; border-color: #83bca6; box-shadow: inset 3px 0 0 #83bca6; }
+  .activity-row.highlighted .activity-text { color: var(--ink); font-weight: 650; }
+  .event-today { background: #ffffff; border-color: #8fb8db; box-shadow: inset 3px 0 0 #8fb8db; }
+
+  /* Notes scope is available in the normal Notes workspace. */
+  #notesFocusScope.show { display: flex; }
+
+  /* Focus is removed from the desktop Planner only. */
+  .app > .note-block { display: none; }
+}
+
+
+/* Desktop-only workspace focus: keep Today's plan visible */
+@media (min-width: 760px) {
+  body.workspace-focus-active:not(.global-search-active) .shell,
+  body.notes-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "workspace planner";
+    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.workspace-focus-active .sidebar,
+  body.notes-focus-active .sidebar {
+    display: none;
+  }
+  body.workspace-focus-active .app,
+  body.notes-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+  body.workspace-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar,
+  body.workspace-focus-active .notes-sidebar.collapsed,
+  body.notes-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    max-height: calc(100vh - 20px);
+  }
+}
+
+
+/* Desktop section-specific Focus sizing */
+@media (min-width: 760px) {
+  /* Tasks, Activity and Events: hide Calendar but preserve normal workspace and Planner widths. */
+  body.workspace-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "calendar workspace planner";
+    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.workspace-focus-active .sidebar { display: none; }
+  body.workspace-focus-active .notes-sidebar,
+  body.workspace-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  body.workspace-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+
+  /* Notes only: hide Calendar and expand Notes into the released space. */
+  body.notes-focus-active:not(.global-search-active) .shell {
+    display: grid;
+    width: calc(100vw - 24px);
+    max-width: 1560px;
+    grid-template-areas: "workspace planner";
+    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
+    gap: 10px;
+    align-items: stretch;
+  }
+  body.notes-focus-active .sidebar { display: none; }
+  body.notes-focus-active .notes-sidebar,
+  body.notes-focus-active .notes-sidebar.collapsed {
+    display: flex;
+    grid-area: workspace;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  body.notes-focus-active .app {
+    display: flex;
+    grid-area: planner;
+  }
+}
+
+
+/* Desktop-only neutral default Task and Activity entries */
+@media (min-width: 760px) {
+  .workspace-panel-host .task-row:not(.highlighted):not(.is-highlighted):not(.task-highlighted),
+  .workspace-panel-host .activity-row:not(.highlighted) {
+    background: #ffffff;
+  }
+}
+
+
+/* Desktop All notes: allow the workspace to grow with the complete list */
+@media (min-width: 760px) {
+  .notes-sidebar.desktop-all-notes {
+    height: auto;
+    max-height: none;
+    align-self: start;
+    overflow: visible;
+  }
+  .notes-sidebar.desktop-all-notes .notes-wrap {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .notes-sidebar.desktop-all-notes #notesList {
+    overflow: visible;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3360,6 +3597,20 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
       <div class="task-editor-actions"><button class="plain-btn delete-note-btn" id="deleteTaskEditorBtn" type="button">Delete</button><button class="plain-btn event-copy-btn" id="copyTaskBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelTaskEditorBtn" type="button">Cancel</button><button class="plain-btn task-save-btn" id="saveTaskEditorBtn" type="button">Save</button></div>
     </section>
   </div>
+
+  <div class="modal-backdrop" id="plannerCreateModal" aria-hidden="true">
+    <section class="planner-create-panel" role="dialog" aria-modal="true" aria-label="Add Planner item">
+      <div class="planner-create-head"><p class="planner-create-title">Add to Planner</p><button class="plain-btn" id="closePlannerCreateBtn" type="button">Close</button></div>
+      <div class="planner-create-body">
+        <div class="planner-create-meta" id="plannerCreateMeta"></div>
+        <label for="plannerCreateType">Type</label>
+        <select id="plannerCreateType"><option value="task">Task</option><option value="event">Event</option><option value="activity">Activity</option></select>
+        <label for="plannerCreateText">Title</label>
+        <input id="plannerCreateText" type="text" maxlength="240" autocomplete="off" placeholder="What do you want to add?" />
+      </div>
+      <div class="planner-create-actions"><button class="plain-btn" id="cancelPlannerCreateBtn" type="button">Cancel</button><button class="plain-btn planner-create-save" id="savePlannerCreateBtn" type="button">Save</button></div>
+    </section>
+  </div>
   <div class="modal-backdrop" id="moveModal" aria-hidden="true">
     <section class="move-note-panel" role="dialog" aria-modal="true"><div class="move-note-head"><p class="move-note-title" id="moveModalTitle">Move Note</p><button class="plain-btn" id="cancelMoveTop" type="button">Close</button></div><div class="move-note-body"><label for="moveDateInput" id="moveDateLabel">Move to date</label><input id="moveDateInput" type="date" /></div><div class="move-note-actions"><button class="plain-btn" id="cancelMoveBtn" type="button">Cancel</button><button class="plain-btn" id="confirmMoveBtn" type="button">Move</button></div></section>
   </div>
@@ -3457,6 +3708,13 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         const importBackupInput = el("importBackupInput");
         const focusInput = el("focusInput");
         const quoteInput = el("quoteInput");
+        const plannerCreateModal = el("plannerCreateModal");
+        const plannerCreateMeta = el("plannerCreateMeta");
+        const plannerCreateType = el("plannerCreateType");
+        const plannerCreateText = el("plannerCreateText");
+        const closePlannerCreateBtn = el("closePlannerCreateBtn");
+        const cancelPlannerCreateBtn = el("cancelPlannerCreateBtn");
+        const savePlannerCreateBtn = el("savePlannerCreateBtn");
         const notesSearchBtn = el("notesSearchBtn");
         const notesSearchRow = el("notesSearchRow");
         const notesSearchInput = el("notesSearchInput");
@@ -3607,6 +3865,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
         let globalSearchQuery = "";
         let globalTasks = normalizeTaskLists(loadJson(TASKS_KEY, null));
         let events = normalizeEvents(loadJson(EVENTS_KEY, []));
+        let plannerCreateTime = "";
         let editingEventId = null;
         let editingEventOccurrenceDate = "";
         let editingTaskId = null;
@@ -3872,14 +4131,8 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     changed = true;
                 }
             });
-            if (link) {
-                delete links[event.id];
-                changed = true;
-            }
-            if (changed) {
-                data.eventTimeblocks = links;
-                writeDateData(event.date, data);
-            }
+            if (link) { delete links[event.id]; changed = true; }
+            if (changed) { data.eventTimeblocks = links; writeDateData(event.date, data); }
         }
         function populateEventTimeblock(event,showOccupiedMessage=true) {
             const times=eventTimeblockTimes(event); if(!times.length)return false; const data=readDateData(event.date); data.entries=data.entries&&typeof data.entries==="object"?data.entries:{}; const links=normalizeEventTimeblocks(data.eventTimeblocks);
@@ -4247,35 +4500,17 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     const belongsToSeries = id.startsWith(seriesId + "@") || exceptionIds.has(id);
                     if (!belongsToSeries || !predicate(occurrenceDate)) return;
                     const link = links[id];
-                    link.times.forEach(time => {
-                        if (data.entries[time] === link.text) {
-                            delete data.entries[time];
-                            delete data.timeblockStatuses[time];
-                        }
-                    });
-                    delete links[id];
-                    changed = true;
+                    link.times.forEach(time => { if (data.entries[time] === link.text) { delete data.entries[time]; delete data.timeblockStatuses[time]; } });
+                    delete links[id]; changed = true;
                 });
                 if (master && recurrenceMatches(master, dateKey)) {
                     const occurrence = eventForOccurrence(master, dateKey);
                     const expectedText = eventTimeblockText(occurrence);
-                    eventTimeblockTimes(occurrence).forEach(time => {
-                        if (data.entries[time] === expectedText) {
-                            delete data.entries[time];
-                            delete data.timeblockStatuses[time];
-                            changed = true;
-                        }
-                    });
+                    eventTimeblockTimes(occurrence).forEach(time => { if (data.entries[time] === expectedText) { delete data.entries[time]; delete data.timeblockStatuses[time]; changed = true; } });
                     const generatedId = occurrenceId(seriesId, dateKey);
-                    if (links[generatedId]) {
-                        delete links[generatedId];
-                        changed = true;
-                    }
+                    if (links[generatedId]) { delete links[generatedId]; changed = true; }
                 }
-                if (changed) {
-                    data.eventTimeblocks = links;
-                    writeDateData(dateKey, data);
-                }
+                if (changed) { data.eventTimeblocks = links; writeDateData(dateKey, data); }
             });
         }
         function saveEventFromEditor(){
@@ -4319,6 +4554,98 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
             renderEvents();
             noteModal.classList.add("open");
             noteModal.setAttribute("aria-hidden", "false");
+        }
+
+        function activityTimeblockText(entry) { return `Activity: ${entry.text}`; }
+        function normalizeActivityTimeblocks(raw) {
+            if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+            const clean = {};
+            Object.entries(raw).forEach(([activityId, link]) => { if (link && typeof link.time === "string" && typeof link.text === "string") clean[activityId] = { time: link.time, text: link.text }; });
+            return clean;
+        }
+        function findActivityEntry(activityId) { return activityEntries.find(entry => entry.id === activityId) || null; }
+        function removeLinkedActivityTimeblock(entry) {
+            if (!entry) return;
+            allDateKeys().forEach(dateKey => {
+                const data = readDateData(dateKey);
+                const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+                const link = links[entry.id];
+                if (!link) return;
+                data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+                data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+                if (data.entries[link.time] === link.text) delete data.entries[link.time];
+                delete data.timeblockStatuses[link.time];
+                delete links[entry.id];
+                data.activityTimeblocks = links;
+                writeDateData(dateKey, data);
+            });
+        }
+        function updateLinkedActivityTimeblock(entry) {
+            if (!entry) return;
+            allDateKeys().forEach(dateKey => {
+                const data = readDateData(dateKey);
+                const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+                const link = links[entry.id];
+                if (!link) return;
+                data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+                if (data.entries[link.time] === link.text) {
+                    link.text = activityTimeblockText(entry);
+                    data.entries[link.time] = link.text;
+                    data.activityTimeblocks = links;
+                    writeDateData(dateKey, data);
+                }
+            });
+        }
+        function populateActivityTimeblock(entry, dateKey, time, showOccupiedMessage = true) {
+            const data = readDateData(dateKey);
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            if ((data.entries[time] || "").trim()) { if (showOccupiedMessage) alert("Activity saved, but the selected Planner block is occupied."); return false; }
+            const links = normalizeActivityTimeblocks(data.activityTimeblocks);
+            const text = activityTimeblockText(entry);
+            data.entries[time] = text;
+            data.timeblockStatuses = data.timeblockStatuses && typeof data.timeblockStatuses === "object" ? data.timeblockStatuses : {};
+            delete data.timeblockStatuses[time];
+            links[entry.id] = { time, text };
+            data.activityTimeblocks = links;
+            writeDateData(dateKey, data);
+            return true;
+        }
+        function openLinkedActivity(activityId) {
+            openActivity();
+            setTimeout(() => {
+                const target = document.querySelector(`.activity-text[data-activity-id="${activityId}"]`);
+                if (target) { target.focus(); target.scrollIntoView({ block: "center" }); }
+            }, 0);
+        }
+        function openPlannerCreate(timeId) {
+            if (isMobileViewport()) return;
+            plannerCreateTime = timeId;
+            plannerCreateType.value = "task";
+            plannerCreateText.value = "";
+            plannerCreateMeta.textContent = `${displayDate(selectedDate)} · ${new Date(2000,0,1,...timeId.split(":").map(Number)).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}`;
+            plannerCreateModal.classList.add("open");
+            plannerCreateModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => plannerCreateText.focus(), 0);
+        }
+        function closePlannerCreate() { plannerCreateModal.classList.remove("open"); plannerCreateModal.setAttribute("aria-hidden", "true"); plannerCreateTime = ""; }
+        function savePlannerCreate() {
+            const text = plannerCreateText.value.trim();
+            if (!text || !plannerCreateTime) { plannerCreateText.focus(); return; }
+            const dateKey = toKey(selectedDate);
+            const type = plannerCreateType.value;
+            if (type === "task") {
+                const task = { id: createId("task"), text, done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
+                globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
+            } else if (type === "event") {
+                const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
+                events.push(event); saveEvents(); populateEventTimeblock(event, false); renderEvents(); buildCalendar();
+            } else {
+                const [hour, minute] = plannerCreateTime.split(":").map(Number);
+                const created = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), hour, minute);
+                const entry = { id: createId("activity"), text, status: "started", highlighted: false, createdAt: created.toISOString() };
+                activityEntries.unshift(entry); saveActivity(); populateActivityTimeblock(entry, dateKey, plannerCreateTime, false); renderActivity();
+            }
+            closePlannerCreate(); loadSelectedDate();
         }
         function normalizeActivityEntries(raw) {
             if (!Array.isArray(raw))
@@ -4438,6 +4765,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
                     highlight.classList.toggle("active", entry.highlighted);
                     const text = document.createElement("textarea");
                     text.className = "activity-text";
+                    text.dataset.activityId = entry.id;
                     text.rows = 1;
                     text.value = entry.text;
                     setTimeout(() => autoGrowActivityText(text), 0);
@@ -4450,7 +4778,7 @@ textarea.task-timeblock:hover, textarea.task-timeblock:focus { background: #f5da
 
 if (!currentEntry) { return; }
 
-currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
+currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); updateLinkedActivityTimeblock(currentEntry); if (activityDateKey(currentEntry.createdAt) === toKey(selectedDate)) loadSelectedDate(); });
                     status.addEventListener("click", () => cycleActivityStatus(entry.id));
                     highlight.addEventListener("click", () => toggleActivityHighlight(entry.id));
                     text.addEventListener("keydown", event => {
@@ -4462,6 +4790,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
                     del.addEventListener("click", () => {
                         if (!confirm("Delete this activity entry?"))
                             return;
+                        removeLinkedActivityTimeblock(entry);
                         activityEntries = activityEntries.filter(item => item.id !== entry.id);
                         saveActivity();
                         renderActivity();
@@ -5035,7 +5364,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); });
             document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { const status = normalizeTimeblockStatus(button.dataset.status); if (status !== "planned") statuses[button.dataset.time] = status; });
             return statuses;
         }
-        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks) }; }
+        function currentDateDataFromState() { return { focus: focusInput.value, evening: saved.evening || "", notes: orderNotes(notes), entries: collectEntries(), timeblockStatuses: collectTimeblockStatuses(), eventTimeblocks: normalizeEventTimeblocks(saved.eventTimeblocks), taskTimeblocks: normalizeTaskTimeblocks(saved.taskTimeblocks), activityTimeblocks: normalizeActivityTimeblocks(saved.activityTimeblocks) }; }
         function save() { const data = currentDateDataFromState(); notes = data.notes; writeDateData(toKey(selectedDate), data); markDateHasData(toKey(selectedDate)); }
         function markDateHasData(key) {
             const button = document.querySelector(`.day-btn[data-date="${key}"]`);
@@ -5210,8 +5539,10 @@ ${body}` : title };
         function applyNotesFocusScope() {
             const mobileMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open");
             const labelsMode = isLabelsWorkspace();
-            const allActive = mobileMode ? mobileNotesAll : labelsMode || (notesFocusView && notesFocusAll);
-            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (notesFocusView || labelsMode))));
+            const desktopNotesMode = !isMobileViewport() && desktopWorkspacePanel === "notes";
+            const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
+            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
+            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && allActive && !notesBinOpen);
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
@@ -5239,7 +5570,7 @@ ${body}` : title };
                 renderNotes();
                 return;
             }
-            if (!notesFocusView)
+            if (desktopWorkspacePanel !== "notes" && !notesFocusView)
                 return;
             notesFocusAll = Boolean(showAll);
             applyNotesFocusScope();
@@ -5428,11 +5759,20 @@ ${body}` : title };
                 box.addEventListener("click", openLinkedTask);
                 box.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openLinkedTask(); } });
             }
+            const activityLink = Object.entries(normalizeActivityTimeblocks(saved.activityTimeblocks)).find(([, link]) => link.time === timeId && link.text === box.value);
+            const linkedActivity = activityLink ? findActivityEntry(activityLink[0]) : null;
+            if (!linkedEvent && !linkedTask && linkedActivity) {
+                box.classList.add("activity-timeblock"); box.dataset.activityId = linkedActivity.id; box.readOnly = true;
+                box.title = `Open Activity: ${linkedActivity.text}`; box.setAttribute("aria-label", box.title); handle.draggable = false; handle.title = "Open this Activity entry";
+                const openActivityEntry = () => openLinkedActivity(linkedActivity.id);
+                box.addEventListener("click", openActivityEntry);
+                box.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openActivityEntry(); } });
+            }
             box.placeholder = "Add...";
-            if (!linkedEvent && !linkedTask)
+            if (!linkedEvent && !linkedTask && !linkedActivity)
                 box.setAttribute("aria-label", `Entry for ${label.textContent}`);
             handle.addEventListener("dragstart", event => {
-                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || !box.value.trim()) {
+                if (!isDesktopDragEnabled() || box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock") || !box.value.trim()) {
                     event.preventDefault();
                     return;
                 }
@@ -5472,9 +5812,14 @@ ${body}` : title };
                 save();
                 clearDropClasses();
             });
-            box.addEventListener("input", () => { autoGrow(box); save(); });
+            if (!linkedEvent && !linkedTask && !linkedActivity && !box.value.trim()) {
+                box.classList.add("planner-empty-slot");
+                box.addEventListener("focus", () => { if (!isMobileViewport() && !box.value.trim()) { box.blur(); openPlannerCreate(timeId); } });
+                box.addEventListener("click", () => { if (!isMobileViewport() && !box.value.trim()) openPlannerCreate(timeId); });
+            }
+            box.addEventListener("input", () => { autoGrow(box); box.classList.toggle("planner-empty-slot", !isMobileViewport() && !box.value.trim()); save(); });
             box.addEventListener("keydown", event => {
-                if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock"))) return;
+                if (event.defaultPrevented || (box.classList.contains("event-timeblock") || box.classList.contains("task-timeblock") || box.classList.contains("activity-timeblock"))) return;
                 if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
                     const boxes = Array.from(document.querySelectorAll("textarea[data-time]"));
@@ -6142,7 +6487,7 @@ ${body}` : title };
             notes = orderNotes(notes);
             applyNotesFocusScope();
             const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || ((desktopWorkspacePanel === "notes" || notesFocusView) && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
@@ -6298,6 +6643,15 @@ ${body}` : title };
             setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", desktopCalendarCollapsed);
         }
         function toggleFocusView() {
+            if (!isMobileViewport()) {
+                const collapseCalendar = !sidebar.classList.contains("collapsed");
+                setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapseCalendar);
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                desktopCalendarCollapsed = collapseCalendar;
+                localStorage.setItem(CALENDAR_COLLAPSED_KEY, String(desktopCalendarCollapsed));
+                updateFocusViewButton();
+                return;
+            }
             const bothCollapsed = sidebar.classList.contains("collapsed") && notesSidebar.classList.contains("collapsed");
             const collapseBoth = !bothCollapsed;
             setSidebarCollapsed(sidebar, sidebarToggle, "left-collapsed", collapseBoth);
@@ -6494,6 +6848,12 @@ ${body}` : title };
         tasksFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("tasks"));
         activityFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("activity"));
         eventsFocusBtn.addEventListener("click", () => toggleWorkspacePanelFocus("events"));
+
+        closePlannerCreateBtn.addEventListener("click", closePlannerCreate);
+        cancelPlannerCreateBtn.addEventListener("click", closePlannerCreate);
+        savePlannerCreateBtn.addEventListener("click", savePlannerCreate);
+        plannerCreateText.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); savePlannerCreate(); } });
+        plannerCreateModal.addEventListener("click", event => { if (event.target === plannerCreateModal) closePlannerCreate(); });
         addEventBtn.addEventListener("click", () => openEventEditor());
         viewEventsBtn.addEventListener("click", openEvents);
         eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
@@ -6616,11 +6976,21 @@ ${body}` : title };
             }
             updateFocusViewButton();
         });
-        notesToggle.addEventListener("click", () => { const collapsed = !notesSidebar.classList.contains("collapsed"); setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed); updateFocusViewButton(); });
+        notesToggle.addEventListener("click", () => {
+            if (!isMobileViewport()) {
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
+                updateFocusViewButton();
+                return;
+            }
+            const collapsed = !notesSidebar.classList.contains("collapsed");
+            setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", collapsed);
+            updateFocusViewButton();
+        });
         window.addEventListener("resize", () => {
             document.querySelectorAll("textarea[data-time]").forEach(autoGrow);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             if (!isMobileViewport() && !noteModal.classList.contains("open")) {
+                setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
                 moveWorkspacePanelsToSidebar();
                 showDesktopWorkspacePanel(desktopWorkspacePanel);
             }
