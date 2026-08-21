@@ -3298,121 +3298,17 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
   .app > .note-block { display: none; }
 }
 
-
-/* Desktop-only workspace focus: keep Today's plan visible */
-@media (min-width: 760px) {
-  body.workspace-focus-active:not(.global-search-active) .shell,
-  body.notes-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "workspace planner";
-    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.workspace-focus-active .sidebar,
-  body.notes-focus-active .sidebar {
-    display: none;
-  }
-  body.workspace-focus-active .app,
-  body.notes-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-  body.workspace-focus-active .notes-sidebar,
-  body.notes-focus-active .notes-sidebar,
-  body.workspace-focus-active .notes-sidebar.collapsed,
-  body.notes-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    max-height: calc(100vh - 20px);
-  }
-}
-
-
-/* Desktop section-specific Focus sizing */
-@media (min-width: 760px) {
-  /* Tasks, Activity and Events: hide Calendar but preserve normal workspace and Planner widths. */
-  body.workspace-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "calendar workspace planner";
-    grid-template-columns: clamp(190px, 15vw, 220px) minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.workspace-focus-active .sidebar { display: none; }
-  body.workspace-focus-active .notes-sidebar,
-  body.workspace-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-  body.workspace-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-
-  /* Notes only: hide Calendar and expand Notes into the released space. */
-  body.notes-focus-active:not(.global-search-active) .shell {
-    display: grid;
-    width: calc(100vw - 24px);
-    max-width: 1560px;
-    grid-template-areas: "workspace planner";
-    grid-template-columns: minmax(480px, 1fr) clamp(380px, 31vw, 460px);
-    gap: 10px;
-    align-items: stretch;
-  }
-  body.notes-focus-active .sidebar { display: none; }
-  body.notes-focus-active .notes-sidebar,
-  body.notes-focus-active .notes-sidebar.collapsed {
-    display: flex;
-    grid-area: workspace;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-  body.notes-focus-active .app {
-    display: flex;
-    grid-area: planner;
-  }
-}
-
-
 /* Desktop-only neutral default Task and Activity entries */
 @media (min-width: 760px) {
   .workspace-panel-host .task-row:not(.highlighted):not(.is-highlighted):not(.task-highlighted),
-  .workspace-panel-host .activity-row:not(.highlighted) {
-    background: #ffffff;
-  }
+  .workspace-panel-host .activity-row:not(.highlighted) { background: #ffffff; }
 }
-
-
 /* Desktop All notes: allow the workspace to grow with the complete list */
 @media (min-width: 760px) {
-  .notes-sidebar.desktop-all-notes {
-    height: auto;
-    max-height: none;
-    align-self: start;
-    overflow: visible;
-  }
-  .notes-sidebar.desktop-all-notes .notes-wrap {
-    flex: 0 0 auto;
-    min-height: 0;
-    overflow: visible;
-  }
-  .notes-sidebar.desktop-all-notes #notesList {
-    overflow: visible;
-  }
+  .notes-sidebar.desktop-all-notes { height: auto; max-height: none; align-self: start; overflow: visible; }
+  .notes-sidebar.desktop-all-notes .notes-wrap { flex: 0 0 auto; min-height: 0; overflow: visible; }
+  .notes-sidebar.desktop-all-notes #notesList { overflow: visible; }
 }
-
 
 /* Desktop workspace Focus feature retired: Calendar visibility is controlled independently. */
 #focusViewBtn,
@@ -3422,6 +3318,53 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
 #eventsFocusBtn {
   display: none !important;
 }
+
+
+/* Mobile homepage Tasks navigation and simplified Planner */
+@media (max-width: 759px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: 1.25fr 1fr 1fr 1fr 32px;
+  }
+  body.mobile-section-active.mobile-view-plan .app > .note-block,
+  body.mobile-section-active.mobile-view-plan .app > .events-strip,
+  body.mobile-section-active.mobile-view-plan .app > .quote-block {
+    display: none !important;
+  }
+  body.mobile-section-active.mobile-view-calendar #calendarWrap {
+    overflow-y: auto !important;
+    scroll-behavior: smooth;
+  }
+}
+@media (max-width: 380px) {
+  .mobile-home-brand .mobile-home-nav {
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 30px;
+    gap: 2px;
+  }
+  .mobile-home-brand .mobile-home-link {
+    font-size: 10px;
+    padding-inline: 3px;
+  }
+}
+
+
+/* Task lifecycle matches Activity: Started, Waiting, Completed, Act later */
+.task-status {
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  line-height: 1;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.task-status-started { color: #526b7a; }
+.task-status-waiting { color: #8a6a24; }
+.task-status-completed { color: #4f6f5f; }
+.task-status-later { color: #6d6078; }
 
 </style>
 </head>
@@ -3456,6 +3399,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
       <nav class="mobile-home-nav" aria-label="Navigation">
         <button class="plain-btn mobile-home-link" id="mobileAllEventsBtn" type="button">All events</button>
         <button class="plain-btn mobile-home-link" id="mobileCalendarBtn" type="button">Planner</button>
+        <button class="plain-btn mobile-home-link" id="mobileTasksBtn" type="button">Tasks</button>
         <button class="plain-btn mobile-home-link" id="mobileNotesBtn" type="button">Notes</button>
         <button class="plain-btn mobile-home-link mobile-home-help" id="mobileHelpBtn" type="button" title="Help" aria-label="Help">?</button>
       </nav>
@@ -3655,6 +3599,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             { id: "completed", icon: "✓", label: "Completed" },
             { id: "later", icon: "↷", label: "Act later" }
         ];
+        const TASK_STATUSES = ACTIVITY_STATUSES;
         const TASK_CONTEXT_KEY = "timeblocks:taskContext";
         const NOTE_FONT_KEY = "timeblocks:expandedNoteLargeFont";
         const NOTE_WIDE_KEY = "timeblocks:expandedNoteWide";
@@ -3672,6 +3617,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         const globalResultsHead = el("globalResultsHead");
         const globalResultsList = el("globalResultsList");
         const mobileCalendarBtn = el("mobileCalendarBtn");
+        const mobileTasksBtn = el("mobileTasksBtn");
         const mobileNotesBtn = el("mobileNotesBtn");
         const mobileAddTaskBtn = el("mobileAddTaskBtn");
         const mobileActivityBtn = el("mobileActivityBtn");
@@ -3866,6 +3812,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
         localStorage.removeItem(NOTE_FOCUS_KEY);
         let notesFocusAll = false;
         let mobileNotesAll = true;
+        let mobileTaskCaptureReturnHome = false;
         let notesLabelFilterValue = "";
         let notesPinnedOnly = false;
         let globalPinnedExpanded = false;
@@ -4355,7 +4302,15 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             taskEditorText.focus();
             taskEditorText.select();
         }
-        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; }
+        function closeTaskEditor() { taskModal.classList.remove("open"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
+        function cancelTaskEditor() {
+            const returnHome = isMobileViewport() && mobileTaskCaptureReturnHome;
+            closeTaskEditor();
+            if (returnHome) {
+                closeExpandedEditor();
+                clearMobileSection();
+            }
+        }
         function showTaskSavedFeedback() {
             const original = saveTaskEditorBtn.textContent;
             saveTaskEditorBtn.textContent = "Saved ✓";
@@ -4372,9 +4327,16 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             if (time && !date) { alert("Please select a date for the task time."); return; }
             const targetContext = TASK_CONTEXTS.includes(taskEditorContext.value) ? taskEditorContext.value : (editingTaskContext || activeTaskContext);
             if (!editingTaskId) {
-                const task = { id: createId("task"), text, done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
+                const task = { id: createId("task"), text, status: "started", done: false, highlighted: false, tags: normalizeTaskTags(taskEditorTags.value.split(",")), date, time, noteLink: null };
                 globalTasks[targetContext].unshift(task); activeTaskContext = targetContext; activeTaskTagFilter = ""; localStorage.setItem(TASK_CONTEXT_KEY, targetContext);
                 saveTasks(); populateTaskTimeblock(task); renderGlobalTasks();
+                if (isMobileViewport() && mobileTaskCaptureReturnHome) {
+                    closeTaskEditor();
+                    closeExpandedEditor();
+                    clearMobileSection();
+                    if (task.date === toKey(selectedDate)) loadSelectedDate();
+                    return;
+                }
                 editingTaskId = task.id;
                 editingTaskContext = targetContext;
                 taskEditorTitle.textContent = "Edit Task";
@@ -4645,7 +4607,7 @@ textarea.activity-timeblock:hover, textarea.activity-timeblock:focus { backgroun
             const dateKey = toKey(selectedDate);
             const type = plannerCreateType.value;
             if (type === "task") {
-                const task = { id: createId("task"), text, done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
+                const task = { id: createId("task"), text, status: "started", done: false, highlighted: false, tags: [], date: dateKey, time: plannerCreateTime, noteLink: null };
                 globalTasks.Today.unshift(task); saveTasks(); populateTaskTimeblock(task, false); renderGlobalTasks();
             } else if (type === "event") {
                 const event = { id: createId("event"), title: text, date: dateKey, time: plannerCreateTime, durationMinutes: 30, recurrence: null, seriesId: "", originalDate: "", cancelled: false, createdAt: new Date().toISOString() };
@@ -4917,10 +4879,11 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             return empty;
         }
         function normalizeTask(task) {
-            return { id: task.id || createId("task"), text: task.text || "", done: Boolean(task.done), highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink) };
+            const status = TASK_STATUSES.some(item => item.id === task.status) ? task.status : (task.done ? "completed" : "started");
+            return { id: task.id || createId("task"), text: task.text || "", status, done: status === "completed", highlighted: Boolean(task.highlighted), tags: normalizeTaskTags(task.tags), date: fromKey(task.date) ? task.date : "", time: /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time || "") ? task.time : "", noteLink: normalizeTaskNoteLink(task.noteLink) };
         }
         function orderTasks(taskList) {
-            const list=(taskList||[]).map(task=>{if(!task.id)task.id=createId("task");if(typeof task.text!=="string")task.text="";task.done=Boolean(task.done);task.highlighted=Boolean(task.highlighted);task.tags=normalizeTaskTags(task.tags);task.date=fromKey(task.date)?task.date:"";task.time=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time||"")?task.time:"";task.noteLink=normalizeTaskNoteLink(task.noteLink);return task;});
+            const list=(taskList||[]).map(task=>{if(!task.id)task.id=createId("task");if(typeof task.text!=="string")task.text="";task.status=TASK_STATUSES.some(item=>item.id===task.status)?task.status:(task.done?"completed":"started");task.done=task.status==="completed";task.highlighted=Boolean(task.highlighted);task.tags=normalizeTaskTags(task.tags);task.date=fromKey(task.date)?task.date:"";task.time=/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(task.time||"")?task.time:"";task.noteLink=normalizeTaskNoteLink(task.noteLink);return task;});
             const firstTag=task=>normalizeTaskTags(task.tags).slice().sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}))[0]||"";return list.sort((a,b)=>{if(a.highlighted!==b.highlighted)return a.highlighted?-1:1;if(a.done!==b.done)return a.done?1:-1;const at=firstTag(a),bt=firstTag(b);if(Boolean(at)!==Boolean(bt))return at?-1:1;const tagOrder=at.localeCompare(bt,undefined,{sensitivity:"base"});if(tagOrder)return tagOrder;return(a.text||"").localeCompare(b.text||"",undefined,{sensitivity:"base"});});
         }
         function allTaskTags() {
@@ -5026,6 +4989,21 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
             saveTasks();
             renderGlobalTasks();
         }
+        function taskStatusDetails(statusId) {
+            return TASK_STATUSES.find(status => status.id === statusId) || TASK_STATUSES[0];
+        }
+        function cycleTaskStatus(taskId) {
+            const task = activeTasks().find(item => item.id === taskId);
+            if (!task)
+                return;
+            const currentIndex = TASK_STATUSES.findIndex(status => status.id === task.status);
+            task.status = TASK_STATUSES[(currentIndex + 1) % TASK_STATUSES.length].id;
+            task.done = task.status === "completed";
+            saveTasks();
+            setLinkedTaskBlockDone(task);
+            if (task.date === toKey(selectedDate)) loadSelectedDate();
+            renderGlobalTasks();
+        }
         function toggleTaskHighlight(taskId) {
             const task = activeTasks().find(item => item.id === taskId);
             if (!task)
@@ -5048,10 +5026,13 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 row.setAttribute("aria-label", `Open task: ${task.text}`);
                 row.classList.toggle("done", task.done);
                 row.classList.toggle("highlighted", task.highlighted);
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.className = "task-checkbox";
-                checkbox.checked = task.done;
+                const statusDetails = taskStatusDetails(task.status);
+                const status = document.createElement("button");
+                status.type = "button";
+                status.className = `plain-btn task-status task-status-${statusDetails.id}`;
+                status.textContent = statusDetails.icon;
+                status.title = `Status: ${statusDetails.label}. Click to change.`;
+                status.setAttribute("aria-label", status.title);
                 const highlight = document.createElement("button");
                 highlight.type = "button";
                 highlight.className = "plain-btn icon-btn task-highlight";
@@ -5130,13 +5111,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                     option.addEventListener("click", () => moveTaskToContext(task.id, context));
                     moveMenu.appendChild(option);
                 });
-                checkbox.addEventListener("change", () => {
-                    task.done = checkbox.checked;
-                    saveTasks();
-                    setLinkedTaskBlockDone(task);
-                    if (task.date === toKey(selectedDate)) loadSelectedDate();
-                    renderGlobalTasks();
-                });
+                status.addEventListener("click", () => cycleTaskStatus(task.id));
                 highlight.addEventListener("click", () => toggleTaskHighlight(task.id));
                 const openTaskTextEditor = () => openTaskEditor(task.id, activeTaskContext, "text");
                 const isTaskCardControl = target => Boolean(target.closest("button, input, select, a, .task-move-menu"));
@@ -5169,8 +5144,8 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 rowActions.className = "task-row-actions";
                 if (canMoveTask) rowActions.append(tagsMeta, tags, schedule, noteButton, move, del);
                 else rowActions.append(tagsMeta, tags, schedule, noteButton, del);
-                if (canMoveTask) row.append(checkbox, highlight, content, rowActions, moveMenu);
-                else row.append(checkbox, highlight, content, rowActions);
+                if (canMoveTask) row.append(status, highlight, content, rowActions, moveMenu);
+                else row.append(status, highlight, content, rowActions);
                 globalTaskList.appendChild(row);
             });
             if (!tasksToRender.length) { const empty = document.createElement("div"); empty.className = "task-empty"; empty.textContent = activeTaskTagFilter ? `No tasks tagged “${activeTaskTagFilter}” in ${activeTaskContext}` : `No tasks in ${activeTaskContext}`; globalTaskList.appendChild(empty); }
@@ -5196,6 +5171,20 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         }
         function isMobileViewport() { return window.matchMedia("(max-width: 759px)").matches; }
         function clearMobileSection() { document.body.classList.remove("mobile-section-active", "mobile-view-plan", "mobile-view-calendar", "mobile-view-notes"); mobileSectionTitle.textContent = "Section"; }
+        function alignMobileCalendarToCurrentMonth() {
+            if (!isMobileViewport())
+                return;
+            requestAnimationFrame(() => {
+                const selectedButton = calendarWrap.querySelector(`.day-btn[data-date="${toKey(selectedDate)}"]`);
+                const month = selectedButton ? selectedButton.closest(".month") : calendarWrap.querySelector(".month");
+                if (!month)
+                    return;
+                const monthHeight = Math.ceil(month.getBoundingClientRect().height);
+                calendarWrap.style.setProperty("height", `${monthHeight}px`, "important");
+                calendarWrap.style.setProperty("max-height", `${monthHeight}px`, "important");
+                calendarWrap.scrollTop = month.offsetTop;
+            });
+        }
         function setMobileSection(section) {
             document.body.classList.remove("mobile-view-plan", "mobile-view-calendar", "mobile-view-notes");
             document.body.classList.add("mobile-section-active", `mobile-view-${section}`);
@@ -5243,7 +5232,7 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
                 const preview = document.createElement("div"); preview.className = "global-result-preview";
                 if (result.type === "note") { const d = fromKey(result.dateKey); typeLine.textContent = "Note"; dateLine.textContent = d ? displayDate(d) : result.dateKey; titleLine.textContent = `${result.note.pinned ? "★ " : ""}${result.note.title || "Untitled"}`; preview.textContent = globalPreview(result.note.body); button.addEventListener("click", () => openGlobalResult(result.dateKey, result.note.id)); }
                 else if (result.type === "event") { const d = fromKey(result.event.date); const phase = eventPhase(result.event); typeLine.textContent = "Event"; dateLine.textContent = `${d ? displayDate(d) : result.event.date} · ${eventTimeLabel(result.event)}`; titleLine.textContent = result.event.title; preview.textContent = phase === "today" ? "Today" : phase.charAt(0).toUpperCase() + phase.slice(1); button.addEventListener("click", () => openGlobalEventResult(result.event.id)); }
-                else { typeLine.textContent = `Task · ${result.context}`; dateLine.textContent = result.task.done ? "Completed" : "Open"; titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`; preview.textContent = normalizeTaskTags(result.task.tags).length ? normalizeTaskTags(result.task.tags).join(" · ") : `Open ${result.context} tasks`; button.addEventListener("click", () => openGlobalTaskResult(result.context, result.task.id)); }
+                else { typeLine.textContent = `Task · ${result.context}`; dateLine.textContent = taskStatusDetails(result.task.status).label; titleLine.textContent = `${result.task.highlighted ? "★ " : ""}${result.task.text || "Task"}`; preview.textContent = normalizeTaskTags(result.task.tags).length ? normalizeTaskTags(result.task.tags).join(" · ") : `Open ${result.context} tasks`; button.addEventListener("click", () => openGlobalTaskResult(result.context, result.task.id)); }
                 button.append(typeLine, dateLine, titleLine, preview); globalResultsList.appendChild(button);
             });
         }
@@ -6209,6 +6198,15 @@ ${body}` : title };
             renderGlobalTasks();
             openNewTaskEditor("Today");
         }
+        function openMobileTodayTasks() {
+            if (!isMobileViewport())
+                return;
+            openTasks();
+            activeTaskContext = "Today";
+            activeTaskTagFilter = "";
+            localStorage.setItem(TASK_CONTEXT_KEY, activeTaskContext);
+            renderGlobalTasks();
+        }
         function openTasks() {
             if (!isMobileViewport()) {
                 showDesktopWorkspacePanel("tasks");
@@ -6498,7 +6496,7 @@ ${body}` : title };
             notes = orderNotes(notes);
             applyNotesFocusScope();
             const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || ((desktopWorkspacePanel === "notes" || notesFocusView) && notesFocusAll))))) {
+            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || (notesFocusView && notesFocusAll))))) {
                 renderAllFocusNotes();
                 return;
             }
@@ -6779,7 +6777,9 @@ ${body}` : title };
             if (isWithinRange(today))
                 selectDate(today, true);
             setMobileSection("calendar");
+            alignMobileCalendarToCurrentMonth();
         });
+        mobileTasksBtn.addEventListener("click", openMobileTodayTasks);
         mobileNotesBtn.addEventListener("click", () => {
             mobileNotesAll = true;
             notesBinOpen = false;
@@ -6788,7 +6788,10 @@ ${body}` : title };
             notesSearchInput.value = "";
             setMobileSection("notes");
         });
-        mobileAddTaskBtn.addEventListener("click", openTasksInboxShortcut);
+        mobileAddTaskBtn.addEventListener("click", () => {
+            mobileTaskCaptureReturnHome = true;
+            openTasksInboxShortcut();
+        });
         mobileActivityBtn.addEventListener("click", openActivity);
         mobileHelpBtn.addEventListener("click", openHelp);
         mobileShareBtn.addEventListener("click", shareFastGtd);
@@ -6886,12 +6889,12 @@ ${body}` : title };
         taskCreateNoteBtn.addEventListener("click", createNoteForEditingTask);
         taskOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingTask);
         taskUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingTask);
-        closeTaskEditorBtn.addEventListener("click", closeTaskEditor);
-        cancelTaskEditorBtn.addEventListener("click", closeTaskEditor);
+        closeTaskEditorBtn.addEventListener("click", cancelTaskEditor);
+        cancelTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
         copyTaskBtn.addEventListener("click", copyEditingTask);
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
-        taskModal.addEventListener("click", event => { if (event.target === taskModal) closeTaskEditor(); });
+        taskModal.addEventListener("click", event => { if (event.target === taskModal) cancelTaskEditor(); });
         taskModal.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && event.target instanceof HTMLInputElement) { event.preventDefault(); saveTaskFromEditor(); } });
         activityAddBtn.addEventListener("click", addActivityEntry);
         activityFilterBtn.addEventListener("click", toggleActivityFilter);
@@ -6999,6 +7002,9 @@ ${body}` : title };
                 setSidebarCollapsed(notesSidebar, notesToggle, "right-collapsed", false);
                 moveWorkspacePanelsToSidebar();
                 showDesktopWorkspacePanel(desktopWorkspacePanel);
+            }
+            else if (document.body.classList.contains("mobile-view-calendar")) {
+                alignMobileCalendarToCurrentMonth();
             }
         });
         window.addEventListener("hashchange", () => { const hashDate = fromKey(location.hash.replace("#", "")); if (hashDate && isWithinRange(hashDate))
