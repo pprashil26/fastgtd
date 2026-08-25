@@ -2680,6 +2680,7 @@ button.note-label-chip {
 }
 .events-panel.open { display: block; }
 .events-toolbar { margin-bottom: 9px; }
+#eventTagFilter { width:auto;max-width:130px;height:28px;padding:3px 7px;border:1px solid var(--line);border-radius:9px;background:var(--page);color:var(--ink);font-size:11px; }
 .event-group { margin-top: 12px; }
 .event-group:first-child { margin-top: 0; }
 .event-group-title {
@@ -3821,6 +3822,56 @@ body.notes-focus-active .note-body {
   }
 }
 
+
+/* Notes label filtering: one visible dropdown on desktop and mobile. */
+@media (min-width: 760px) {
+  #notesFocusScope { justify-content:flex-start; }
+  #notesLabelFilter { display:inline-flex;min-width:150px;width:auto; }
+}
+@media (max-width: 759px) {
+  body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { grid-template-columns:minmax(0,1fr) 38px 38px !important;align-items:center;gap:7px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { min-width:0; }
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;margin:0;padding:0;border:0;background:transparent; }
+  body.mobile-section-active.mobile-view-notes #notesScopeDateBtn,
+  body.mobile-section-active.mobile-view-notes #notesScopeAllBtn { display:none !important; }
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;width:100%;min-width:0;min-height:38px;margin:0;padding:6px 30px 6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:13px; }
+  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn,
+  body.mobile-section-active.mobile-view-notes #mobileNotesMoreBtn { width:38px;min-width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center; }
+}
+
+/* Simplified global Notes model */
+.mobile-notes-date, .notes-date-picker, #notesScopeDateBtn, #notesScopeAllBtn, #sortNotesBtn, #mobileNotesSortBtn { display:none !important; }
+.notes-filter-scope { width:auto;justify-content:flex-start; }
+.mobile-notes-menu-backdrop { position:fixed;inset:0;display:none;background:transparent;z-index:79; }
+.mobile-notes-menu-backdrop.open { display:block; }
+.mobile-notes-more-menu { position:fixed !important;top:0;right:auto !important;bottom:auto;left:0;z-index:80;width:176px;min-width:176px; }
+@media (min-width:760px) {
+  #notesFocusScope { display:flex;justify-content:flex-start;margin-bottom:8px; }
+  #notesLabelFilter { display:inline-flex;min-width:150px;width:auto; }
+  .notes-sidebar.desktop-all-notes { height:auto;max-height:none;align-self:start;overflow:visible; }
+  .notes-sidebar.desktop-all-notes .notes-wrap, .notes-sidebar.desktop-all-notes #notesList { overflow:visible; }
+}
+@media (max-width:759px) {
+  body.mobile-section-active.mobile-view-notes #notesToggle { display:none !important; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-toolbar { display:grid !important;grid-template-columns:1fr !important;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { display:grid;grid-template-columns:145px minmax(0,1fr) 38px;align-items:stretch;gap:7px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot { grid-column:1;width:145px;height:38px;min-width:0; }
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope { display:block !important;width:145px;height:38px;margin:0;padding:0;border:0;background:transparent; }
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { display:block !important;box-sizing:border-box;width:145px;max-width:145px;min-width:0;height:38px;min-height:38px;margin:0;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;appearance:auto; }
+  body.mobile-section-active.mobile-view-notes #mobileNotesAddBtn { grid-column:3;position:relative;z-index:2;box-sizing:border-box;width:38px;min-width:38px;height:38px;min-height:38px;margin:0;padding:0;border-width:1px;border-radius:10px;display:inline-flex !important;align-items:center;justify-content:center;visibility:visible;opacity:1; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:22px;padding:0 2px;color:var(--muted);font-size:11px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { min-height:22px;padding:1px 2px;border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:hover, body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn:focus-visible { color:var(--ink);background:transparent;text-decoration:underline; }
+}
+@media (max-width:380px) {
+  body.mobile-section-active.mobile-view-notes .mobile-notes-primary-row { grid-template-columns:125px minmax(0,1fr) 38px;gap:5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-scope-slot,
+  body.mobile-section-active.mobile-view-notes .notes-focus-scope.mobile-scope,
+  body.mobile-section-active.mobile-view-notes #notesLabelFilter { width:125px;max-width:125px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row { gap:6px;font-size:10.5px; }
+  body.mobile-section-active.mobile-view-notes .mobile-notes-secondary-row .plain-btn { font-size:10.5px; }
+}
 </style>
 </head>
 <body>
@@ -3923,12 +3974,11 @@ body.notes-focus-active .note-body {
     <aside class="notes-sidebar" id="notesSidebar" aria-label="Lined notepad sidebar">
       <div class="notes-head"><div class="notes-title">Notepad</div><div class="workspace-tabs" id="workspaceTabs" role="tablist" aria-label="Right sidebar panels"><button class="workspace-tab active" id="workspaceNotesTab" type="button" role="tab" aria-selected="true">Notes</button><button class="workspace-tab" id="workspaceTasksTab" type="button" role="tab" aria-selected="false">Tasks</button><button class="workspace-tab" id="workspaceActivityTab" type="button" role="tab" aria-selected="false">Activity</button><button class="workspace-tab" id="workspaceEventsTab" type="button" role="tab" aria-selected="false">Events</button></div><button class="plain-btn" id="notesToggle" type="button">Hide</button></div>
       <div class="notes-wrap" id="notesWorkspacePanel">
-        <div class="mobile-notes-date" id="mobileNotesDate">Notes for selected date</div>
         <div class="notes-search-row" id="notesSearchRow" hidden><input id="notesSearchInput" type="text" placeholder="Search notes..." autocomplete="off" /><button class="plain-btn search-clear-btn" id="notesSearchClear" type="button">×</button></div>
         <button class="plain-btn search-btn" id="notesSearchBtn" type="button" hidden>⌕</button>
-        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn notes-labels-btn" id="notesLabelsBtn" type="button" title="Filter notes by label">Labels</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon" id="sortNotesBtn" type="button" title="Sort notes A-Z">A↓</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
-        <div class="notes-focus-scope" id="notesFocusScope" aria-label="Notes scope"><input class="notes-date-picker active" id="notesScopeDateBtn" type="date" aria-label="Notes date" title="Select Notes date" /><button class="plain-btn notes-scope-btn" id="notesScopeAllBtn" type="button">All notes</button><select class="notes-label-filter" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
-        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-tool" id="mobileNotesLabelsBtn" type="button">Labels</button><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note to selected date">＋</button><span class="mobile-notes-more-wrap"><button class="plain-btn mobile-notes-more-btn" id="mobileNotesMoreBtn" type="button" aria-expanded="false">⋯</button><span class="mobile-notes-more-menu" id="mobileNotesMoreMenu"><button class="plain-btn" id="mobileNotesSortBtn" type="button">Sort A–Z</button><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button></span></span></div>
+        <div class="notes-top"><div class="notes-actions"><button class="plain-btn icon-btn notes-toolbar-icon" id="notesFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on notes in a wider grid view">⛶</button><button class="plain-btn icon-btn notes-toolbar-icon bin-back-btn" id="notesBinBackBtn" type="button" title="Back to notes">←</button><button class="plain-btn icon-btn notes-toolbar-icon move-all-btn" id="moveAllNotesBtn" type="button" title="Move all notes">⇄</button><button class="plain-btn icon-btn notes-toolbar-icon bin-btn" id="notesBinBtn" type="button" title="Recycle Bin">♻</button><button class="plain-btn icon-btn notes-toolbar-icon add-note-icon-btn" id="addNoteBtn" type="button" title="Add note">+</button><span class="notes-more-wrap" hidden><button class="plain-btn more-btn" id="notesMoreBtn" type="button" hidden>⋯</button><span class="notes-more-menu" id="notesMoreMenu" hidden></span></span></div></div>
+        <div class="notes-focus-scope notes-filter-scope" id="notesFocusScope" aria-label="Notes filters"><select class="notes-label-filter show" id="notesLabelFilter" title="Filter notes by label" aria-label="Filter notes by label"><option value="">All labels</option></select></div>
+        <div class="mobile-notes-toolbar" id="mobileNotesToolbar" hidden><div class="mobile-notes-primary-row"><div class="mobile-notes-scope-slot" id="mobileNotesScopeSlot"></div><button class="plain-btn mobile-notes-add" id="mobileNotesAddBtn" type="button" title="Add note">＋</button></div><div class="mobile-notes-secondary-row"><button class="plain-btn" id="mobileNotesBinBtn" type="button">Recycle Bin</button><span aria-hidden="true">·</span><button class="plain-btn" id="mobileNotesMoveAllBtn" type="button">Move all notes</button></div></div>
         <div id="notesList"></div><div class="no-results" id="notesNoResults">No matching notes</div>
       </div>
       <div class="workspace-panel-host" id="workspacePanelHost"></div>
@@ -3960,7 +4010,7 @@ body.notes-focus-active .note-body {
         <div id="activityLog"></div>
       </div>
       <div class="events-panel" id="eventsPanel" hidden>
-        <div class="events-toolbar"><span class="events-title">Events</span><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
+        <div class="events-toolbar"><span class="events-title">Events</span><select id="eventTagFilter" aria-label="Filter Events by tag"><option value="">All tags</option></select><span class="workspace-panel-actions"><button class="plain-btn icon-btn workspace-focus-btn" id="eventsFocusBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus on Events">⛶</button><button class="plain-btn" id="eventsPastBtn" type="button" aria-expanded="false">Show past</button><button class="plain-btn event-add-link workspace-add-icon" id="eventsPanelAddBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div>
         <div id="eventsList"></div>
       </div>
       <div class="link-preview expanded-links" id="expandedLinks"></div>
@@ -3983,10 +4033,12 @@ body.notes-focus-active .note-body {
       <div class="event-editor-head"><p class="event-editor-title" id="eventEditorTitle">New Event</p><button class="plain-btn" id="closeEventBtn" type="button">Close</button></div>
       <div class="event-editor-body">
         <label for="eventTitleInput">Event</label><input id="eventTitleInput" type="text" maxlength="120" placeholder="Event title" autocomplete="off" />
+        <label for="eventTagInput">Tag <span class="event-optional">optional</span></label><input id="eventTagInput" type="text" maxlength="40" list="eventTagSuggestions" placeholder="Work, Family, Health..." autocomplete="off" /><datalist id="eventTagSuggestions"></datalist>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDateInput">Date</label><input id="eventDateInput" type="date" /></div><div class="event-editor-field"><label for="eventTimeInput">Time <span class="event-optional">optional</span></label><input id="eventTimeInput" type="time" /></div></div>
         <div class="event-editor-grid"><div class="event-editor-field"><label for="eventDurationInput">Duration</label><select id="eventDurationInput"><option value="30">30 minutes</option><option value="60">1 hour</option><option value="90">1 hour 30 minutes</option><option value="120">2 hours</option><option value="150">2 hours 30 minutes</option><option value="180">3 hours</option><option value="custom">Custom</option></select></div><div class="event-editor-field" id="eventCustomDurationField" hidden><label for="eventCustomDurationInput">Minutes</label><input id="eventCustomDurationInput" type="number" min="30" max="1440" step="30" value="30" /></div></div>
         <label for="eventRepeatInput">Repeat</label><select id="eventRepeatInput"><option value="none">Does not repeat</option><option value="daily">Daily</option><option value="weekdays">Weekdays</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="custom">Custom</option></select>
         <div class="event-recurrence-options" id="eventRecurrenceOptions" hidden><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatIntervalInput">Repeat every</label><input id="eventRepeatIntervalInput" type="number" min="1" max="99" value="1" /></div><div class="event-editor-field"><label for="eventRepeatUnitInput">Unit</label><select id="eventRepeatUnitInput"><option value="day">Day</option><option value="week">Week</option><option value="month">Month</option><option value="year">Year</option></select></div></div><div class="event-editor-field" id="eventWeekdaysField" hidden><label>On days</label><div class="event-weekdays" id="eventWeekdays"></div></div><div class="event-editor-grid"><div class="event-editor-field"><label for="eventRepeatEndInput">Ends</label><select id="eventRepeatEndInput"><option value="never">Never</option><option value="date">On date</option><option value="count">After occurrences</option></select></div><div class="event-editor-field" id="eventRepeatEndValueField" hidden><label for="eventRepeatEndValue">End value</label><input id="eventRepeatEndValue" type="date" /></div></div></div>
+        <div class="task-note-section" id="eventNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="eventCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="eventLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="eventOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="eventUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="eventNoteHelp"></span></div>
       </div>
       <div class="event-series-scope" id="eventSeriesScope" hidden><label for="eventSeriesScopeInput">Apply changes to</label><select id="eventSeriesScopeInput"><option value="this">This event</option><option value="future">This and future events</option><option value="all">All events in the series</option></select></div>
       <div class="event-editor-actions"><button class="plain-btn delete-note-btn" id="deleteEventBtn" type="button" hidden>Delete</button><button class="plain-btn event-copy-btn" id="copyEventBtn" type="button" hidden>Copy</button><span></span><button class="plain-btn" id="cancelEventBtn" type="button">Cancel</button><button class="plain-btn event-save-btn" id="saveEventBtn" type="button">Save</button></div>
@@ -4022,7 +4074,7 @@ body.notes-focus-active .note-body {
   </div>
   <div class="modal-backdrop" id="taskNotePickerModal" aria-hidden="true">
     <section class="task-note-picker-panel" role="dialog" aria-modal="true" aria-label="Link existing note">
-      <div class="task-note-picker-head"><p class="task-note-picker-title">Link existing note</p><button class="plain-btn" id="closeTaskNotePickerBtn" type="button">Close</button></div>
+      <div class="task-note-picker-head"><p class="task-note-picker-title" id="taskNotePickerTitle">Link existing note</p><button class="plain-btn" id="closeTaskNotePickerBtn" type="button">Close</button></div>
       <div class="task-note-picker-body">
         <input id="taskNotePickerSearch" type="text" placeholder="Search note title, body or labels..." autocomplete="off" />
         <div class="task-note-picker-list" id="taskNotePickerList"></div>
@@ -4034,7 +4086,7 @@ body.notes-focus-active .note-body {
   </div>
 
   <div class="modal-backdrop" id="helpModal" aria-hidden="true">
-    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>Quick Start</h3><ul><li>+ Task creates a Task.</li><li>+ Note creates a Note or List.</li><li>+ Event creates an Event.</li></ul><h3>Navigation</h3><ul><li>Today = today's timeline.</li><li>Tasks = Inbox, Today, This Month and Someday.</li><li>Notes = Notes, checklists and lists.</li><li>More = Activity, Events, Calendar, Export, Import and Help.</li></ul><h3>Tasks</h3><ul><li>Add Tags to organise Tasks.</li><li>Schedule Tasks to dates and times.</li><li>Link Tasks to Notes.</li></ul><h3>Notes &amp; Lists</h3><ul><li>Create Notes, checklists, numbered lists and bullet lists.</li><li>Use Labels to organise Notes.</li><li>Use All Notes to see every Note.</li></ul><h3>Backup</h3><ul><li>Export creates a complete backup.</li><li>Import restores a backup.</li></ul><h3>Privacy</h3><ul><li>Data stays on your device.</li><li>No account required.</li></ul></div></div></section>
+    <section class="help-panel" role="dialog" aria-modal="true"><div class="help-head"><p class="help-title">Help</p><button class="plain-btn" id="closeHelpBtn" type="button">Close</button></div><div class="help-body"><div class="help-desktop-content"><h3>How to use</h3><ol><li>Pick a date from Calendar.</li><li>Add your Focus for the day.</li><li>Plan your day in 30-minute blocks.</li><li>Use the right workspace tabs for Notes, Tasks, and Activity.</li><li>Use Tasks for a global checklist grouped by time horizon and filter them with Task tags.</li><li>Use Export regularly to back up your data.</li></ol><h3>Quick tips</h3><ul><li>Use Focus to hide both sidebars, then Full view to restore them.</li><li>Select a note card to open it, and use Labels to filter notes.</li><li>Use Search all notes to find notes across dates.</li><li>Tasks are grouped by Inbox, Today, This month, and Someday. Add Task tags such as Home, Work, or Waiting for context.</li></ul><div class="help-note">Data is saved locally on this device only. Export creates a backup text file you can import later.</div></div><div class="help-mobile-content"><h3>Quick Start</h3><ul><li>+ Task creates a Task.</li><li>+ Note creates a Note or List.</li><li>+ Event creates an Event.</li></ul><h3>Navigation</h3><ul><li>Today = today's timeline.</li><li>Tasks = Inbox, Today, This Month and Someday.</li><li>Notes = Notes, checklists and lists.</li><li>More = Activity, Events, Calendar, Export, Import and Help.</li></ul><h3>Tasks</h3><ul><li>Add Tags to organise Tasks.</li><li>Schedule Tasks to dates and times.</li><li>Link Tasks to Notes.</li></ul><h3>Events</h3><ul><li>Create a Note or link an existing Note to an Event.</li></ul><h3>Notes &amp; Lists</h3><ul><li>Create Notes, checklists, numbered lists and bullet lists.</li><li>Use Labels to organise Notes.</li><li>Use All Notes to see every Note.</li></ul><h3>Backup</h3><ul><li>Export creates a complete backup.</li><li>Import restores a backup.</li></ul><h3>Privacy</h3><ul><li>Data stays on your device.</li><li>No account required.</li></ul></div></div></section>
   </div>
 
   <script>
@@ -4101,7 +4153,6 @@ body.notes-focus-active .note-body {
         const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
-        const mobileNotesDate = el("mobileNotesDate");
         const shell = el("shell");
         const sidebar = el("sidebar");
         const sidebarToggle = el("sidebarToggle");
@@ -4150,20 +4201,12 @@ body.notes-focus-active .note-body {
         const notesSearchClear = el("notesSearchClear");
         const notesNoResults = el("notesNoResults");
         const addNoteBtn = el("addNoteBtn");
-        const sortNotesBtn = el("sortNotesBtn");
         const notesFocusBtn = el("notesFocusBtn");
-        const notesLabelsBtn = el("notesLabelsBtn");
         const notesFocusScope = el("notesFocusScope");
-        const notesScopeDateBtn = el("notesScopeDateBtn");
-        const notesScopeAllBtn = el("notesScopeAllBtn");
         const notesLabelFilter = el("notesLabelFilter");
         const mobileNotesToolbar = el("mobileNotesToolbar");
         const mobileNotesScopeSlot = el("mobileNotesScopeSlot");
-        const mobileNotesLabelsBtn = el("mobileNotesLabelsBtn");
         const mobileNotesAddBtn = el("mobileNotesAddBtn");
-        const mobileNotesMoreBtn = el("mobileNotesMoreBtn");
-        const mobileNotesMoreMenu = el("mobileNotesMoreMenu");
-        const mobileNotesSortBtn = el("mobileNotesSortBtn");
         const mobileNotesMoveAllBtn = el("mobileNotesMoveAllBtn");
         const mobileNotesBinBtn = el("mobileNotesBinBtn");
         const moveAllNotesBtn = el("moveAllNotesBtn");
@@ -4219,6 +4262,7 @@ body.notes-focus-active .note-body {
         const taskNotePickerModal = el("taskNotePickerModal");
         const taskNotePickerSearch = el("taskNotePickerSearch");
         const taskNotePickerList = el("taskNotePickerList");
+        const taskNotePickerTitle = el("taskNotePickerTitle");
         const closeTaskNotePickerBtn = el("closeTaskNotePickerBtn");
         const closeTaskEditorBtn = el("closeTaskEditorBtn");
         const cancelTaskEditorBtn = el("cancelTaskEditorBtn");
@@ -4242,6 +4286,9 @@ body.notes-focus-active .note-body {
         const eventModal = el("eventModal");
         const eventEditorTitle = el("eventEditorTitle");
         const eventTitleInput = el("eventTitleInput");
+        const eventTagInput = el("eventTagInput");
+        const eventTagSuggestions = el("eventTagSuggestions");
+        const eventTagFilter = el("eventTagFilter");
         const eventDateInput = el("eventDateInput");
         const eventTimeInput = el("eventTimeInput");
         const eventDurationInput = el("eventDurationInput");
@@ -4263,6 +4310,11 @@ body.notes-focus-active .note-body {
         const cancelEventBtn = el("cancelEventBtn");
         const saveEventBtn = el("saveEventBtn");
         const deleteEventBtn = el("deleteEventBtn");
+        const eventCreateNoteBtn = el("eventCreateNoteBtn");
+        const eventLinkNoteBtn = el("eventLinkNoteBtn");
+        const eventOpenNoteBtn = el("eventOpenNoteBtn");
+        const eventUnlinkNoteBtn = el("eventUnlinkNoteBtn");
+        const eventNoteHelp = el("eventNoteHelp");
         const labelModal = el("labelModal");
         const closeLabelBtn = el("closeLabelBtn");
         const labelInput = el("labelInput");
@@ -4295,7 +4347,7 @@ body.notes-focus-active .note-body {
         let notesBinOpen = false;
         let notesFocusView = false;
         localStorage.removeItem(NOTE_FOCUS_KEY);
-        let notesFocusAll = false;
+        let notesFocusAll = true;
         let mobileNotesAll = true;
         let mobileTaskCaptureReturnHome = false;
         let notesLabelFilterValue = "";
@@ -4313,8 +4365,10 @@ body.notes-focus-active .note-body {
         let editingEventOccurrenceDate = "";
         let editingTaskId = null;
         let editingTaskContext = null;
+        let notePickerTarget = "task";
         let taskEditorFocusTarget = "text";
         let showPastEvents = false;
+        let activeEventTagFilter = "";
         let activityEntries = normalizeActivityEntries(loadJson(ACTIVITY_KEY, []));
         let activityHideCompleted = localStorage.getItem(ACTIVITY_HIDE_COMPLETED_KEY) === "true";
         let activeTaskContext = "Today";
@@ -4477,7 +4531,7 @@ body.notes-focus-active .note-body {
             if (!parsed.cleanQuery || !parsed.types.size) return { results: [], parsed };
             const results = [];
             if (parsed.types.has("notes")) allDateKeys().forEach(dateKey => { const data = readDateData(dateKey); normalizeNotes(data.notes).filter(note => !note.deleted).forEach(note => { if (noteMatchesGlobalSearch(note, parsed.cleanQuery)) results.push({ type: "note", dateKey, note }); }); });
-            if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (event.title.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
+            if (parsed.types.has("events")) events.filter(event => !event.cancelled).forEach(event => { if (`${event.title} ${event.tag || ""}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "event", event }); });
             if (parsed.types.has("tasks")) TASK_CONTEXTS.forEach(context => { (globalTasks[context] || []).forEach(task => { if (`${task.text || ""} ${normalizeTaskTags(task.tags).join(" ")}`.toLowerCase().includes(parsed.cleanQuery)) results.push({ type: "task", context, task }); }); });
             return { results, parsed };
         }
@@ -4492,6 +4546,7 @@ body.notes-focus-active .note-body {
             if (!Array.isArray(raw)) return [];
             return raw.map(item => ({
                 id: item.id || createId("event"), title: typeof item.title === "string" ? item.title.trim() : "",
+                tag: typeof item.tag === "string" ? item.tag.trim().slice(0,40) : "",
                 date: fromKey(item.date) ? item.date : toKey(getToday()),
                 time: /^([01]\d|2[0-3]):[0-5]\d$/.test(item.time || "") ? item.time : "",
                 durationMinutes: Math.max(30, Math.min(1440, Math.round((Number(item.durationMinutes) || 30) / 30) * 30)),
@@ -4499,6 +4554,7 @@ body.notes-focus-active .note-body {
                 seriesId: typeof item.seriesId === "string" ? item.seriesId : "",
                 originalDate: fromKey(item.originalDate) ? item.originalDate : "",
                 cancelled: Boolean(item.cancelled),
+                noteLink: normalizeTaskNoteLink(item.noteLink),
                 createdAt: item.createdAt && !Number.isNaN(new Date(item.createdAt).getTime()) ? item.createdAt : new Date().toISOString()
             })).filter(item => item.title || item.cancelled).sort(compareEvents);
         }
@@ -4705,7 +4761,7 @@ body.notes-focus-active .note-body {
             }
             setTimeout(() => openExpandedNote(note.id, true), 0);
         }
-        function allAvailableNotesForTaskLink() {
+        function allAvailableNotesForLink() {
             const available = [];
             allDateKeys().slice().sort().reverse().forEach(dateKey => {
                 normalizeNotes(readDateData(dateKey).notes).forEach(note => {
@@ -4716,7 +4772,7 @@ body.notes-focus-active .note-body {
         }
         function renderTaskNotePicker() {
             const query = taskNotePickerSearch.value.trim().toLowerCase();
-            const available = allAvailableNotesForTaskLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
+            const available = allAvailableNotesForLink().filter(({ note }) => !query || `${note.title || ""} ${note.body || ""} ${(note.labels || []).join(" ")}`.toLowerCase().includes(query));
             taskNotePickerList.innerHTML = "";
             if (!available.length) {
                 const empty = document.createElement("div");
@@ -4737,13 +4793,15 @@ body.notes-focus-active .note-body {
                 const date = fromKey(dateKey);
                 meta.textContent = `${date ? displayDate(date) : dateKey}${note.labels.length ? " · " + note.labels.join(" · ") : ""}`;
                 button.append(title, meta);
-                button.addEventListener("click", () => linkExistingNoteToEditingTask(note.id, dateKey));
+                button.addEventListener("click", () => notePickerTarget === "event" ? linkExistingNoteToEditingEvent(note.id, dateKey) : linkExistingNoteToEditingTask(note.id, dateKey));
                 taskNotePickerList.appendChild(button);
             });
         }
         function openTaskNotePicker() {
             const found = saveEditingTaskChangesBeforeNote();
             if (!found || linkedNoteForTask(found.task)) return updateTaskNoteControls();
+            notePickerTarget = "task";
+            taskNotePickerTitle.textContent = "Link existing note";
             taskNotePickerSearch.value = "";
             renderTaskNotePicker();
             taskNotePickerModal.classList.add("open");
@@ -4765,6 +4823,101 @@ body.notes-focus-active .note-body {
             closeTaskNotePicker();
             updateTaskNoteControls();
             renderGlobalTasks();
+        }
+        function editingEventRecord() {
+            if (!editingEventId) return null;
+            const id = editingEventId.includes("@") ? editingEventId.split("@")[0] : editingEventId;
+            const event = events.find(item => item.id === id);
+            if (!event) return null;
+            return event.seriesId ? events.find(item => item.id === event.seriesId) || event : event;
+        }
+        function linkedNoteForEvent(event) {
+            const link = normalizeTaskNoteLink(event && event.noteLink);
+            if (!link) return null;
+            const note = normalizeNotes(readDateData(link.dateKey).notes).find(item => item.id === link.noteId && !item.deleted);
+            return note ? { link, note } : null;
+        }
+        function updateEventNoteControls() {
+            const event = editingEventRecord();
+            const linked = event ? linkedNoteForEvent(event) : null;
+            eventCreateNoteBtn.hidden = Boolean(linked);
+            eventLinkNoteBtn.hidden = Boolean(linked);
+            eventOpenNoteBtn.hidden = !linked;
+            eventUnlinkNoteBtn.hidden = !linked;
+            eventCreateNoteBtn.disabled = !event;
+            eventLinkNoteBtn.disabled = !event;
+            eventNoteHelp.textContent = linked ? `Linked: ${linked.note.title || "Untitled"}` : event ? "Create a new Note or link an existing Note. A Note can be shared by multiple Tasks and Events." : "Save the Event before creating or linking its Note.";
+            if (event && event.noteLink && !linked) { event.noteLink = null; saveEvents(); }
+        }
+        function createNoteForEditingEvent() {
+            const event = editingEventRecord();
+            if (!event || linkedNoteForEvent(event)) return updateEventNoteControls();
+            const dateKey = fromKey(event.date) ? event.date : toKey(selectedDate);
+            const data = readDateData(dateKey);
+            const note = { id: createId(), title: event.title || "Event note", body: "", labels: [], pinned: false, deleted: false, deletedAt: null };
+            data.notes = orderNotes([note].concat(normalizeNotes(data.notes)));
+            data.entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            data.focus = data.focus || "";
+            data.evening = data.evening || "";
+            writeDateData(dateKey, data);
+            event.noteLink = { noteId: note.id, dateKey };
+            saveEvents();
+            closeEventEditor();
+            const targetDate = fromKey(dateKey);
+            if (targetDate) { notesDate = targetDate; loadNotesForIndependentDate(); }
+            setTimeout(() => openExpandedNote(note.id, true), 0);
+        }
+        function openEventNotePicker() {
+            const event = editingEventRecord();
+            if (!event || linkedNoteForEvent(event)) return updateEventNoteControls();
+            notePickerTarget = "event";
+            taskNotePickerTitle.textContent = "Link existing note to Event";
+            taskNotePickerSearch.value = "";
+            renderTaskNotePicker();
+            taskNotePickerModal.classList.add("open");
+            taskNotePickerModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => taskNotePickerSearch.focus(), 0);
+        }
+        function linkExistingNoteToEditingEvent(noteId, dateKey) {
+            const event = editingEventRecord();
+            const note = normalizeNotes(readDateData(dateKey).notes).find(item => item.id === noteId && !item.deleted);
+            if (!event || !note) return;
+            event.noteLink = { noteId, dateKey };
+            saveEvents();
+            closeTaskNotePicker();
+            updateEventNoteControls();
+            renderSelectedDateEvents();
+            renderEvents();
+        }
+        function openLinkedNoteForEditingEvent() {
+            const event = editingEventRecord();
+            const linked = event ? linkedNoteForEvent(event) : null;
+            if (!linked) return updateEventNoteControls();
+            closeEventEditor();
+            const targetDate = fromKey(linked.link.dateKey);
+            if (targetDate) { notesDate = targetDate; loadNotesForIndependentDate(); }
+            setTimeout(() => openExpandedNote(linked.note.id), 0);
+        }
+        function unlinkNoteFromEditingEvent() {
+            const event = editingEventRecord();
+            if (!event) return;
+            event.noteLink = null;
+            saveEvents();
+            updateEventNoteControls();
+            renderSelectedDateEvents();
+            renderEvents();
+        }
+        function linkedEventsForNote(noteId) { return events.filter(event => event.noteLink && event.noteLink.noteId === noteId); }
+        function clearEventNoteLinks(noteId) {
+            let changed = false;
+            events.forEach(event => { if (event.noteLink && event.noteLink.noteId === noteId) { event.noteLink = null; changed = true; } });
+            if (changed) { saveEvents(); renderSelectedDateEvents(); renderEvents(); }
+            return changed;
+        }
+        function updateLinkedEventNoteDate(noteId, dateKey) {
+            let changed = false;
+            events.forEach(event => { if (event.noteLink && event.noteLink.noteId === noteId) { event.noteLink = { noteId, dateKey }; changed = true; } });
+            if (changed) saveEvents();
         }
         function linkedTasksForNote(noteId) {
             const matches = [];
@@ -4932,7 +5085,7 @@ body.notes-focus-active .note-body {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "event-strip-item";
-                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}`;
+                button.textContent = `${event.time ? eventTimeLabel(event) + "  " : ""}${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
                 button.title = `Edit ${event.title}`;
                 button.addEventListener("click", () => openEventEditor(event.id));
                 eventsStripList.appendChild(button);
@@ -4955,16 +5108,23 @@ body.notes-focus-active .note-body {
             when.textContent = `${dateText}${event.time ? " · " + eventTimeLabel(event) : " · All day"}`;
             const title = document.createElement("span");
             title.className = "event-row-title";
-            title.textContent = event.title;
+            title.textContent = `${event.title}${event.tag ? "  #" + event.tag : ""}${linkedNoteForEvent(event) ? "  ▤" : ""}`;
             row.append(when, title);
             row.addEventListener("click", () => openEventEditor(event.id));
             return row;
         }
         function renderEvents() {
             eventsList.innerHTML = "";
+            const tags = Array.from(new Set(events.map(event => event.tag).filter(Boolean))).sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
+            if (activeEventTagFilter && !tags.includes(activeEventTagFilter)) activeEventTagFilter = "";
+            eventTagFilter.innerHTML = '<option value="">All tags</option>';
+            tags.forEach(tag => { const option=document.createElement("option");option.value=tag;option.textContent=tag;eventTagFilter.appendChild(option); });
+            eventTagFilter.value = activeEventTagFilter;
+            eventTagSuggestions.innerHTML = "";
+            tags.forEach(tag => { const option=document.createElement("option");option.value=tag;eventTagSuggestions.appendChild(option); });
             const today = getToday();
             const windowEvents = [];
-            for (let offset = -365; offset <= 730; offset += 1) { const date = new Date(today); date.setDate(date.getDate() + offset); if (isWithinRange(date)) windowEvents.push(...eventsForDate(toKey(date))); }
+            for (let offset = -365; offset <= 730; offset += 1) { const date = new Date(today); date.setDate(date.getDate() + offset); if (isWithinRange(date)) windowEvents.push(...eventsForDate(toKey(date)).filter(event => !activeEventTagFilter || event.tag === activeEventTagFilter)); }
             const groups = [
                 ["Today", windowEvents.filter(event => eventPhase(event) === "today")],
                 ["Upcoming", windowEvents.filter(event => eventPhase(event) === "upcoming")],
@@ -5015,13 +5175,13 @@ body.notes-focus-active .note-body {
             if(eventId&&eventId.includes("@")){const [masterId,dateKey]=eventId.split("@");const master=events.find(item=>item.id===masterId);if(master){event=eventForOccurrence(master,dateKey);occurrenceDate=dateKey;}}
             else event=eventId?events.find(item=>item.id===eventId):null;
             editingEventId=event?event.id:null;editingEventOccurrenceDate=occurrenceDate;
-            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
+            eventEditorTitle.textContent=event?"Edit Event":"New Event";eventTitleInput.value=event?event.title:"";eventTagInput.value=event?event.tag||"":"";eventDateInput.min=toKey(START_DATE);eventDateInput.max=toKey(END_DATE);eventDateInput.value=event?event.date:toKey(selectedDate);eventTimeInput.value=event?event.time:"";
             const duration=event?event.durationMinutes||30:30;eventDurationInput.value=[30,60,90,120,150,180].includes(duration)?String(duration):"custom";eventCustomDurationInput.value=String(duration);
             const master=event&&event.seriesId?events.find(item=>item.id===event.seriesId):event;const rule=master&&master.recurrence?master.recurrence:null;eventRepeatInput.value=rule?rule.type:"none";eventRepeatIntervalInput.value=String(rule?rule.interval:1);eventRepeatUnitInput.value=rule?rule.unit:"week";eventRepeatEndInput.value=rule?rule.endType:"never";eventRepeatEndValue.value=rule?(rule.endType==="date"?rule.endDate:String(rule.count)):"";renderEventWeekdays(rule?rule.weekdays:[]);
-            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
+            deleteEventBtn.hidden=!event;copyEventBtn.hidden=!event;eventSeriesScope.hidden=!(event&&(event.seriesId||event.recurrence));eventSeriesScopeInput.value="this";updateEventEditorOptions();updateEventNoteControls();eventModal.classList.add("open");eventModal.setAttribute("aria-hidden","false");setTimeout(()=>eventTitleInput.focus(),0);
         }
         function closeEventEditor(){eventModal.classList.remove("open");eventModal.setAttribute("aria-hidden","true");editingEventId=null;editingEventOccurrenceDate="";}
-        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();eventTitleInput.focus();}
+        function copyEditingEvent(){const id=editingEventId;let event=id&&id.includes("@")?eventsForDate(editingEventOccurrenceDate).find(item=>item.id===id):events.find(item=>item.id===id);if(!event)return;editingEventId=null;editingEventOccurrenceDate="";eventEditorTitle.textContent="Copy Event";deleteEventBtn.hidden=true;copyEventBtn.hidden=true;eventSeriesScope.hidden=true;eventRepeatInput.value="none";renderEventWeekdays([]);updateEventEditorOptions();updateEventNoteControls();eventTitleInput.focus();}
         function removeSeriesPlannerLinks(seriesId, predicate = () => true) {
             const master = events.find(item => item.id === seriesId);
             const exceptionIds = new Set(events.filter(item => item.seriesId === seriesId).map(item => item.id));
@@ -5052,21 +5212,25 @@ body.notes-focus-active .note-body {
         }
         function saveEventFromEditor(){
             const title=eventTitleInput.value.trim(),date=eventDateInput.value;if(!title){alert("Please enter an event title.");eventTitleInput.focus();return;}if(!fromKey(date)||!isWithinRange(fromKey(date))){alert("Please select a valid event date.");return;}
-            const draft={title,date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor()};
+            const currentNoteLink=editingEventRecord()?normalizeTaskNoteLink(editingEventRecord().noteLink):null;
+            const draft={title,tag:eventTagInput.value.trim().slice(0,40),date,time:eventTimeInput.value||"",durationMinutes:eventTimeInput.value?eventDurationValue():30,recurrence:recurrenceFromEditor(),noteLink:currentNoteLink};
+            const isNewEvent=!editingEventId;
             let savedEvent=null,previousSnapshot=null;
             if(editingEventId&&editingEventId.includes("@")){
                 const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;
                 if(scope==="this"){removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));events=events.filter(item=>!(item.seriesId===seriesId&&item.originalDate===originalDate));savedEvent={id:createId("event"),...draft,recurrence:null,seriesId,originalDate,cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
-                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
+                else if(scope==="all"){removeSeriesPlannerLinks(seriesId);master.title=draft.title;master.tag=draft.tag;master.time=draft.time;master.durationMinutes=draft.durationMinutes;master.recurrence=draft.recurrence||master.recurrence;savedEvent=eventForOccurrence(master,originalDate);}
                 else {removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);if(master.recurrence){master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}savedEvent={id:createId("event"),...draft,createdAt:new Date().toISOString(),seriesId:"",originalDate:"",cancelled:false};events.push(savedEvent);}
             } else if(editingEventId){
                 const current=events.find(item=>item.id===editingEventId);if(!current)return;previousSnapshot={...current};removeLinkedEventTimeblock(previousSnapshot);Object.assign(current,draft);savedEvent=current;
             } else {savedEvent={id:createId("event"),...draft,seriesId:"",originalDate:"",cancelled:false,createdAt:new Date().toISOString()};events.push(savedEvent);}
-            saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);closeEventEditor();if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
+            saveEvents();if(savedEvent.recurrence){const occ=eventForOccurrence(savedEvent,savedEvent.date);populateEventTimeblock(occ);}else populateEventTimeblock(savedEvent);if(toKey(selectedDate)===savedEvent.date||(previousSnapshot&&toKey(selectedDate)===previousSnapshot.date))loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
+            if(isNewEvent){editingEventId=savedEvent.id;editingEventOccurrenceDate="";eventEditorTitle.textContent="Edit Event";deleteEventBtn.hidden=false;copyEventBtn.hidden=false;eventSeriesScope.hidden=!savedEvent.recurrence;updateEventNoteControls();const original=saveEventBtn.textContent;saveEventBtn.textContent="Saved ✓";saveEventBtn.disabled=true;setTimeout(()=>{saveEventBtn.textContent=original;saveEventBtn.disabled=false;},900);return;}
+            closeEventEditor();
         }
         function deleteEditingEvent(){
             if(!editingEventId||!confirm("Delete this event?"))return;
-            if(editingEventId.includes("@")){const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));if(scope==="this")events.push({id:createId("event"),title:"",date:originalDate,time:"",durationMinutes:30,recurrence:null,seriesId,originalDate,cancelled:true,createdAt:new Date().toISOString()});else if(scope==="all"){removeSeriesPlannerLinks(seriesId);events=events.filter(item=>item.id!==seriesId&&item.seriesId!==seriesId);}else{removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}}
+            if(editingEventId.includes("@")){const [seriesId,originalDate]=editingEventId.split("@");const master=events.find(item=>item.id===seriesId);if(!master)return;const scope=eventSeriesScopeInput.value;removeLinkedEventTimeblock(eventForOccurrence(master,originalDate));if(scope==="this")events.push({id:createId("event"),title:"",tag:"",date:originalDate,time:"",durationMinutes:30,recurrence:null,seriesId,originalDate,cancelled:true,createdAt:new Date().toISOString()});else if(scope==="all"){removeSeriesPlannerLinks(seriesId);events=events.filter(item=>item.id!==seriesId&&item.seriesId!==seriesId);}else{removeSeriesPlannerLinks(seriesId,d=>d>=originalDate);master.recurrence.endType="date";const before=fromKey(originalDate);before.setDate(before.getDate()-1);master.recurrence.endDate=toKey(before);}}
             else {const deleting=events.find(event=>event.id===editingEventId);if(deleting&&deleting.recurrence)removeSeriesPlannerLinks(deleting.id);removeLinkedEventTimeblock(deleting);events=events.filter(event=>event.id!==editingEventId);}
             saveEvents();closeEventEditor();loadSelectedDate();renderSelectedDateEvents();renderEvents();buildCalendar();
         }
@@ -5533,17 +5697,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function applyExpandedNoteLayout() {
             noteModal.classList.toggle("wide-note-page", !isMobileViewport());
         }
-        function sortNotesByTitle() {
-            const active = notes.filter(note => !note.deleted);
-            const deleted = notes.filter(note => note.deleted);
-            const byTitle = (a, b) => (a.title || "").localeCompare(b.title || "", undefined, { sensitivity: "base" });
-            const pinned = active.filter(note => note.pinned).sort(byTitle);
-            const normal = active.filter(note => !note.pinned).sort(byTitle);
-            notes = pinned.concat(normal, deleted);
-            renderNotes();
-            save();
-            closeNotesMoreMenu();
-        }
         function autoGrowTaskText(box) {
             box.style.height = "auto";
             box.style.height = Math.max(31, box.scrollHeight) + "px";
@@ -5917,25 +6070,6 @@ currentEntry.text = text.value; autoGrowActivityText(text); saveActivity(); upda
         function notesDateKey() { return toKey(notesDate); }
         function loadNotesForIndependentDate() {
             notes = orderNotes(normalizeNotes(readDateData(notesDateKey()).notes));
-            notesScopeDateBtn.value = notesDateKey();
-            mobileNotesDate.textContent = `Notes for ${displayDate(notesDate)}`;
-        }
-        function setIndependentNotesDate(dateKey) {
-            const target = fromKey(dateKey);
-            if (!target || !isWithinRange(target)) {
-                notesScopeDateBtn.value = notesDateKey();
-                return;
-            }
-            notesDate = target;
-            localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
-            notesBinOpen = false;
-            notesSearchQuery = "";
-            notesSearchInput.value = "";
-            loadNotesForIndependentDate();
-            if (isMobileViewport()) mobileNotesAll = false;
-            else notesFocusAll = false;
-            applyNotesFocusScope();
-            renderNotes();
         }
         function readSavedData() { storageKey = selectedStorageKey(); saved = readDateData(toKey(selectedDate)); loadNotesForIndependentDate(); }
         function hasNotesData(data) { return Array.isArray(data.notes) ? normalizeNotes(data.notes).some(note => !note.deleted && ((note.title || "").trim() || (note.body || "").trim())) : Boolean((data.notes || "").trim()); }
@@ -6145,40 +6279,17 @@ ${body}` : title };
             const mobileMode = isMobileViewport() && notesSidebar.classList.contains("mobile-notes-open");
             const labelsMode = isLabelsWorkspace();
             const desktopNotesMode = !isMobileViewport() && desktopWorkspacePanel === "notes";
-            const allActive = mobileMode ? mobileNotesAll : labelsMode || (desktopNotesMode && notesFocusAll) || (notesFocusView && notesFocusAll);
-            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || (!isMobileViewport() && (desktopNotesMode || notesFocusView || labelsMode))));
-            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && allActive && !notesBinOpen);
+            notesFocusScope.classList.toggle("show", !notesBinOpen && (mobileMode || desktopNotesMode || notesFocusView || labelsMode));
+            notesSidebar.classList.toggle("desktop-all-notes", desktopNotesMode && !notesBinOpen);
             notesFocusScope.classList.toggle("labels-mode", labelsMode);
             notesFocusScope.classList.toggle("mobile-scope", mobileMode);
             if (mobileMode && notesFocusScope.parentElement !== mobileNotesScopeSlot)
                 mobileNotesScopeSlot.appendChild(notesFocusScope);
             else if (!mobileMode && notesFocusScope.parentElement !== notesWorkspacePanel)
                 notesWorkspacePanel.insertBefore(notesFocusScope, mobileNotesToolbar);
-            notesLabelFilter.classList.toggle("show", (allActive && labelsMode) || mobileMode);
-            if (allActive || mobileMode)
-                updateLabelFilterOptions();
-            notesScopeDateBtn.classList.toggle("active", !allActive);
-            notesScopeAllBtn.classList.toggle("active", allActive);
-            notesScopeAllBtn.setAttribute("aria-pressed", String(allActive));
+            notesLabelFilter.classList.add("show");
+            updateLabelFilterOptions();
             mobileNotesToolbar.hidden = !mobileMode || notesBinOpen;
-        }
-        function setNotesFocusScope(showAll) {
-            if (notesBinOpen)
-                return;
-            if (isMobileViewport()) {
-                mobileNotesAll = Boolean(showAll);
-                notesLabelFilterValue = "";
-                notesSearchQuery = "";
-                notesSearchInput.value = "";
-                applyNotesFocusScope();
-                renderNotes();
-                return;
-            }
-            if (desktopWorkspacePanel !== "notes" && !notesFocusView)
-                return;
-            notesFocusAll = Boolean(showAll);
-            applyNotesFocusScope();
-            renderNotes();
         }
         function collectAllFocusNotes() {
             const results = [];
@@ -6236,7 +6347,9 @@ ${body}` : title };
                     : "No labelled notes yet";
             }
             else {
-                notesNoResults.textContent = "No notes found across saved dates";
+                notesNoResults.textContent = notesLabelFilterValue
+                    ? `No notes with label “${notesLabelFilterValue}”`
+                    : "No notes yet. Tap + to create your first note.";
             }
             notesNoResults.classList.toggle("show", results.length === 0);
             applyNotesCompact();
@@ -6500,9 +6613,12 @@ ${body}` : title };
             if (!note)
                 return;
             const linkedTasks = linkedTasksForNote(id);
-            if (linkedTasks.length > 1 && !confirm(`This note is linked to ${linkedTasks.length} tasks. Delete it anyway? The tasks will remain, but their note links will be removed.`))
+            const linkedEvents = linkedEventsForNote(id);
+            const linkedCount = linkedTasks.length + linkedEvents.length;
+            if (linkedCount > 1 && !confirm(`This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"} and ${linkedEvents.length} event${linkedEvents.length === 1 ? "" : "s"}. Delete it anyway? The links will be removed.`))
                 return;
             clearTaskNoteLinks(id);
+            clearEventNoteLinks(id);
             if (expandedNoteId === id)
                 closeExpandedEditor();
             if (movingNoteId === id)
@@ -6519,10 +6635,13 @@ ${body}` : title };
             if (!note)
                 return;
             const linkedTasks = linkedTasksForNote(id);
-            const warning = linkedTasks.length ? ` This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"}; those links will be removed.` : "";
+            const linkedEvents = linkedEventsForNote(id);
+            const linkedCount = linkedTasks.length + linkedEvents.length;
+            const warning = linkedCount ? ` This note is linked to ${linkedTasks.length} task${linkedTasks.length === 1 ? "" : "s"} and ${linkedEvents.length} event${linkedEvents.length === 1 ? "" : "s"}; those links will be removed.` : "";
             if (!confirm(`Permanently delete this note? This cannot be undone.${warning}`))
                 return;
             clearTaskNoteLinks(id);
+            clearEventNoteLinks(id);
             notes = notes.filter(item => item.id !== id);
             renderNotes();
             save();
@@ -6672,7 +6791,7 @@ ${body}` : title };
                 const active = panel === "notes" ? (desktopWorkspacePanel === "notes" || desktopWorkspacePanel === "labels") : desktopWorkspacePanel === panel;
                 button.classList.toggle("active", active);button.setAttribute("aria-selected",String(active));
             });
-            notesLabelsBtn.classList.toggle("active",desktopWorkspacePanel === "labels");
+            // Labels are filtered through the shared dropdown; no separate button state.
         }
         function applyWorkspaceFocusState() {
             const active = !isMobileViewport() && Boolean(workspaceFocusPanel);
@@ -7160,6 +7279,7 @@ ${body}` : title };
                 targetData.evening = "";
             writeDateData(targetKey, targetData);
             updateLinkedTaskNoteDate(movingNote.id, targetKey);
+            updateLinkedEventNoteDate(movingNote.id, targetKey);
             renderNotes();
             markDateHasData(sourceKey);
             markDateHasData(targetKey);
@@ -7191,7 +7311,7 @@ ${body}` : title };
             if (isMobileViewport() || notesBinOpen || notesFocusView || isLabelsWorkspace() || notesPinnedOnly) return new Set();
             const pinned = collectGlobalPinnedNotes(); if (!pinned.length) return new Set();
             const section = document.createElement("section"); section.className = "global-pinned-section";
-            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `Pinned · ${pinned.length}`; head.appendChild(title);
+            const head = document.createElement("div"); head.className = "global-pinned-head"; const title = document.createElement("div"); title.className = "global-pinned-title"; title.textContent = `★ Pinned Notes (${pinned.length})`; head.appendChild(title);
             if (pinned.length > 3) { const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "plain-btn global-pinned-toggle"; toggle.textContent = globalPinnedExpanded ? "Show less" : `Show all pinned (${pinned.length})`; toggle.addEventListener("click", () => { globalPinnedExpanded = !globalPinnedExpanded; renderNotes(); }); head.appendChild(toggle); }
             const list = document.createElement("div"); list.className = "global-pinned-list";
             (globalPinnedExpanded ? pinned : pinned.slice(0, 3)).forEach(result => { const button = document.createElement("button"); button.type = "button"; button.className = "global-pinned-note"; const noteTitle = document.createElement("span"); noteTitle.className = "global-pinned-note-title"; noteTitle.textContent = `★ ${result.note.title || "Untitled"}`; const noteDate = document.createElement("span"); noteDate.className = "global-pinned-note-date"; const parsed = fromKey(result.dateKey); noteDate.textContent = parsed ? parsed.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : result.dateKey; button.append(noteTitle, noteDate); button.addEventListener("click", () => openAllFocusNote(result.dateKey, result.note.id)); list.appendChild(button); });
@@ -7201,25 +7321,14 @@ ${body}` : title };
             notesList.innerHTML = "";
             notes = orderNotes(notes);
             applyNotesFocusScope();
-            const mobilePinnedGlobal = isMobileViewport() && notesPinnedOnly && notesSidebar.classList.contains("mobile-notes-open");
-            const desktopNotesAll = !isMobileViewport() && desktopWorkspacePanel === "notes" && notesFocusAll;
-            if (!notesBinOpen && (mobilePinnedGlobal || (isMobileViewport() && mobileNotesAll && notesSidebar.classList.contains("mobile-notes-open")) || (!isMobileViewport() && (isLabelsWorkspace() || desktopNotesAll || (notesFocusView && notesFocusAll))))) {
+            if (!notesBinOpen) {
                 renderAllFocusNotes();
                 return;
             }
-            const pinnedIdsOnSelectedDate = renderGlobalPinnedSection();
-            const visibleNotes = notesBinOpen
-                ? notes.filter(note => note.deleted)
-                : notes.filter(note => !note.deleted && !pinnedIdsOnSelectedDate.has(note.id) && (!notesLabelFilterValue || note.labels.some(label => label.toLowerCase() === notesLabelFilterValue.toLowerCase())) && noteMatchesSearch(note));
-            visibleNotes.forEach(note => notesList.appendChild(notesBinOpen ? createTrashCard(note) : createNoteCard(note)));
-            if (notesBinOpen) {
-                notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
-                notesNoResults.classList.toggle("show", !visibleNotes.length);
-            }
-            else {
-                notesNoResults.textContent = notesLabelFilterValue ? `No notes with label “${notesLabelFilterValue}”` : notesPinnedOnly ? "No pinned notes" : "No matching notes";
-                notesNoResults.classList.toggle("show", visibleNotes.length === 0 && (notesPinnedOnly || Boolean(notesSearchQuery)));
-            }
+            const visibleNotes = notes.filter(note => note.deleted);
+            visibleNotes.forEach(note => notesList.appendChild(createTrashCard(note)));
+            notesNoResults.textContent = visibleNotes.length ? "" : "Recycle bin is empty";
+            notesNoResults.classList.toggle("show", !visibleNotes.length);
             document.querySelectorAll(".note-body").forEach(autoGrowNoteBody);
             applyNotesCompact();
             updateSearchUi();
@@ -7536,27 +7645,9 @@ ${body}` : title };
         helpModal.addEventListener("click", event => { if (event.target === helpModal)
             closeHelp(); });
         notesSearchBtn.addEventListener("click", openSearch);
-        mobileNotesLabelsBtn.addEventListener("click", () => {
-            const open = !notesLabelFilter.classList.contains("mobile-open");
-            notesLabelFilter.classList.toggle("mobile-open", open);
-            mobileNotesLabelsBtn.classList.toggle("active", open || Boolean(notesLabelFilterValue));
-            mobileNotesLabelsBtn.setAttribute("aria-pressed", String(open));
-            if (open) {
-                updateLabelFilterOptions();
-                notesLabelFilter.focus();
-            }
-        });
         mobileNotesAddBtn.addEventListener("click", () => addNoteBtn.click());
-        mobileNotesMoreBtn.addEventListener("click", event => {
-            event.stopPropagation();
-            const open = !mobileNotesMoreMenu.classList.contains("open");
-            mobileNotesMoreMenu.classList.toggle("open", open);
-            mobileNotesMoreBtn.setAttribute("aria-expanded", String(open));
-        });
-        mobileNotesMoreMenu.addEventListener("click", event => event.stopPropagation());
-        mobileNotesSortBtn.addEventListener("click", () => { sortNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
-        mobileNotesMoveAllBtn.addEventListener("click", () => { moveAllNotesBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
-        mobileNotesBinBtn.addEventListener("click", () => { notesBinBtn.click(); mobileNotesMoreMenu.classList.remove("open"); });
+        mobileNotesBinBtn.addEventListener("click", () => notesBinBtn.click());
+        mobileNotesMoveAllBtn.addEventListener("click", () => moveAllNotesBtn.click());
         notesSearchClear.addEventListener("click", clearSearch);
         notesSearchInput.addEventListener("input", () => { notesSearchQuery = notesSearchInput.value; renderNotes(); });
         notesSearchInput.addEventListener("keydown", event => { if (event.key === "Escape")
@@ -7568,23 +7659,11 @@ ${body}` : title };
                 closeExpandedListMenu();
             if (!notesMoreMenu.contains(event.target) && event.target !== notesMoreBtn)
                 closeNotesMoreMenu();
-            if (!mobileNotesMoreMenu.contains(event.target) && event.target !== mobileNotesMoreBtn) {
-                mobileNotesMoreMenu.classList.remove("open");
-                mobileNotesMoreBtn.setAttribute("aria-expanded", "false");
-            }
             if (!event.target.closest || !event.target.closest(".task-row"))
                 closeTaskMoveMenus();
         });
-        sortNotesBtn.addEventListener("click", sortNotesByTitle);
-        notesScopeDateBtn.min = toKey(START_DATE);
-        notesScopeDateBtn.max = toKey(END_DATE);
-        notesScopeDateBtn.addEventListener("change", () => setIndependentNotesDate(notesScopeDateBtn.value));
-        notesScopeAllBtn.addEventListener("click", () => setNotesFocusScope(true));
         notesLabelFilter.addEventListener("change", () => {
             notesLabelFilterValue = notesLabelFilter.value;
-            notesLabelFilter.classList.remove("mobile-open");
-            mobileNotesLabelsBtn.classList.toggle("active", Boolean(notesLabelFilterValue));
-            mobileNotesLabelsBtn.setAttribute("aria-pressed", "false");
             renderNotes();
         });
         moveAllNotesBtn.addEventListener("click", () => { closeNotesMoreMenu(); openMoveAllNotes(); });
@@ -7600,7 +7679,6 @@ ${body}` : title };
             openExpandedNote(newNote.id, true, "title");
         });
         workspaceNotesTab.addEventListener("click", () => showDesktopWorkspacePanel("notes"));
-        notesLabelsBtn.addEventListener("click", toggleNotesLabelsWorkspace);
         workspaceTasksTab.addEventListener("click", () => showDesktopWorkspacePanel("tasks"));
         workspaceActivityTab.addEventListener("click", () => showDesktopWorkspacePanel("activity"));
         workspaceEventsTab.addEventListener("click", () => showDesktopWorkspacePanel("events"));
@@ -7614,11 +7692,16 @@ ${body}` : title };
         viewEventsBtn.addEventListener("click", openEvents);
         eventsPanelAddBtn.addEventListener("click", () => openEventEditor());
         eventsPastBtn.addEventListener("click", () => { showPastEvents = !showPastEvents; renderEvents(); });
+        eventTagFilter.addEventListener("change", () => { activeEventTagFilter = eventTagFilter.value; renderEvents(); });
         closeEventBtn.addEventListener("click", closeEventEditor);
         cancelEventBtn.addEventListener("click", closeEventEditor);
         saveEventBtn.addEventListener("click", saveEventFromEditor);
         deleteEventBtn.addEventListener("click", deleteEditingEvent);
         copyEventBtn.addEventListener("click", copyEditingEvent);
+        eventCreateNoteBtn.addEventListener("click", createNoteForEditingEvent);
+        eventLinkNoteBtn.addEventListener("click", openEventNotePicker);
+        eventOpenNoteBtn.addEventListener("click", openLinkedNoteForEditingEvent);
+        eventUnlinkNoteBtn.addEventListener("click", unlinkNoteFromEditingEvent);
         eventDurationInput.addEventListener("change", updateEventEditorOptions);
         eventTimeInput.addEventListener("input", updateEventEditorOptions);
         eventRepeatInput.addEventListener("change", updateEventEditorOptions);
