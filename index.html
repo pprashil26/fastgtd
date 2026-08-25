@@ -1889,7 +1889,6 @@
 }
 
 @media (max-width: 759px) {
-  #todayBtn,
   .notes-focus-scope {
     display: none !important;
   }
@@ -3936,6 +3935,81 @@ body.notes-focus-active .note-body {
     padding-left: 53px;
   }
 }
+
+/* Today and Print card toolbar alignment */
+.print-today-sheet { display:none; }
+#todayBtn,
+.print-today-btn {
+  display:inline-flex;
+  min-height:24px;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  padding:1px 0;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:var(--muted);
+  font-size:var(--font-sm);
+  font-weight:500;
+  line-height:1.25;
+  text-decoration:none;
+  vertical-align:middle;
+}
+#todayBtn:hover,
+#todayBtn:focus-visible,
+.print-today-btn:hover,
+.print-today-btn:focus-visible {
+  background:transparent;
+  color:var(--ink);
+  text-decoration:underline;
+}
+.toolbar .actions {
+  align-items:center;
+}
+@media (max-width:759px) {
+  body.mobile-section-active.mobile-view-plan .toolbar {
+    justify-content:flex-end;
+  }
+  body.mobile-section-active.mobile-view-plan .toolbar .hint {
+    display:none;
+  }
+  body.mobile-section-active.mobile-view-plan .toolbar .actions {
+    width:100%;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+  }
+  body.mobile-section-active.mobile-view-plan #todayBtn,
+  body.mobile-section-active.mobile-view-plan .print-today-btn {
+    display:inline-flex!important;
+    min-height:30px;
+    padding:3px 1px;
+    font-size:12px;
+  }
+}
+@media print {
+  @page { size:A5 portrait; margin:7mm; }
+  html,body { width:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;color:#222!important;display:block!important; }
+  body > *:not(.print-today-sheet) { display:none!important; }
+  .print-today-sheet[hidden] { display:block!important; }
+  .print-today-sheet { display:block!important;width:100%;font-family:Arial,Helvetica,sans-serif;color:#24231f; }
+  .print-card-header { display:flex;align-items:flex-end;justify-content:space-between;gap:5mm;margin-bottom:3.5mm;padding-bottom:2.5mm;border-bottom:.45mm solid #272620; }
+  .print-card-brand { flex:0 0 auto;font-size:8pt;font-weight:800;letter-spacing:.16em;text-transform:uppercase; }
+  .print-card-date { font-family:Georgia,serif;font-size:13pt;line-height:1;text-align:right; }
+  .print-card-columns { display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:5mm;align-items:start; }
+  .print-card-column { min-width:0; }
+  .print-card-label { margin-bottom:2mm;padding-bottom:1.5mm;border-bottom:.3mm solid #272620;font-size:7pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase; }
+  .print-card-item { display:grid;grid-template-columns:4.5mm minmax(0,1fr);gap:1mm;margin:0;padding:1.45mm 0;border-bottom:.2mm solid #ddd8cf;font-size:8.1pt;line-height:1.2;break-inside:avoid; }
+  .print-card-item.completed { color:#777;text-decoration:line-through; }
+  .print-card-check { font-size:9pt;line-height:1; }
+  .print-card-empty { color:#777;font-size:8pt;font-style:italic; }
+  .print-card-plan-row { display:grid;grid-template-columns:15mm minmax(0,1fr);gap:1.5mm;min-height:4.65mm;align-items:center;padding:.55mm 1mm;border:.2mm solid #cfc9be;border-bottom:0;font-size:7.4pt;line-height:1.08;break-inside:avoid; }
+  .print-card-plan-row:last-child { border-bottom:.2mm solid #cfc9be; }
+  .print-card-plan-row.empty { background:#faf9f6; }
+  .print-card-plan-time { color:#555;font-size:6.9pt;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap; }
+  .print-card-plan-text { min-width:0;overflow-wrap:anywhere; }
+}
 </style>
 </head>
 <body>
@@ -4010,7 +4084,7 @@ body.notes-focus-active .note-body {
             <button class="plain-btn nav-day-btn" id="nextDayBtn" type="button">›</button>
           </div>
         </div>
-        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button><button class="plain-btn clear-btn" id="clearBtn" type="button">Clear</button></div></div>
+        <div class="toolbar"><div class="hint">A lightweight GTD app - empty your mind</div><div class="actions"><button class="plain-btn" id="focusViewBtn" type="button" hidden aria-hidden="true" tabindex="-1" title="Focus view" aria-label="Focus view">⛶</button><button class="plain-btn today-tasks-btn" id="todayTasksBtn" type="button" title="Open Today tasks">Today tasks</button><button class="plain-btn print-today-btn" id="printTodayBtn" type="button" title="Print Today card">Print card</button><button class="plain-btn" id="activityBtn" type="button" hidden>Activity</button><button class="plain-btn" id="addTaskInboxBtn" type="button" hidden>+ Inbox</button><button class="plain-btn" id="addTaskTodayBtn" type="button" hidden>+ Today</button><button class="plain-btn" id="todayBtn" type="button">Today</button></div></div>
       </header>
       <section class="note-block"><div class="note-line"><label class="note-label" for="focusInput">Focus</label><input id="focusInput" type="text" placeholder="Focus, critical reminder, intention..." autocomplete="off" /></div></section>
       <section class="events-strip" id="eventsStrip" aria-label="Events for selected date"><div class="events-strip-head"><span class="events-strip-title">Events</span><div class="events-strip-list" id="eventsStripList"></div><span class="events-strip-actions"><button class="plain-btn" id="viewEventsBtn" type="button">All events</button><button class="plain-btn event-add-link" id="addEventBtn" type="button" title="Add event" aria-label="Add event">+</button></span></div></section>
@@ -4049,6 +4123,13 @@ body.notes-focus-active .note-body {
     </aside>
   </div>
 
+  <section class="print-today-sheet" id="printTodaySheet" aria-label="Printable Today card" hidden>
+    <header class="print-card-header"><div class="print-card-brand">FAST GTD</div><div class="print-card-date" id="printCardDate"></div></header>
+    <div class="print-card-columns">
+      <section class="print-card-column print-card-tasks"><div class="print-card-label">Today’s Tasks</div><div id="printCardTasks"></div></section>
+      <section class="print-card-column print-card-plan"><div class="print-card-label">Timeblocks</div><div id="printCardPlan"></div></section>
+    </div>
+  </section>
   <div class="modal-backdrop" id="noteModal" aria-hidden="true">
     <section class="expanded-note" id="expandedNoteShell" role="dialog" aria-modal="true" aria-label="Expanded note editor">
       <div class="expanded-note-head"><input id="expandedTitle" class="expanded-title" type="text" placeholder="Note title" autocomplete="off" /><button class="plain-btn" id="closeExpandedNote" type="button">Close</button></div>
@@ -4241,9 +4322,13 @@ body.notes-focus-active .note-body {
         const addEventBtn = el("addEventBtn");
         const viewEventsBtn = el("viewEventsBtn");
         const selectedDateText = el("selectedDateText");
-        const clearBtn = el("clearBtn");
         const focusViewBtn = el("focusViewBtn");
         const todayTasksBtn = el("todayTasksBtn");
+        const printTodayBtn = el("printTodayBtn");
+        const printTodaySheet = el("printTodaySheet");
+        const printCardDate = el("printCardDate");
+        const printCardTasks = el("printCardTasks");
+        const printCardPlan = el("printCardPlan");
         const activityBtn = el("activityBtn");
         const addTaskInboxBtn = el("addTaskInboxBtn");
         const addTaskTodayBtn = el("addTaskTodayBtn");
@@ -7512,6 +7597,62 @@ ${body}` : title };
             currentSlot.classList.add("current-slot", isFirstFifteen ? "current-first-15" : "current-last-15");
             currentSlot.title = `Current block: ${isFirstFifteen ? "first" : "last"} 15 minutes`;
         }
+        function renderPrintTasks(tasks) {
+            printCardTasks.innerHTML = "";
+            if (!tasks.length) {
+                const empty = document.createElement("div");
+                empty.className = "print-card-empty";
+                empty.textContent = "No Today tasks";
+                printCardTasks.appendChild(empty);
+                return;
+            }
+            tasks.forEach(task => {
+                const row = document.createElement("div");
+                row.className = "print-card-item";
+                row.classList.toggle("completed", Boolean(task.done));
+                const mark = document.createElement("span");
+                mark.className = "print-card-check";
+                mark.textContent = task.done ? "☑" : "□";
+                const text = document.createElement("span");
+                text.textContent = task.text || "Task";
+                row.append(mark, text);
+                printCardTasks.appendChild(row);
+            });
+        }
+        function renderPrintTimeblocks(entries) {
+            printCardPlan.innerHTML = "";
+            for (let total = 8 * 60; total < 24 * 60; total += 30) {
+                const time = `${pad(Math.floor(total / 60))}:${pad(total % 60)}`;
+                const text = String(entries[time] || "").trim();
+                const row = document.createElement("div");
+                row.className = "print-card-plan-row";
+                row.classList.toggle("empty", !text);
+                const when = document.createElement("span");
+                when.className = "print-card-plan-time";
+                when.textContent = new Date(2000, 0, 1, ...time.split(":").map(Number)).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+                const value = document.createElement("span");
+                value.className = "print-card-plan-text";
+                value.textContent = text.replace(/^(Task|Event|Activity):\s*/i, "");
+                row.append(when, value);
+                printCardPlan.appendChild(row);
+            }
+        }
+        function buildPrintTodayCard() {
+            const today = getToday();
+            const dateKey = toKey(today);
+            const data = readDateData(dateKey);
+            printCardDate.textContent = today.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+            renderPrintTasks(orderTasks(globalTasks.Today || []));
+            const entries = data.entries && typeof data.entries === "object" ? data.entries : {};
+            renderPrintTimeblocks(entries);
+        }
+        function printTodayCard() {
+            save();
+            buildPrintTodayCard();
+            printTodaySheet.hidden = false;
+            requestAnimationFrame(() => window.print());
+        }
+        window.addEventListener("afterprint", () => { printTodaySheet.hidden = true; });
         function loadSelectedDate() {
             ensureRecurringEventBlocks(toKey(selectedDate));
             readSavedData();
@@ -7939,23 +8080,9 @@ ${body}` : title };
     handleEscapeKey();
   }
 });
-        clearBtn.addEventListener("click", () => {
-            if (!confirm(`Clear all entries for ${displayDate(selectedDate)}?`))
-                return;
-            if (noteModal.classList.contains("open"))
-                closeExpandedEditor();
-            if (moveModal.classList.contains("open"))
-                closeMoveNote();
-            localStorage.removeItem(storageKey);
-            focusInput.value = "";
-            notes = [];
-            renderNotes();
-            document.querySelectorAll("textarea[data-time]").forEach(box => { box.value = ""; autoGrow(box); });
-            document.querySelectorAll(".timeblock-status[data-time]").forEach(button => { button.dataset.status = "planned"; button.textContent = TIMEBLOCK_STATUSES[0].icon; button.title = `Status: ${TIMEBLOCK_STATUSES[0].label}. Click to change.`; button.setAttribute("aria-label", button.title); TIMEBLOCK_STATUSES.forEach(item => button.classList.toggle(`timeblock-status-${item.id}`, item.id === "planned")); });
-            markDateHasData(toKey(selectedDate));
-            highlightCurrentTimeBlock();
-        });
+
         todayTasksBtn.addEventListener("click", openTodayTasksWorkspace);
+        printTodayBtn.addEventListener("click", printTodayCard);
         todayBtn.addEventListener("click", () => { const today = getToday(); if (isWithinRange(today))
             selectDate(today, true); });
         prevDayBtn.addEventListener("click", () => shiftSelectedDate(-1));
