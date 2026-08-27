@@ -4317,7 +4317,6 @@ body.notes-focus-active .note-body {
 }
 
 /* Mobile capture-first New Task form */
-.task-capture-more-btn { display: none; }
 .capture-toast {
   position: fixed;
   left: 50%;
@@ -4340,22 +4339,7 @@ body.notes-focus-active .note-body {
 .capture-toast.show { opacity: 1; transform: translate(-50%, 0); }
 @media (max-width: 759px) {
   #taskModal.mobile-new-task-capture .task-capture-organize { display: none !important; }
-  #taskModal.mobile-new-task-capture .task-capture-more-btn {
-    display: flex;
-    width: 100%;
-    min-height: 34px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 9px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--panel);
-    color: var(--ink);
-    font-size: 12px;
-    font-weight: 650;
-  }
   #taskModal.mobile-new-task-capture .task-capture-advanced { display: none !important; }
-  #taskModal.mobile-new-task-capture.mobile-capture-more-open .task-capture-advanced { display: grid !important; }
   #taskModal.mobile-new-task-capture .task-editor-body { gap: 6px; }
 }
 
@@ -4395,6 +4379,175 @@ body.notes-focus-active .note-body {
 }
 @media (max-width: 759px) {
   .next-action-line { font-size: 10px; }
+}
+
+
+
+
+/* Keep the Note capture More control out of non-Note-capture workspace views. */
+#expandedNoteShell:not(.mobile-new-note-capture) .note-capture-more-btn {
+  display: none !important;
+}
+
+/* Cross-device UI standards: Phase 1 controls + Phase 2 modal consistency */
+:root {
+  --control-height: 32px;
+  --control-radius: 10px;
+  --control-gap: 8px;
+  --modal-compact-width: 410px;
+  --modal-radius: 18px;
+  --modal-header-height: 44px;
+  --modal-inline-padding: 14px;
+  --modal-block-padding: 12px;
+  --modal-field-gap: 8px;
+  --modal-action-gap: 8px;
+}
+button,
+input,
+select {
+  min-height: var(--control-height);
+}
+.plain-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--control-radius);
+}
+#taskModal .task-editor-panel,
+#eventModal .event-editor-panel,
+#plannerCreateModal .planner-create-panel {
+  width: min(var(--modal-compact-width), 94vw);
+  border-radius: var(--modal-radius);
+}
+#taskModal .task-editor-head,
+#eventModal .event-editor-head,
+#plannerCreateModal .planner-create-head,
+#expandedNoteShell .expanded-note-head {
+  min-height: var(--modal-header-height);
+  gap: var(--control-gap);
+  padding: 9px 12px;
+  align-items: center;
+}
+#taskModal .task-editor-body,
+#eventModal .event-editor-body,
+#plannerCreateModal .planner-create-body {
+  gap: var(--modal-field-gap);
+  padding: var(--modal-block-padding) var(--modal-inline-padding);
+}
+#taskModal .task-editor-body label,
+#eventModal .event-editor-body label,
+#plannerCreateModal .planner-create-body label {
+  line-height: 1.25;
+}
+#taskModal .task-editor-body > input,
+#taskModal .task-editor-body > select,
+#eventModal .event-editor-body > input,
+#eventModal .event-editor-body > select,
+#plannerCreateModal .planner-create-body > input,
+#plannerCreateModal .planner-create-body > select {
+  min-height: var(--control-height);
+  border-radius: var(--control-radius);
+}
+#taskModal .task-editor-actions,
+#eventModal .event-editor-actions,
+#plannerCreateModal .planner-create-actions {
+  gap: var(--modal-action-gap);
+  align-items: center;
+  padding: 8px var(--modal-inline-padding) 12px;
+}
+#taskModal .task-editor-actions .plain-btn,
+#eventModal .event-editor-actions .plain-btn,
+#plannerCreateModal .planner-create-actions .plain-btn {
+  min-height: var(--control-height);
+}
+@media (max-width: 759px) {
+  #taskModal .task-editor-panel,
+  #eventModal .event-editor-panel,
+  #plannerCreateModal .planner-create-panel {
+    width: min(var(--modal-compact-width), calc(100vw - 20px));
+  }
+  #taskModal .task-editor-body,
+  #eventModal .event-editor-body,
+  #plannerCreateModal .planner-create-body {
+    padding: 10px 12px;
+  }
+  #taskModal .task-editor-actions,
+  #eventModal .event-editor-actions,
+  #plannerCreateModal .planner-create-actions {
+    gap: var(--control-gap);
+    padding: 8px 12px;
+  }
+}
+
+
+/* Mobile Voice Capture using native keyboard dictation */
+.voice-capture-backdrop { display: none; }
+@media (max-width: 759px) {
+  .voice-capture-backdrop.open { display: flex; }
+  .voice-capture-panel {
+    width: min(410px, calc(100vw - 20px));
+    max-height: calc(100dvh - 24px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--modal-radius, 18px);
+    background: var(--page);
+    box-shadow: 0 18px 50px rgba(50,40,28,.22);
+  }
+  .voice-capture-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: var(--modal-header-height, 44px);
+    gap: var(--control-gap, 8px);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .voice-capture-body { display: grid; gap: 8px; padding: 10px 12px; }
+  .voice-capture-body label,
+  .voice-capture-label { color: var(--muted); font-size: var(--font-xs); font-weight: 650; }
+  #voiceCaptureText {
+    width: 100%;
+    min-height: 132px;
+    max-height: 42vh;
+    resize: vertical;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--control-radius, 10px);
+    background: var(--page);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .voice-capture-help { color: var(--muted); font-size: 10.5px; line-height: 1.35; }
+  .voice-capture-types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .voice-capture-types .plain-btn {
+    min-width: 0;
+    min-height: 32px;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    background: var(--page);
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .voice-capture-types .plain-btn.active {
+    border-color: var(--entry-border);
+    background: var(--selected);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .voice-capture-actions { display: flex; justify-content: flex-end; padding: 0 12px 12px; }
+  .voice-capture-save {
+    min-height: 32px;
+    padding: 5px 14px;
+    border: 1px solid #e2cd61;
+    border-radius: var(--control-radius, 10px);
+    background: #FFEE8C;
+    color: #4f4518;
+    font-weight: 750;
+  }
 }
 </style>
 </head>
@@ -4440,11 +4593,31 @@ body.notes-focus-active .note-body {
         <button class="plain-btn mobile-more-item" id="mobileActivityBtn" type="button">Activity</button>
         <button class="plain-btn mobile-more-item" id="mobileAllEventsBtn" type="button">Events</button>
         <button class="plain-btn mobile-more-item" id="mobileCalendarBtn" type="button">Calendar</button>
+        <button class="plain-btn mobile-more-item" id="mobileVoiceCaptureBtn" type="button">🎤 Voice Capture</button>
         <button class="plain-btn mobile-more-item mobile-export-btn" type="button">Export</button>
         <button class="plain-btn mobile-more-item mobile-import-btn" type="button">Import</button>
         <button class="plain-btn mobile-more-item" id="mobileHelpBtn" type="button">Help</button>
         <button class="plain-btn mobile-more-item mobile-share-btn" id="mobileShareBtn" type="button">Share</button>
       </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop voice-capture-backdrop" id="voiceCaptureModal" aria-hidden="true">
+    <section class="voice-capture-panel" role="dialog" aria-modal="true" aria-labelledby="voiceCaptureTitle">
+      <div class="voice-capture-head"><strong id="voiceCaptureTitle">Voice Capture</strong><button class="plain-btn" id="closeVoiceCaptureBtn" type="button">Cancel</button></div>
+      <div class="voice-capture-body">
+        <label for="voiceCaptureText">Speak or type</label>
+        <textarea id="voiceCaptureText" rows="5" placeholder="Tap here, then use the microphone on your phone keyboard..."></textarea>
+        <span class="voice-capture-help">Use your phone keyboard’s microphone, then review the text before saving.</span>
+        <span class="voice-capture-label">Save as</span>
+        <div class="voice-capture-types" role="group" aria-label="Save voice capture as">
+          <button class="plain-btn active" type="button" data-voice-type="task" aria-pressed="true">Task</button>
+          <button class="plain-btn" type="button" data-voice-type="event" aria-pressed="false">Event</button>
+          <button class="plain-btn" type="button" data-voice-type="note" aria-pressed="false">Note</button>
+          <button class="plain-btn" type="button" data-voice-type="activity" aria-pressed="false">Activity</button>
+        </div>
+      </div>
+      <div class="voice-capture-actions"><button class="plain-btn voice-capture-save" id="saveVoiceCaptureBtn" type="button">Save</button></div>
     </section>
   </div>
 
@@ -4590,7 +4763,6 @@ body.notes-focus-active .note-body {
         <label class="task-capture-organize" for="taskEditorContext">List</label><select class="task-capture-organize" id="taskEditorContext"></select>
         <div class="task-editor-mobile-controls task-capture-organize"><div><label for="taskEditorStatus">Status</label><select id="taskEditorStatus"></select></div><label class="task-editor-highlight-option" for="taskEditorHighlight"><input id="taskEditorHighlight" type="checkbox" /> Highlight this task</label></div>
         <label class="task-capture-organize" for="taskEditorTags">Tags <span class="event-optional">optional</span></label><input class="task-capture-organize" id="taskEditorTags" type="text" maxlength="240" list="taskTagSuggestions" placeholder="Work, Home, Waiting..." autocomplete="off" /><datalist id="taskTagSuggestions"></datalist><div class="task-editor-tags-help task-capture-organize">Separate multiple tags with commas. Task tags are independent from Note labels.</div>
-        <button class="plain-btn task-capture-more-btn" id="taskCaptureMoreBtn" type="button" aria-expanded="false">More <span aria-hidden="true">⌄</span></button>
         <div class="task-editor-date-row task-capture-advanced"><div><label for="taskEditorDate">Date <span class="event-optional">optional</span></label><input id="taskEditorDate" type="date" /></div><div><label for="taskEditorTime">Time <span class="event-optional">optional</span></label><input id="taskEditorTime" type="time" /></div></div>
         <div class="task-note-section task-capture-advanced" id="taskNoteSection"><span class="task-note-label">Note</span><span class="task-note-actions"><button class="plain-btn task-note-btn" id="taskCreateNoteBtn" type="button">Create note</button><button class="plain-btn task-note-btn" id="taskLinkNoteBtn" type="button">Link existing</button><button class="plain-btn task-note-btn" id="taskOpenNoteBtn" type="button" hidden>Open note</button><button class="plain-btn task-note-unlink" id="taskUnlinkNoteBtn" type="button" hidden>Unlink</button></span><span class="task-note-help" id="taskNoteHelp"></span></div>
       </div>
@@ -4691,6 +4863,11 @@ body.notes-focus-active .note-body {
         const mobileMoreBtn = el("mobileMoreBtn");
         const mobileMoreBackdrop = el("mobileMoreBackdrop");
         const mobileMoreCloseBtn = el("mobileMoreCloseBtn");
+        const mobileVoiceCaptureBtn = el("mobileVoiceCaptureBtn");
+        const voiceCaptureModal = el("voiceCaptureModal");
+        const closeVoiceCaptureBtn = el("closeVoiceCaptureBtn");
+        const voiceCaptureText = el("voiceCaptureText");
+        const saveVoiceCaptureBtn = el("saveVoiceCaptureBtn");
         const mobileSectionTitle = el("mobileSectionTitle");
         const mobileHomeBtn = el("mobileHomeBtn");
         const shell = el("shell");
@@ -4805,7 +4982,6 @@ body.notes-focus-active .note-body {
         const taskTagSuggestions = el("taskTagSuggestions");
         const taskEditorDate = el("taskEditorDate");
         const taskEditorTime = el("taskEditorTime");
-        const taskCaptureMoreBtn = el("taskCaptureMoreBtn");
         const captureToast = el("captureToast");
         const taskCreateNoteBtn = el("taskCreateNoteBtn");
         const taskLinkNoteBtn = el("taskLinkNoteBtn");
@@ -5553,7 +5729,7 @@ body.notes-focus-active .note-body {
             const found = context && (globalTasks[context] || []).find(item => item.id === taskId) ? { context, task: globalTasks[context].find(item => item.id === taskId) } : findTaskLocation(taskId);
             if (!found) return;
             editingTaskId = found.task.id; editingTaskContext = found.context; taskEditorFocusTarget = focusTarget;
-            taskModal.classList.remove("mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.remove("mobile-new-task-capture");
             taskEditorTitle.textContent = "Edit Task";
             taskEditorText.value = found.task.text; taskEditorNextAction.value = found.task.nextAction || ""; populateTaskEditorLists(found.context); populateTaskEditorStatus(found.task.status); taskEditorHighlight.checked = Boolean(found.task.highlighted);
             taskEditorTags.value = normalizeTaskTags(found.task.tags).join(", "); updateTaskTagSuggestions();
@@ -5578,7 +5754,7 @@ body.notes-focus-active .note-body {
         }
         function openNewTaskEditor(context = activeTaskContext, focusTarget = "text") {
             editingTaskId = null; editingTaskContext = isMobileViewport() ? "Inbox" : (TASK_CONTEXTS.includes(context) ? context : "Inbox"); taskEditorFocusTarget = focusTarget;
-            taskModal.classList.toggle("mobile-new-task-capture", isMobileViewport()); taskModal.classList.remove("mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.toggle("mobile-new-task-capture", isMobileViewport());
             taskEditorTitle.textContent = "New Task";
             taskEditorText.value = ""; taskEditorNextAction.value = ""; populateTaskEditorLists(editingTaskContext); populateTaskEditorStatus("not-started"); taskEditorHighlight.checked = false;
             taskEditorTags.value = ""; updateTaskTagSuggestions();
@@ -5593,7 +5769,7 @@ body.notes-focus-active .note-body {
             if (!found) return;
             editingTaskId = null;
             editingTaskContext = found.context;
-            taskModal.classList.remove("mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false");
+            taskModal.classList.remove("mobile-new-task-capture");
             taskEditorTitle.textContent = "Copy Task";
             taskEditorText.value = found.task.text;
             taskEditorNextAction.value = found.task.nextAction || "";
@@ -5609,7 +5785,7 @@ body.notes-focus-active .note-body {
             taskEditorText.focus();
             taskEditorText.select();
         }
-        function closeTaskEditor() { taskModal.classList.remove("open", "mobile-new-task-capture", "mobile-capture-more-open"); taskCaptureMoreBtn.setAttribute("aria-expanded", "false"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
+        function closeTaskEditor() { taskModal.classList.remove("open", "mobile-new-task-capture"); taskModal.setAttribute("aria-hidden", "true"); editingTaskId = null; editingTaskContext = null; taskEditorFocusTarget = "text"; mobileTaskCaptureReturnHome = false; }
         function cancelTaskEditor() {
             const returnHome = isMobileViewport() && mobileTaskCaptureReturnHome;
             closeTaskEditor();
@@ -5617,11 +5793,6 @@ body.notes-focus-active .note-body {
                 closeExpandedEditor();
                 clearMobileSection();
             }
-        }
-        function toggleTaskCaptureMore() {
-            if (!taskModal.classList.contains("mobile-new-task-capture")) return;
-            const open = taskModal.classList.toggle("mobile-capture-more-open");
-            taskCaptureMoreBtn.setAttribute("aria-expanded", String(open));
         }
         let captureToastTimer = null;
         function showCaptureToast(message) {
@@ -8393,6 +8564,10 @@ ${body}` : title };
       function handleEscapeKey() {
   clearShortcutPrefix();
 
+  if (voiceCaptureModal.classList.contains("open")) {
+    closeVoiceCapture();
+    return;
+  }
   if (mobileMoreBackdrop.classList.contains("open")) {
     closeMobileMore();
     return;
@@ -8501,6 +8676,74 @@ ${body}` : title };
   }
 });
         globalSearchClear.addEventListener("click", clearGlobalSearch);
+        let voiceCaptureType = "task";
+        function setVoiceCaptureType(type) {
+            if (!["task", "event", "note", "activity"].includes(type)) return;
+            voiceCaptureType = type;
+            document.querySelectorAll("[data-voice-type]").forEach(button => {
+                const active = button.dataset.voiceType === type;
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+        }
+        function openVoiceCapture() {
+            closeMobileMore();
+            voiceCaptureText.value = "";
+            setVoiceCaptureType("task");
+            voiceCaptureModal.classList.add("open");
+            voiceCaptureModal.setAttribute("aria-hidden", "false");
+            setTimeout(() => voiceCaptureText.focus(), 0);
+        }
+        function closeVoiceCapture() {
+            voiceCaptureModal.classList.remove("open");
+            voiceCaptureModal.setAttribute("aria-hidden", "true");
+            voiceCaptureText.value = "";
+        }
+        function saveVoiceCapture() {
+            const capturedText = voiceCaptureText.value.trim();
+            if (!capturedText) {
+                alert("Please speak or enter some text.");
+                voiceCaptureText.focus();
+                return;
+            }
+            const destination = voiceCaptureType;
+            closeVoiceCapture();
+            if (destination === "task") {
+                const task = { id: createId("task"), text: capturedText, nextAction: "", status: "not-started", done: false, highlighted: false, tags: [], date: "", time: "", noteLink: null, createdAt: new Date().toISOString() };
+                globalTasks.Inbox.unshift(task);
+                saveTasks();
+                renderGlobalTasks();
+                showCaptureToast("✓ Task saved to Inbox");
+                return;
+            }
+            if (destination === "event") {
+                openEventEditor();
+                eventTitleInput.value = capturedText.slice(0, 120);
+                eventTitleInput.dispatchEvent(new Event("input", { bubbles: true }));
+                return;
+            }
+            if (destination === "note") {
+                const today = getToday();
+                if (!isWithinRange(today)) return;
+                notesDate = today;
+                localStorage.setItem(NOTES_DATE_KEY, notesDateKey());
+                notesFocusAll = false;
+                mobileNotesAll = false;
+                notesBinOpen = false;
+                loadNotesForIndependentDate();
+                const note = { id: createId(), title: "Voice note", body: capturedText, labels: [], pinned: false, deleted: false, deletedAt: null };
+                notes.unshift(note);
+                renderNotes();
+                save();
+                showCaptureToast("✓ Note saved");
+                return;
+            }
+            activityEntries.unshift({ id: createId("activity"), text: capturedText, status: "started", highlighted: false, createdAt: new Date().toISOString() });
+            saveActivity();
+            renderActivity();
+            showCaptureToast("✓ Activity saved");
+        }
+
         function openMobileMore() {
             mobileMoreBackdrop.classList.add("open");
             mobileMoreBackdrop.setAttribute("aria-hidden", "false");
@@ -8512,6 +8755,11 @@ ${body}` : title };
             mobileMoreBtn.setAttribute("aria-expanded", "false");
         }
         mobileMoreBtn.addEventListener("click", openMobileMore);
+        mobileVoiceCaptureBtn.addEventListener("click", openVoiceCapture);
+        closeVoiceCaptureBtn.addEventListener("click", closeVoiceCapture);
+        saveVoiceCaptureBtn.addEventListener("click", saveVoiceCapture);
+        voiceCaptureModal.addEventListener("click", event => { if (event.target === voiceCaptureModal) closeVoiceCapture(); });
+        document.querySelectorAll("[data-voice-type]").forEach(button => button.addEventListener("click", () => setVoiceCaptureType(button.dataset.voiceType)));
         mobileMoreCloseBtn.addEventListener("click", closeMobileMore);
         mobileMoreBackdrop.addEventListener("click", event => { if (event.target === mobileMoreBackdrop) closeMobileMore(); });
         mobileTodayBtn.addEventListener("click", () => {
@@ -8638,7 +8886,6 @@ ${body}` : title };
         closeTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         cancelTaskEditorBtn.addEventListener("click", cancelTaskEditor);
         saveTaskEditorBtn.addEventListener("click", saveTaskFromEditor);
-        taskCaptureMoreBtn.addEventListener("click", toggleTaskCaptureMore);
         copyTaskBtn.addEventListener("click", copyEditingTask);
         deleteTaskEditorBtn.addEventListener("click", deleteTaskFromEditor);
         taskModal.addEventListener("click", event => { if (event.target === taskModal) cancelTaskEditor(); });
